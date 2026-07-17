@@ -2,4 +2,4 @@
 
 MVP security agent.
 
-Step 2 adds deterministic Python AST and JavaScript/TypeScript regex heuristics. Findings are candidates only, never final verdicts.
+Step 3 adds GPT-5.6 strict structured review, bounded concurrency, unified-diff generation, path validation and `git apply --check`. Patches are stored but never applied automatically.
