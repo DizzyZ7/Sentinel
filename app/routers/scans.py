@@ -15,7 +15,7 @@ from fastapi import (
     UploadFile,
     status,
 )
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,8 +28,11 @@ from app.models.finding import Finding
 from app.models.scan import Scan
 from app.schemas.decision import DecisionRequest, DecisionResponse
 from app.schemas.finding import FindingResponse
+from app.schemas.policy import GateResponse
 from app.schemas.scan import ReportResponse, ScanCreated, ScanStatus, SeveritySummary
+from app.services.attack_paths import build_attack_path_response, to_mermaid
 from app.services.ingestion import IngestionError, save_upload, validate_git_url
+from app.services.policy import evaluate_gate
 from app.services.reporting import severity_summary
 from app.services.sarif import build_sarif
 from app.services.scanner import process_scan
@@ -106,7 +109,7 @@ async def create_scan(
             assert archive is not None
             filename = SAFE_FILENAME_RE.sub("_", archive.filename or "repository.zip")
             if not filename.lower().endswith(".zip"):
-                raise IngestionError("Only .zip archives are supported")
+                raise IngestionError(only ".zip archives are supported")
             await save_upload(archive, workspace / "source.zip", settings.max_archive_bytes)
             scan = Scan(
                 id=scan_id,
@@ -161,12 +164,51 @@ async def get_report(
 
     wants_html = format == "html" or (format is None and "text/html" in request.headers.get("accept", ""))
     if wants_html:
+        attack_paths = build_attack_path_response(scan.id, ordered_findings)
+        gate = evaluate_gate(scan.id, ordered_findings)
         return templates.TemplateResponse(
             request=request,
             name="report.html",
-            context={"report": payload.model_dump(mode="json")},
+            context={
+                "report": payload.model_dump(mode="json"),
+                "attack_paths": attack_paths.model_dump(mode="json"),
+                "gate": gate.model_dump(mode="json"),
+            },
         )
     return payload
+
+
+@router.get("/{scan_id}/attack-paths", response_model=None)
+async def get_attack_paths(
+    scan_id: str,
+    format: Literal["json", "mermaid"] = Query(default="json"),
+    db: AsyncSession = Depends(get_db),
+):
+    scan = await _load_completed_scan(scan_id, db)
+    payload = build_attack_path_response(scan.id, _ordered_findings(scan))
+    if format == "mermaid":
+        return PlainTextResponse(
+            to_mermaid(payload),
+            media_type="text/plain",
+            headers={"Content-Disposition": f'attachment; filename="sentinel-{scan.id}.mmd"'},
+        )
+    return payload
+
+
+@router.get("/{scan_id}/gate", response_model=GateResponse)
+async def get_release_gate(
+    scan_id: str,
+    block_on: Literal["critical", "high", "medium", "low"] = Query(default="high"),
+    fail_closed_on_unreviewed: bool = Query(default=True),
+    db: AsyncSession = Depends(get_db),
+) -> GateResponse:
+    scan = await _load_completed_scan(scan_id, db)
+    return evaluate_gate(
+        scan.id,
+        _ordered_findings(scan),
+        block_on=block_on,
+        fail_closed_on_unreviewed=fail_closed_on_unreviewed,
+    )
 
 
 @router.get("/{scan_id}/findings/{finding_id}/patch", response_class=FileResponse)
