@@ -1,5 +1,6 @@
 import re
 import uuid
+from pathlib import Path
 from typing import Annotated, Literal
 
 from fastapi import (
@@ -14,6 +15,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,11 +23,15 @@ from sqlalchemy.orm import selectinload
 
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
+from app.models.decision import ReviewDecision
+from app.models.finding import Finding
 from app.models.scan import Scan
+from app.schemas.decision import DecisionRequest, DecisionResponse
 from app.schemas.finding import FindingResponse
 from app.schemas.scan import ReportResponse, ScanCreated, ScanStatus, SeveritySummary
 from app.services.ingestion import IngestionError, save_upload, validate_git_url
 from app.services.reporting import severity_summary
+from app.services.sarif import build_sarif
 from app.services.scanner import process_scan
 
 router = APIRouter(prefix="/scan", tags=["scans"])
@@ -39,6 +45,35 @@ def _scan_created(scan: Scan) -> ScanCreated:
         status=scan.status,
         status_url=f"/scan/{scan.id}",
         report_url=f"/scan/{scan.id}/report",
+    )
+
+
+def _scan_query(scan_id: str):
+    return (
+        select(Scan)
+        .options(selectinload(Scan.findings).selectinload(Finding.decision))
+        .where(Scan.id == scan_id)
+    )
+
+
+async def _load_completed_scan(scan_id: str, db: AsyncSession) -> Scan:
+    result = await db.execute(_scan_query(scan_id))
+    scan = result.scalar_one_or_none()
+    if not scan:
+        raise HTTPException(status_code=404, detail="Scan not found")
+    if scan.status not in {"completed", "failed"}:
+        raise HTTPException(status_code=409, detail=f"Scan is still {scan.status}")
+    return scan
+
+
+def _ordered_findings(scan: Scan) -> list[Finding]:
+    return sorted(
+        scan.findings,
+        key=lambda finding: (
+            {"critical": 0, "high": 1, "medium": 2, "low": 3}.get(finding.severity or "", 4),
+            finding.file_path,
+            finding.line,
+        ),
     )
 
 
@@ -101,24 +136,19 @@ async def get_scan(scan_id: str, db: AsyncSession = Depends(get_db)) -> ScanStat
 async def get_report(
     request: Request,
     scan_id: str,
-    format: Literal["json", "html"] | None = Query(default=None),
+    format: Literal["json", "html", "sarif"] | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(Scan).options(selectinload(Scan.findings)).where(Scan.id == scan_id))
-    scan = result.scalar_one_or_none()
-    if not scan:
-        raise HTTPException(status_code=404, detail="Scan not found")
-    if scan.status not in {"completed", "failed"}:
-        raise HTTPException(status_code=409, detail=f"Scan is still {scan.status}")
+    scan = await _load_completed_scan(scan_id, db)
+    ordered_findings = _ordered_findings(scan)
 
-    ordered_findings = sorted(
-        scan.findings,
-        key=lambda finding: (
-            {"critical": 0, "high": 1, "medium": 2, "low": 3}.get(finding.severity or "", 4),
-            finding.file_path,
-            finding.line,
-        ),
-    )
+    if format == "sarif":
+        return JSONResponse(
+            build_sarif(ordered_findings),
+            media_type="application/sarif+json",
+            headers={"Content-Disposition": f'attachment; filename="sentinel-{scan.id}.sarif"'},
+        )
+
     confirmed_severities = [
         finding.severity for finding in ordered_findings if finding.confirmed and finding.severity is not None
     ]
@@ -137,6 +167,65 @@ async def get_report(
             context={"report": payload.model_dump(mode="json")},
         )
     return payload
+
+
+@router.get("/{scan_id}/findings/{finding_id}/patch", response_class=FileResponse)
+async def download_patch(scan_id: str, finding_id: str, db: AsyncSession = Depends(get_db)) -> FileResponse:
+    result = await db.execute(
+        select(Finding).join(Scan).where(Finding.id == finding_id, Finding.scan_id == scan_id)
+    )
+    finding = result.scalar_one_or_none()
+    if not finding:
+        raise HTTPException(status_code=404, detail="Finding not found")
+    if not finding.patch_valid or not finding.patch_path:
+        raise HTTPException(status_code=409, detail="Finding does not have a validated patch")
+
+    scan = await db.get(Scan, scan_id)
+    assert scan is not None
+    workspace = Path(scan.workspace_path).resolve()
+    patch_path = Path(finding.patch_path).resolve()
+    if not patch_path.is_relative_to(workspace) or not patch_path.is_file():
+        raise HTTPException(status_code=409, detail="Patch artifact is unavailable")
+    return FileResponse(
+        patch_path,
+        media_type="text/x-diff",
+        filename=f"sentinel-{finding.rule_id}-{finding.id}.patch",
+    )
+
+
+@router.post(
+    "/{scan_id}/findings/{finding_id}/decision",
+    response_model=DecisionResponse,
+)
+async def decide_finding(
+    scan_id: str,
+    finding_id: str,
+    payload: DecisionRequest,
+    db: AsyncSession = Depends(get_db),
+) -> DecisionResponse:
+    result = await db.execute(
+        select(Finding)
+        .options(selectinload(Finding.decision))
+        .where(Finding.id == finding_id, Finding.scan_id == scan_id)
+    )
+    finding = result.scalar_one_or_none()
+    if not finding:
+        raise HTTPException(status_code=404, detail="Finding not found")
+    if not finding.confirmed:
+        raise HTTPException(status_code=409, detail="Only confirmed findings require a human decision")
+    if payload.decision == "approved" and not finding.patch_valid:
+        raise HTTPException(status_code=409, detail="Only a validated patch can be approved")
+
+    decision = finding.decision
+    if decision is None:
+        decision = ReviewDecision(finding_id=finding.id, decision=payload.decision, note=payload.note)
+        db.add(decision)
+    else:
+        decision.decision = payload.decision
+        decision.note = payload.note
+    await db.commit()
+    await db.refresh(decision)
+    return DecisionResponse.model_validate(decision)
 
 
 @router.get("", response_model=list[ScanStatus])

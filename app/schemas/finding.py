@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.decision import DecisionResponse
+
 
 class FindingResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -26,3 +28,4 @@ class FindingResponse(BaseModel):
     unified_diff: str | None
     patch_valid: bool | None
     patch_error: str | None
+    decision: DecisionResponse | None

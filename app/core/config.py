@@ -14,7 +14,12 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5.6"
     llm_enabled: bool = True
     llm_max_concurrency: int = 3
+    llm_timeout_seconds: float = 90.0
+    llm_max_retries: int = 3
+    llm_max_context_chars: int = 40_000
     max_llm_candidates: int = 30
+    max_patch_bytes: int = 64_000
+    max_patch_changed_lines: int = 200
     data_dir: Path = Path("/data")
     allowed_git_hosts: list[str] = ["github.com", "gitlab.com", "bitbucket.org"]
     max_archive_bytes: int = 50 * 1024 * 1024

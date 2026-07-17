@@ -94,6 +94,7 @@ GPT-5.6 structured review (strict JSON)
 - common hardcoded credential patterns
 - `pickle.load(s)` and unsafe `yaml.load`
 - sensitive FastAPI/Flask/Express routes with no obvious auth dependency or middleware
+- request-derived OS commands, filesystem paths, and outbound URLs (command injection, path traversal, SSRF)
 
 The pre-filter intentionally favors recall. GPT-5.6 is responsible for reviewing exploitability from local evidence.
 
@@ -130,6 +131,27 @@ ruff check app tests
 ```
 
 The MVP uses FastAPI background tasks and one API worker. A production version should move orchestration to a durable queue, add tenant isolation, rate limits, webhook/PR delivery, richer data-flow analysis, and sandboxed patch tests.
+
+## Human review and CI export
+
+Sentinel 0.2 formalizes the human boundary instead of treating it as a slogan:
+
+```bash
+# Download a validated patch without applying it
+curl -OJ http://localhost:8000/scan/<scan_id>/findings/<finding_id>/patch
+
+# Record an explicit human decision; this still does not modify the repository
+curl -X POST http://localhost:8000/scan/<scan_id>/findings/<finding_id>/decision \
+  -H 'Content-Type: application/json' \
+  -d '{"decision":"approved","note":"Reviewed against the vulnerable demo path"}'
+
+# Export confirmed findings for code-scanning systems
+curl -o sentinel.sarif 'http://localhost:8000/scan/<scan_id>/report?format=sarif'
+```
+
+The LLM boundary is hardened against repository-borne prompt injection: source comments and strings are explicitly treated as untrusted data. Transient API failures are retried with bounded exponential backoff, and generated patches are rejected if they rename files, change modes, contain binary data, exceed safety limits, touch another path, fail `git apply --check`, or make a Python file syntactically invalid.
+
+Additional deterministic candidates cover request-derived OS commands, filesystem paths, and outbound URLs (command injection, path traversal, and SSRF) in Python and JavaScript/TypeScript.
 
 ## Build Week narrative
 

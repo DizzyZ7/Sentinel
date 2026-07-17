@@ -26,7 +26,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="Sentinel",
-    version="0.1.0",
+    version="0.2.0",
     description="Human-in-the-loop security review agent powered by GPT-5.6",
     lifespan=lifespan,
 )
