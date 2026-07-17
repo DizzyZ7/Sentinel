@@ -38,3 +38,6 @@ class Finding(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     scan = relationship("Scan", back_populates="findings")
+    decision = relationship(
+        "ReviewDecision", back_populates="finding", cascade="all, delete-orphan", uselist=False
+    )

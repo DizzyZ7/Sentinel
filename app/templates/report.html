@@ -11,9 +11,13 @@
   <header class="report-header">
     <div>
       <a href="/" class="back">← New scan</a>
-      <div class="eyebrow">SECURITY REVIEW COMPLETE</div>
+      <div class="eyebrow">EVIDENCE REVIEW COMPLETE</div>
       <h1>Repository risk report</h1>
       <p>{{ report.file_count }} source files · {{ report.candidate_count }} static candidates · {{ report.finding_count }} confirmed findings</p>
+      <nav class="report-links">
+        <a href="/scan/{{ report.id }}/report">JSON</a>
+        <a href="/scan/{{ report.id }}/report?format=sarif">Download SARIF</a>
+      </nav>
     </div>
     <div class="score" data-score="{{ report.risk_score }}">
       <span>Risk score</span>
@@ -31,12 +35,18 @@
     {% endfor %}
   </section>
 
+  <section class="trust-boundary">
+    <strong>Human-in-the-loop boundary</strong>
+    <p>Approval records intent only. Sentinel never applies a patch to the scanned repository.</p>
+  </section>
+
   <section class="findings">
     {% for finding in report.findings %}
-    <article class="finding {% if not finding.confirmed %}dismissed{% endif %}">
+    <article class="finding {% if not finding.confirmed %}dismissed{% endif %}" id="finding-{{ finding.id }}">
       <div class="finding-top">
         <div>
           <span class="badge {{ finding.severity or 'candidate' }}">{{ finding.severity or finding.llm_status }}</span>
+          {% if finding.decision %}<span class="badge decision-{{ finding.decision.decision }}">{{ finding.decision.decision }}</span>{% endif %}
           <h2>{{ finding.title }}</h2>
           <code>{{ finding.file_path }}:{{ finding.line }}</code>
         </div>
@@ -51,7 +61,19 @@
       </dl>
       <h3>Attack scenario</h3><p>{{ finding.attack_scenario }}</p>
       <h3>Recommended change</h3><p>{{ finding.recommendation }}</p>
-      {% if finding.unified_diff %}<details><summary>Review proposed patch</summary><pre>{{ finding.unified_diff }}</pre></details>{% endif %}
+      {% if finding.unified_diff %}
+      <details><summary>Review proposed patch</summary><pre>{{ finding.unified_diff }}</pre></details>
+      {% endif %}
+      <div class="decision-panel" data-finding="{{ finding.id }}">
+        {% if finding.patch_valid %}
+        <a class="secondary" href="/scan/{{ report.id }}/findings/{{ finding.id }}/patch">Download patch</a>
+        <button class="decision-button approve" data-decision="approved">Approve patch</button>
+        {% endif %}
+        <button class="decision-button reject" data-decision="rejected">Reject</button>
+        <span class="decision-state">
+          {% if finding.decision %}Decision: {{ finding.decision.decision }}{% else %}Awaiting human decision{% endif %}
+        </span>
+      </div>
       {% else %}
       <p class="dismissal">Static candidate was not confirmed as a real vulnerability.</p>
       {% endif %}
@@ -61,5 +83,29 @@
     {% endfor %}
   </section>
 </main>
+<script>
+document.querySelectorAll('.decision-button').forEach(button => {
+  button.addEventListener('click', async () => {
+    const panel = button.closest('.decision-panel');
+    const findingId = panel.dataset.finding;
+    const decision = button.dataset.decision;
+    const note = window.prompt(`Optional note for ${decision}:`, '') || null;
+    const response = await fetch(`/scan/{{ report.id }}/findings/${findingId}/decision`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({decision, note})
+    });
+    const state = panel.querySelector('.decision-state');
+    if (!response.ok) {
+      const error = await response.json();
+      state.textContent = error.detail || 'Decision could not be saved';
+      state.classList.add('error-text');
+      return;
+    }
+    state.classList.remove('error-text');
+    state.textContent = `Decision: ${decision}`;
+  });
+});
+</script>
 </body>
 </html>
