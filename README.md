@@ -134,7 +134,7 @@ The MVP uses FastAPI background tasks and one API worker. A production version s
 
 ## Human review and CI export
 
-Sentinel 0.2 formalizes the human boundary instead of treating it as a slogan:
+Sentinel 0.3 formalizes the human boundary and turns each finding into an inspectable attack path:
 
 ```bash
 # Download a validated patch without applying it
@@ -152,6 +152,28 @@ curl -o sentinel.sarif 'http://localhost:8000/scan/<scan_id>/report?format=sarif
 The LLM boundary is hardened against repository-borne prompt injection: source comments and strings are explicitly treated as untrusted data. Transient API failures are retried with bounded exponential backoff, and generated patches are rejected if they rename files, change modes, contain binary data, exceed safety limits, touch another path, fail `git apply --check`, or make a Python file syntactically invalid.
 
 Additional deterministic candidates cover request-derived OS commands, filesystem paths, and outbound URLs (command injection, path traversal, and SSRF) in Python and JavaScript/TypeScript.
+
+## Attack paths and release policy
+
+Every candidate is represented as a six-stage evidence chain:
+
+```text
+trust-boundary source → deterministic triage → dangerous sink
+                      → GPT-5.6 verdict → patch escrow → human decision
+```
+
+```bash
+# Machine-readable reasoning graph
+curl http://localhost:8000/scan/<scan_id>/attack-paths
+
+# Portable Mermaid graph for documentation or the pitch deck
+curl -o attack-paths.mmd 'http://localhost:8000/scan/<scan_id>/attack-paths?format=mermaid'
+
+# Fail-closed release policy: unresolved high/critical findings block release
+curl 'http://localhost:8000/scan/<scan_id>/gate?block_on=high&fail_closed_on_unreviewed=true'
+```
+
+The release gate treats an in-scope finding as remediated only when the model confirmed it, the patch passed validation, and a human explicitly approved it. High-confidence static candidates whose deep review failed or was skipped block the gate by default.
 
 ## Build Week narrative
 
