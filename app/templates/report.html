@@ -17,6 +17,9 @@
       <nav class="report-links">
         <a href="/scan/{{ report.id }}/report">JSON</a>
         <a href="/scan/{{ report.id }}/report?format=sarif">Download SARIF</a>
+        <a href="/scan/{{ report.id }}/attack-paths">Attack paths JSON</a>
+        <a href="/scan/{{ report.id }}/attack-paths?format=mermaid">Mermaid graph</a>
+        <a href="/scan/{{ report.id }}/gate">Release gate JSON</a>
       </nav>
     </div>
     <div class="score" data-score="{{ report.risk_score }}">
@@ -35,12 +38,87 @@
     {% endfor %}
   </section>
 
+  <section class="gate-card {{ gate.state }}">
+    <div>
+      <span class="gate-kicker">RELEASE POLICY · BLOCK ON {{ gate.block_on|upper }}</span>
+      <h2>{{ 'Release gate passed' if gate.passed else 'Release gate blocked' }}</h2>
+      <p>
+        {% if gate.passed %}
+        All findings at or above the policy threshold have a validated patch and explicit human approval.
+        {% else %}
+        {{ gate.blockers|length }} blocker{{ '' if gate.blockers|length == 1 else 's' }} must be resolved before release.
+        {% endif %}
+      </p>
+    </div>
+    <div class="gate-count">
+      <strong>{{ gate.remediated_findings }}</strong>
+      <span>remediated</span>
+    </div>
+  </section>
+  {% if gate.blockers %}
+  <div class="gate-blockers">
+    {% for blocker in gate.blockers[:3] %}
+    <a href="#finding-{{ blocker.finding_id }}">
+      <strong>{{ blocker.title }}</strong>
+      <span>{{ blocker.file_path }}:{{ blocker.line }} · {{ blocker.reason }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <section class="trust-boundary">
     <strong>Human-in-the-loop boundary</strong>
     <p>Approval records intent only. Sentinel never applies a patch to the scanned repository.</p>
   </section>
 
+  <section class="attack-path-section">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">ATTACK-PATH REASONING</span>
+        <h2>From trust boundary to human decision</h2>
+      </div>
+      <div class="path-summary">
+        <span>{{ attack_paths.summary.exposed }} exposed</span>
+        <span>{{ attack_paths.summary.patch_ready }} patch-ready</span>
+        <span>{{ attack_paths.summary.approved }} approved</span>
+        <span>{{ attack_paths.summary.dismissed }} dismissed</span>
+      </div>
+    </div>
+
+    {% for path in attack_paths.paths %}
+    <article class="attack-path status-{{ path.status }}">
+      <header>
+        <div>
+          <span class="badge {{ path.severity or 'candidate' }}">{{ path.severity or path.status }}</span>
+          <span class="surface">{{ path.attack_surface|replace('_', ' ') }}</span>
+          <h3>{{ path.title }}</h3>
+          <code>{{ path.file_path }}:{{ path.line }}</code>
+        </div>
+        <span class="path-state">{{ path.status|replace('_', ' ') }}</span>
+      </header>
+      <div class="path-chain">
+        {% for node in path.nodes %}
+        <div class="path-node node-{{ node.status }}">
+          <span>{{ node.stage }}</span>
+          <strong>{{ node.label }}</strong>
+          <p>{{ node.detail }}</p>
+        </div>
+        {% if not loop.last %}<div class="path-arrow">→</div>{% endif %}
+        {% endfor %}
+      </div>
+    </article>
+    {% else %}
+    <article class="attack-path"><p>No attack paths were produced.</p></article>
+    {% endfor %}
+  </section>
+
   <section class="findings">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">DETAILED EVIDENCE</span>
+        <h2>Findings and proposed patches</h2>
+      </div>
+    </div>
     {% for finding in report.findings %}
     <article class="finding {% if not finding.confirmed %}dismissed{% endif %}" id="finding-{{ finding.id }}">
       <div class="finding-top">
@@ -103,7 +181,7 @@ document.querySelectorAll('.decision-button').forEach(button => {
       return;
     }
     state.classList.remove('error-text');
-    state.textContent = `Decision: ${decision}`;
+    state.textContent = `Decision: ${decision}. Refresh to recalculate the release gate.`;
   });
 });
 </script>

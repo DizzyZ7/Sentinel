@@ -111,3 +111,43 @@ pre { margin: 0; padding: 18px; overflow: auto; background: #05080d; color: #d5e
   .confidence { margin-top: 12px; }
   .decision-state { width: 100%; margin: 8px 0 0; }
 }
+
+.section-heading { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin: 48px 0 18px; }
+.section-heading h2 { margin: 6px 0 0; font-size: clamp(28px, 4vw, 44px); letter-spacing: -.03em; }
+.gate-card { display: flex; justify-content: space-between; gap: 24px; align-items: center; border: 1px solid var(--line); border-radius: 20px; padding: 24px; margin: 20px 0 12px; }
+.gate-card.passed { border-color: #28584d; background: linear-gradient(120deg, #0c211c, #0d1718); }
+.gate-card.blocked { border-color: #6d2933; background: linear-gradient(120deg, #2b1116, #151014); }
+.gate-card h2 { margin: 5px 0 8px; font-size: 30px; }
+.gate-card p { margin: 0; color: #c1c8d4; }
+.gate-kicker { font: 700 11px/1.2 ui-monospace, monospace; letter-spacing: .13em; color: var(--muted); }
+.gate-count { text-align: center; min-width: 120px; }
+.gate-count strong { display: block; font-size: 42px; }
+.gate-count span { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
+.gate-blockers { display: grid; gap: 8px; margin-bottom: 24px; }
+.gate-blockers a { display: grid; gap: 5px; padding: 13px 16px; border: 1px solid #4e2730; border-radius: 12px; background: rgba(43, 17, 22, .6); color: var(--text); text-decoration: none; }
+.gate-blockers span { color: var(--muted); font-size: 13px; }
+.attack-path-section { margin-top: 36px; }
+.path-summary { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.path-summary span, .surface, .path-state { border: 1px solid var(--line); background: #111925; color: var(--muted); border-radius: 999px; padding: 7px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.attack-path { border: 1px solid var(--line); background: rgba(10, 14, 21, .9); border-radius: 20px; padding: 22px; margin: 14px 0; overflow: hidden; }
+.attack-path.status-exposed { border-color: #6d2933; }
+.attack-path.status-patch_ready { border-color: #66542d; }
+.attack-path.status-approved, .attack-path.status-dismissed { border-color: #28584d; }
+.attack-path > header { display: flex; justify-content: space-between; align-items: start; gap: 20px; margin-bottom: 18px; }
+.attack-path h3 { margin: 10px 0 6px; font-size: 23px; }
+.path-chain { display: flex; align-items: stretch; gap: 8px; overflow-x: auto; padding: 4px 0 8px; }
+.path-node { flex: 1 0 155px; min-width: 155px; max-width: 210px; border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: #0d131d; }
+.path-node > span { display: block; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font: 700 10px/1.2 ui-monospace, monospace; margin-bottom: 8px; }
+.path-node strong { display: block; font-size: 14px; line-height: 1.35; }
+.path-node p { margin: 8px 0 0; color: #929eaf; font-size: 12px; line-height: 1.45; }
+.path-node.node-danger { border-color: #6d2933; background: #211015; }
+.path-node.node-warning { border-color: #66542d; background: #1d190e; }
+.path-node.node-safe { border-color: #28584d; background: #0c1d19; }
+.path-node.node-blocked { border-color: #7b3340; background: #2b1116; }
+.path-arrow { display: grid; place-items: center; color: #5e6b7d; font-size: 22px; flex: 0 0 20px; }
+
+@media (max-width: 760px) {
+  .section-heading, .gate-card, .attack-path > header { display: block; }
+  .path-summary { justify-content: flex-start; margin-top: 14px; }
+  .gate-count { text-align: left; margin-top: 18px; }
+}
