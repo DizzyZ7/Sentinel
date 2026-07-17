@@ -73,6 +73,8 @@ async def _review_one(
                 finding_id=finding.id,
                 expected_file=finding.file_path,
                 diff=output.unified_diff,
+                max_bytes=settings.max_patch_bytes,
+                max_changed_lines=settings.max_patch_changed_lines,
             )
             finding.patch_valid = validation.valid
             finding.patch_path = str(validation.path) if validation.path else None
