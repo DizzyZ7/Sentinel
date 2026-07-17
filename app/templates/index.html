@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sentinel — Evidence-to-patch security agent</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">GPT-5.6 · CODE MODE · HUMAN-IN-THE-LOOP</div>
+      <h1>Sentinel turns suspicious code into reviewable evidence and safe patches.</h1>
+      <p>Upload a repository ZIP or provide a public Git URL. Sentinel performs deterministic triage, asks GPT-5.6 for a conservative verdict, checks every diff with <code>git apply --check</code>, and never changes source code automatically.</p>
+    </section>
+
+    <section class="panel">
+      <div class="tabs">
+        <button class="tab active" data-mode="zip">ZIP archive</button>
+        <button class="tab" data-mode="git">Git URL</button>
+      </div>
+      <form id="scan-form">
+        <div id="zip-field" class="field">
+          <label for="archive">Repository archive</label>
+          <input id="archive" name="archive" type="file" accept=".zip">
+        </div>
+        <div id="git-field" class="field hidden">
+          <label for="git_url">Public repository URL</label>
+          <input id="git_url" name="git_url" type="url" placeholder="https://github.com/org/repo.git">
+        </div>
+        <button class="primary" type="submit">Start security review</button>
+      </form>
+      <div id="status" class="status hidden"></div>
+    </section>
+
+    <section class="principles">
+      <article><strong>01</strong><h2>Evidence first</h2><p>Regex and AST rules produce candidates, not verdicts.</p></article>
+      <article><strong>02</strong><h2>Model as reviewer</h2><p>GPT-5.6 confirms exploitability and explains risk in plain language.</p></article>
+      <article><strong>03</strong><h2>Patch escrow</h2><p>Diffs are validated and stored for human approval, never auto-applied.</p></article>
+    </section>
+  </main>
+<script>
+const tabs = document.querySelectorAll('.tab');
+const zipField = document.querySelector('#zip-field');
+const gitField = document.querySelector('#git-field');
+const form = document.querySelector('#scan-form');
+const statusBox = document.querySelector('#status');
+let mode = 'zip';
+
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  tabs.forEach(item => item.classList.remove('active'));
+  tab.classList.add('active');
+  mode = tab.dataset.mode;
+  zipField.classList.toggle('hidden', mode !== 'zip');
+  gitField.classList.toggle('hidden', mode !== 'git');
+}));
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  const data = new FormData();
+  if (mode === 'zip') {
+    const file = document.querySelector('#archive').files[0];
+    if (!file) return;
+    data.append('archive', file);
+  } else {
+    const url = document.querySelector('#git_url').value.trim();
+    if (!url) return;
+    data.append('git_url', url);
+  }
+  statusBox.classList.remove('hidden', 'error');
+  statusBox.textContent = 'Creating isolated workspace…';
+  const response = await fetch('/scan/repo', {method: 'POST', body: data});
+  if (!response.ok) {
+    const error = await response.json();
+    statusBox.classList.add('error');
+    statusBox.textContent = error.detail || 'Could not start scan';
+    return;
+  }
+  const created = await response.json();
+  while (true) {
+    const scan = await fetch(created.status_url).then(item => item.json());
+    statusBox.textContent = `Scan ${scan.status} · ${scan.file_count} files · ${scan.candidate_count} candidates`;
+    if (scan.status === 'completed') {
+      window.location.href = `${created.report_url}?format=html`;
+      return;
+    }
+    if (scan.status === 'failed') {
+      statusBox.classList.add('error');
+      statusBox.textContent = scan.error || 'Scan failed';
+      return;
+    }
+    await sleep(1200);
+  }
+});
+</script>
+</body>
+</html>

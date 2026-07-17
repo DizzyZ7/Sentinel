@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.finding import FindingResponse
+
 
 class ScanCreated(BaseModel):
     scan_id: str
@@ -25,3 +27,16 @@ class ScanStatus(BaseModel):
     error: str | None
     created_at: datetime
     completed_at: datetime | None
+
+
+class SeveritySummary(BaseModel):
+    critical: int = 0
+    high: int = 0
+    medium: int = 0
+    low: int = 0
+
+
+class ReportResponse(ScanStatus):
+    severity_summary: SeveritySummary
+    findings: list[FindingResponse]
+    structure: list[dict]

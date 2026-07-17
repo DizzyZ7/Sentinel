@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sentinel report {{ report.id }}</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<main class="shell report-shell">
+  <header class="report-header">
+    <div>
+      <a href="/" class="back">← New scan</a>
+      <div class="eyebrow">SECURITY REVIEW COMPLETE</div>
+      <h1>Repository risk report</h1>
+      <p>{{ report.file_count }} source files · {{ report.candidate_count }} static candidates · {{ report.finding_count }} confirmed findings</p>
+    </div>
+    <div class="score" data-score="{{ report.risk_score }}">
+      <span>Risk score</span>
+      <strong>{{ report.risk_score|round|int }}</strong>
+      <small>/ 100</small>
+    </div>
+  </header>
+
+  <section class="summary-grid">
+    {% for severity in ['critical', 'high', 'medium', 'low'] %}
+    <article class="metric {{ severity }}">
+      <span>{{ severity }}</span>
+      <strong>{{ report.severity_summary[severity] }}</strong>
+    </article>
+    {% endfor %}
+  </section>
+
+  <section class="findings">
+    {% for finding in report.findings %}
+    <article class="finding {% if not finding.confirmed %}dismissed{% endif %}">
+      <div class="finding-top">
+        <div>
+          <span class="badge {{ finding.severity or 'candidate' }}">{{ finding.severity or finding.llm_status }}</span>
+          <h2>{{ finding.title }}</h2>
+          <code>{{ finding.file_path }}:{{ finding.line }}</code>
+        </div>
+        <div class="confidence">{{ ((finding.confidence or finding.static_confidence) * 100)|round|int }}% confidence</div>
+      </div>
+      <p>{{ finding.explanation or finding.static_rationale }}</p>
+      {% if finding.confirmed %}
+      <dl>
+        <div><dt>CWE</dt><dd>{{ finding.cwe }}</dd></div>
+        <div><dt>CVSS-like score</dt><dd>{{ finding.cvss_score }}</dd></div>
+        <div><dt>Patch check</dt><dd>{{ 'valid' if finding.patch_valid else 'needs review' }}</dd></div>
+      </dl>
+      <h3>Attack scenario</h3><p>{{ finding.attack_scenario }}</p>
+      <h3>Recommended change</h3><p>{{ finding.recommendation }}</p>
+      {% if finding.unified_diff %}<details><summary>Review proposed patch</summary><pre>{{ finding.unified_diff }}</pre></details>{% endif %}
+      {% else %}
+      <p class="dismissal">Static candidate was not confirmed as a real vulnerability.</p>
+      {% endif %}
+    </article>
+    {% else %}
+    <article class="finding"><h2>No candidates found</h2><p>The current Python and JS/TS rules did not find review candidates.</p></article>
+    {% endfor %}
+  </section>
+</main>
+</body>
+</html>
