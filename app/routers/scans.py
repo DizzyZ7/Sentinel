@@ -109,7 +109,7 @@ async def create_scan(
             assert archive is not None
             filename = SAFE_FILENAME_RE.sub("_", archive.filename or "repository.zip")
             if not filename.lower().endswith(".zip"):
-                raise IngestionError(only ".zip archives are supported")
+                raise IngestionError("Only .zip archives are supported")
             await save_upload(archive, workspace / "source.zip", settings.max_archive_bytes)
             scan = Scan(
                 id=scan_id,
