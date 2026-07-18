@@ -19,6 +19,7 @@ from app.services.progress import add_scan_event
 from app.services.project_context import assign_latest_project_context
 from app.services.rescan import RescanError, prepare_rescan
 from app.services.scanner import process_scan
+from app.services.security_policy import assign_latest_security_policy
 
 router = APIRouter(prefix="/scan", tags=["comparison"])
 templates = Jinja2Templates(directory="app/templates")
@@ -63,6 +64,7 @@ async def create_rescan(
     await db.flush()
     await link_rescan(db, baseline, scan)
     await assign_latest_project_context(db, baseline, scan)
+    await assign_latest_security_policy(db, baseline, scan)
     await add_scan_event(
         db,
         scan.id,

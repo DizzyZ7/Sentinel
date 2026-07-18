@@ -340,3 +340,14 @@ python -m scripts.check_public_image
 ## License
 
 MIT
+
+## Security Policy Profiles
+
+Sentinel 1.4 versions organizational release rules alongside project context. Policies can strengthen thresholds for production, public, restricted-data, or critical assets and require validated patches, passed proof, and explicit human approval.
+
+```bash
+curl http://localhost:8000/scan/<scan_id>/security-policy
+curl 'http://localhost:8000/scan/<scan_id>/policy-compliance?format=html'
+```
+
+Saving a policy creates an immutable version for the next rescan. The current scan retains its assigned policy hash, and compliance changes can be compared across lineage generations. See [`docs/SECURITY_POLICY.md`](docs/SECURITY_POLICY.md).

@@ -46,6 +46,7 @@ from app.services.regression import RegressionResult, verify_patch_regression
 from app.services.reporting import severity_summary
 from app.services.sarif import build_sarif
 from app.services.scanner import process_scan
+from app.services.security_policy import ensure_security_policy, parse_security_policy
 
 router = APIRouter(prefix="/scan", tags=["scans"])
 templates = Jinja2Templates(directory="app/templates")
@@ -123,6 +124,7 @@ async def create_scan(
     git_url: Annotated[str | None, Form()] = None,
     archive: Annotated[UploadFile | None, File()] = None,
     project_context: Annotated[str | None, Form()] = None,
+    security_policy: Annotated[str | None, Form()] = None,
     db: AsyncSession = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> ScanCreated:
@@ -131,6 +133,7 @@ async def create_scan(
 
     try:
         context_document = parse_project_context(project_context)
+        policy_document = parse_security_policy(security_policy)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -169,6 +172,9 @@ async def create_scan(
     await ensure_root_lineage(db, scan)
     await ensure_project_context(
         db, scan, context_document, source="declared" if context_document is not None else "inferred"
+    )
+    await ensure_security_policy(
+        db, scan, policy_document, source="declared" if policy_document is not None else "inferred"
     )
     await db.commit()
     background_tasks.add_task(process_scan, scan.id)

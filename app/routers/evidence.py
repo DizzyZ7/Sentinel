@@ -8,6 +8,12 @@ from app.core.database import get_db
 from app.models.finding import Finding
 from app.models.scan import Scan
 from app.services.evidence import build_finding_evidence_bundle
+from app.services.project_context import load_context_snapshot
+from app.services.security_policy import (
+    ensure_security_policy,
+    evaluate_security_policy,
+    load_policy_snapshot,
+)
 
 router = APIRouter(prefix="/scan", tags=["evidence"])
 
@@ -38,7 +44,18 @@ async def get_finding_evidence_bundle(
         raise HTTPException(status_code=404, detail="Finding not found")
 
     ordered_findings = sorted(scan.findings, key=lambda item: (item.file_path, item.line))
-    bundle = build_finding_evidence_bundle(scan, finding, ordered_findings)
+    await ensure_security_policy(db, scan)
+    policy = await load_policy_snapshot(db, scan.id)
+    context = await load_context_snapshot(db, scan.id)
+    compliance = (
+        evaluate_security_policy(scan.id, ordered_findings, policy, context)
+        if policy is not None
+        else None
+    )
+    await db.commit()
+    bundle = build_finding_evidence_bundle(
+        scan, finding, ordered_findings, security_policy_compliance=compliance
+    )
     return JSONResponse(
         bundle.model_dump(mode="json"),
         media_type="application/json",

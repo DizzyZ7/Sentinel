@@ -41,6 +41,11 @@
           <input id="git_url" name="git_url" type="url" placeholder="https://github.com/org/repo.git">
         </div>
         <details class="context-input">
+          <summary>Optional security policy profile</summary>
+          <p>Declare organizational release thresholds and controls. The policy is hashed and assigned to this scan.</p>
+          <textarea id="security_policy" name="security_policy" placeholder='{"policy_name":"Production release policy","base_block_on":"high","public_asset_block_on":"medium","restricted_data_block_on":"medium","require_valid_patch_from":"high","require_passed_proof_from":"high","require_human_approval_from":"high"}'></textarea>
+        </details>
+        <details class="context-input">
           <summary>Optional project context profile</summary>
           <p>Declare production exposure, data sensitivity, and asset path patterns before the scan. The profile is hashed and assigned to this scan.</p>
           <textarea id="project_context" name="project_context" placeholder='{"project_name":"Payments API","environment":"production","internet_exposed":true,"assets":[{"asset_id":"payments","name":"Payment service","asset_type":"financial_service","path_patterns":["payments/**"],"criticality":"critical","exposure":"public","data_classification":"restricted","data_types":["payment records"]}]}'></textarea>
@@ -174,6 +179,11 @@ form.addEventListener('submit', async event => {
   if (context) {
     try { JSON.parse(context); } catch (error) { return showError(`Project context JSON is invalid: ${error.message}`); }
     data.append('project_context', context);
+  }
+  const policy = document.querySelector('#security_policy').value.trim();
+  if (policy) {
+    try { JSON.parse(policy); } catch (error) { return showError(`Security policy JSON is invalid: ${error.message}`); }
+    data.append('security_policy', policy);
   }
   await startRequest('/scan/repo', {body: data});
 });
