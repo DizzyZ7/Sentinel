@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 from app.schemas.finding import FindingResponse
+from app.schemas.progress import ScanProgress
 
 
 class ScanCreated(BaseModel):
@@ -27,6 +28,7 @@ class ScanStatus(BaseModel):
     error: str | None
     created_at: datetime
     completed_at: datetime | None
+    progress: ScanProgress | None = None
 
 
 class SeveritySummary(BaseModel):

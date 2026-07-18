@@ -173,3 +173,18 @@ Security-sensitive components are versioned independently:
 - release policy.
 
 Every exported evidence bundle should eventually include all component versions so a result can be reproduced and compared across releases.
+
+
+## Observable orchestration
+
+`ScanEvent` is an append-only operational timeline. It keeps transient progress outside the `Scan` aggregate so new stages can be introduced without repeatedly altering the core scan table. The dedicated progress API reads the latest event, while `/scan/{scan_id}/events` exposes the complete timeline for the dashboard, debugging, and the competition demo.
+
+Current stages are `queued`, `ingesting`, `indexing`, `prefiltering`, `reviewing`, `finalizing`, `completed`, and `failed`. A degraded event is emitted when deep review is unavailable; deterministic evidence is preserved and policy remains fail-closed.
+
+## Demo boundary
+
+The built-in replay uses the same ingestion, analyzer, patch validator, regression verifier, persistence, reporting, and release-policy code as an ordinary scan. Only the reviewer adapter is replaced by `DemoReviewer`, and its audit records are explicitly identified as `sentinel-deterministic-demo-replay`. Live demo mode uses the ordinary GPT-5.6 gateway. This prevents a deterministic product tour from being misrepresented as an external model call.
+
+## Golden path verification
+
+The golden end-to-end test runs the packaged judge fixture through a temporary SQLite database and the real application pipeline. It verifies three outcomes in one execution: confirmed and proof-passing remediation, false-positive rejection, and a validated but regression-failing patch. It also asserts the fail-closed release gate and the persisted progress timeline.

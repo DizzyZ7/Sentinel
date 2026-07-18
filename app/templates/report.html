@@ -21,6 +21,8 @@
         <a href="/scan/{{ report.id }}/attack-paths?format=mermaid">Mermaid graph</a>
         <a href="/scan/{{ report.id }}/gate">Release gate JSON</a>
         <a href="/scan/{{ report.id }}/verifications">Regression proofs JSON</a>
+        <a href="/scan/{{ report.id }}/llm-reviews?format=html">GPT review audit</a>
+        <a href="/scan/{{ report.id }}/events">Pipeline events</a>
       </nav>
     </div>
     <div class="score" data-score="{{ report.risk_score }}">
@@ -65,6 +67,18 @@
     </a>
     {% endfor %}
   </div>
+  {% endif %}
+
+  {% if report.original_filename and 'demo-replay' in report.original_filename %}
+  <section class="trust-boundary">
+    <strong>Deterministic demo replay</strong>
+    <p>This product tour uses a clearly labelled local reviewer adapter. No external GPT call is claimed; all other pipeline stages are real.</p>
+  </section>
+  {% elif report.original_filename and 'demo-live-gpt' in report.original_filename %}
+  <section class="trust-boundary">
+    <strong>Live GPT-5.6 demo</strong>
+    <p>The packaged judge fixture was reviewed through the ordinary secret-sanitized OpenAI Responses API boundary.</p>
+  </section>
   {% endif %}
 
   <section class="trust-boundary">

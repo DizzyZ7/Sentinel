@@ -26,3 +26,4 @@ class Scan(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     findings = relationship("Finding", back_populates="scan", cascade="all, delete-orphan")
+    events = relationship("ScanEvent", back_populates="scan", cascade="all, delete-orphan")

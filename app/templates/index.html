@@ -11,7 +11,19 @@
     <section class="hero">
       <div class="eyebrow">GPT-5.6 · EVIDENCE-BOUND · HUMAN-IN-THE-LOOP</div>
       <h1>Sentinel turns suspicious code into reviewable evidence and safe patches.</h1>
-      <p>Upload a repository ZIP or provide a public Git URL. Sentinel performs deterministic triage, asks GPT-5.6 for a conservative verdict, checks every diff with <code>git apply --check</code>, proves the original source-to-sink signal disappears without executing repository code, and never changes source code automatically.</p>
+      <p>Deterministic triage finds candidates. GPT-5.6 confirms exploitability. Sentinel validates the diff, proves the original signal disappears without running repository code, and waits for a human decision.</p>
+    </section>
+
+    <section class="demo-panel">
+      <div>
+        <div class="eyebrow">60-SECOND JUDGE TOUR</div>
+        <h2>See the complete evidence-to-patch workflow.</h2>
+        <p>The deterministic replay is fully offline and clearly labelled. It demonstrates one verified fix, one false positive rejected by deep review, and one cosmetic patch blocked by regression proof.</p>
+      </div>
+      <div class="demo-actions">
+        <button id="demo-replay" class="primary" type="button">Run one-click demo</button>
+        <button id="demo-live" class="secondary" type="button">Run live GPT-5.6 demo</button>
+      </div>
     </section>
 
     <section class="panel">
@@ -30,13 +42,24 @@
         </div>
         <button class="primary" type="submit">Start security review</button>
       </form>
-      <div id="status" class="status hidden"></div>
+
+      <section id="status" class="progress-card hidden" aria-live="polite">
+        <div class="progress-head">
+          <div>
+            <span id="progress-stage">QUEUED</span>
+            <strong id="progress-message">Preparing scan…</strong>
+          </div>
+          <strong id="progress-percent">0%</strong>
+        </div>
+        <div class="progress-track"><div id="progress-fill"></div></div>
+        <div id="progress-meta" class="progress-meta">0 / 1</div>
+      </section>
     </section>
 
     <section class="principles">
       <article><strong>01</strong><h2>Evidence first</h2><p>Regex and AST rules produce candidates, not verdicts.</p></article>
-      <article><strong>02</strong><h2>Model as reviewer</h2><p>GPT-5.6 confirms exploitability and explains risk in plain language.</p></article>
-      <article><strong>03</strong><h2>Proof before approval</h2><p>Diffs are validated, regression-checked without source execution, then explicitly approved or rejected.</p></article>
+      <article><strong>02</strong><h2>Model as reviewer</h2><p>GPT-5.6 receives secret-sanitized evidence and returns strict structured output.</p></article>
+      <article><strong>03</strong><h2>Proof before approval</h2><p>Validated diffs must pass regression proof before a human can approve them.</p></article>
     </section>
   </main>
 <script>
@@ -45,7 +68,79 @@ const zipField = document.querySelector('#zip-field');
 const gitField = document.querySelector('#git-field');
 const form = document.querySelector('#scan-form');
 const statusBox = document.querySelector('#status');
+const progressStage = document.querySelector('#progress-stage');
+const progressMessage = document.querySelector('#progress-message');
+const progressPercent = document.querySelector('#progress-percent');
+const progressFill = document.querySelector('#progress-fill');
+const progressMeta = document.querySelector('#progress-meta');
 let mode = 'zip';
+let polling = false;
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function showError(message) {
+  statusBox.classList.remove('hidden');
+  statusBox.classList.add('error');
+  progressStage.textContent = 'FAILED';
+  progressMessage.textContent = message;
+  progressPercent.textContent = '—';
+  progressFill.style.width = '100%';
+}
+
+function renderProgress(scan) {
+  const progress = scan.progress || {
+    stage: scan.status,
+    message: `Scan ${scan.status}`,
+    current: 0,
+    total: 1,
+    percent: scan.status === 'completed' ? 100 : 0
+  };
+  statusBox.classList.remove('hidden', 'error');
+  progressStage.textContent = progress.stage.replaceAll('_', ' ').toUpperCase();
+  progressMessage.textContent = progress.message;
+  progressPercent.textContent = `${progress.percent}%`;
+  progressFill.style.width = `${progress.percent}%`;
+  progressMeta.textContent = `${progress.current} / ${progress.total} · ${scan.file_count} files · ${scan.candidate_count} candidates`;
+}
+
+async function pollScan(created) {
+  if (polling) return;
+  polling = true;
+  try {
+    while (true) {
+      const response = await fetch(`${created.status_url}/progress`);
+      if (!response.ok) throw new Error('Could not read scan status');
+      const scan = await response.json();
+      renderProgress(scan);
+      if (scan.status === 'completed') {
+        await sleep(350);
+        window.location.href = `${created.report_url}?format=html`;
+        return;
+      }
+      if (scan.status === 'failed') {
+        showError(scan.error || 'Scan failed safely');
+        return;
+      }
+      await sleep(850);
+    }
+  } catch (error) {
+    showError(error.message || 'Could not monitor scan');
+  } finally {
+    polling = false;
+  }
+}
+
+async function startRequest(url, options = {}) {
+  statusBox.classList.remove('hidden', 'error');
+  renderProgress({status: 'queued', file_count: 0, candidate_count: 0, progress: {stage: 'queued', message: 'Creating isolated workspace…', current: 0, total: 1, percent: 0}});
+  const response = await fetch(url, {method: 'POST', ...options});
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    showError(error.detail || 'Could not start scan');
+    return;
+  }
+  await pollScan(await response.json());
+}
 
 tabs.forEach(tab => tab.addEventListener('click', () => {
   tabs.forEach(item => item.classList.remove('active'));
@@ -55,44 +150,22 @@ tabs.forEach(tab => tab.addEventListener('click', () => {
   gitField.classList.toggle('hidden', mode !== 'git');
 }));
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+document.querySelector('#demo-replay').addEventListener('click', () => startRequest('/scan/demo?mode=replay'));
+document.querySelector('#demo-live').addEventListener('click', () => startRequest('/scan/demo?mode=live'));
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
   const data = new FormData();
   if (mode === 'zip') {
     const file = document.querySelector('#archive').files[0];
-    if (!file) return;
+    if (!file) return showError('Choose a ZIP archive first');
     data.append('archive', file);
   } else {
     const url = document.querySelector('#git_url').value.trim();
-    if (!url) return;
+    if (!url) return showError('Enter a public Git URL first');
     data.append('git_url', url);
   }
-  statusBox.classList.remove('hidden', 'error');
-  statusBox.textContent = 'Creating isolated workspace…';
-  const response = await fetch('/scan/repo', {method: 'POST', body: data});
-  if (!response.ok) {
-    const error = await response.json();
-    statusBox.classList.add('error');
-    statusBox.textContent = error.detail || 'Could not start scan';
-    return;
-  }
-  const created = await response.json();
-  while (true) {
-    const scan = await fetch(created.status_url).then(item => item.json());
-    statusBox.textContent = `Scan ${scan.status} · ${scan.file_count} files · ${scan.candidate_count} candidates`;
-    if (scan.status === 'completed') {
-      window.location.href = `${created.report_url}?format=html`;
-      return;
-    }
-    if (scan.status === 'failed') {
-      statusBox.classList.add('error');
-      statusBox.textContent = scan.error || 'Scan failed';
-      return;
-    }
-    await sleep(1200);
-  }
+  await startRequest('/scan/repo', {body: data});
 });
 </script>
 </body>
