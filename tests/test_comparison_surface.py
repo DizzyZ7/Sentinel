@@ -4,9 +4,9 @@ from app.main import app
 
 
 def test_comparison_routes_are_registered() -> None:
-    routes = {(route.path, method) for route in app.routes for method in getattr(route, "methods", set())}
-    assert ("/scan/{baseline_scan_id}/rescan", "POST") in routes
-    assert ("/scan/{current_scan_id}/compare/{baseline_scan_id}", "GET") in routes
+    paths = app.openapi()["paths"]
+    assert "post" in paths["/scan/{baseline_scan_id}/rescan"]
+    assert "get" in paths["/scan/{current_scan_id}/compare/{baseline_scan_id}"]
 
 
 def test_comparison_and_judge_templates_include_baseline_workflow() -> None:
