@@ -157,12 +157,27 @@ python -m scripts.run_evals \
 
 CI fails if any expected rule disappears or any unexpected finding is introduced.
 
+## Baselines and no-new-risk policy
+
+Sentinel 1.0 can rescan a preserved source and compare the new result with a completed baseline:
+
+```bash
+curl -X POST http://localhost:8000/scan/<baseline_scan_id>/rescan
+curl 'http://localhost:8000/scan/<current_scan_id>/compare/<baseline_scan_id>?format=html'
+```
+
+Findings are matched through a privacy-safe fingerprint rather than line number, so moved evidence stays persistent. The comparison classifies introduced, resolved, changed, and persistent findings and evaluates a separate **delta gate**. This lets teams enforce “no new high/critical security debt” while legacy exposure remains visible in the ordinary full gate. A newly introduced finding stops blocking the delta gate only after its patch is validated, regression proof passes, and a human approves it.
+
+The judge view includes **Start rescan** and automatically opens the delta report when the new scan completes. Full semantics and limitations are documented in [`docs/BASELINE_COMPARISON.md`](docs/BASELINE_COMPARISON.md).
+
 ## API highlights
 
 ```text
 POST /scan/repo
 POST /scan/demo?mode=replay
 POST /scan/demo?mode=live
+POST /scan/{baseline_scan_id}/rescan
+GET  /scan/{current_scan_id}/compare/{baseline_scan_id}
 GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
 GET  /scan/{scan_id}/report

@@ -188,3 +188,19 @@ The built-in replay uses the same ingestion, analyzer, patch validator, regressi
 ## Golden path verification
 
 The golden end-to-end test runs the packaged judge fixture through a temporary SQLite database and the real application pipeline. It verifies three outcomes in one execution: confirmed and proof-passing remediation, false-positive rejection, and a validated but regression-failing patch. It also asserts the fail-closed release gate and the persisted progress timeline.
+
+
+## Baseline comparison boundary
+
+Scan comparison is a derived read model rather than a new persistence aggregate. `ComparisonService` consumes two completed `Scan` aggregates and their persisted findings, then emits introduced, resolved, changed, and persistent evidence. No repository source is executed and no model call is required.
+
+Exact matching uses a SHA-256 fingerprint over rule ID, normalized path, language, and normalized evidence. Remaining findings with the same rule and path are paired by nearest line location. This keeps line movement stable without pretending to infer file renames or arbitrary semantic equivalence.
+
+The full gate and delta gate intentionally answer different questions:
+
+```text
+full gate  → is all current in-scope exposure remediated?
+delta gate → did this change introduce or materially alter unresolved in-scope exposure?
+```
+
+A rescan always creates a new isolated workspace and runs the ordinary ingestion-to-policy pipeline. Preserved ZIP input can only be copied from within the configured scan root.
