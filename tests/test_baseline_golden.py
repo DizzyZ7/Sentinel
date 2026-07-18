@@ -20,6 +20,13 @@ from app.services.project_context import (
 )
 from app.services.rescan import prepare_rescan
 from app.services.scanner import process_scan
+from app.services.security_policy import (
+    assign_latest_security_policy,
+    demo_security_policy,
+    ensure_security_policy,
+    evaluate_security_policy,
+    load_policy_snapshot,
+)
 
 
 async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_path: Path) -> None:
@@ -45,6 +52,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         await session.flush()
         await ensure_root_lineage(session, baseline)
         await ensure_project_context(session, baseline, demo_project_context(), source="built_in")
+        await ensure_security_policy(session, baseline, demo_security_policy(), source="built_in")
         await session.commit()
 
     reviewer = DemoReviewer(settings)
@@ -55,6 +63,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         await session.flush()
         await link_rescan(session, baseline, current)
         await assign_latest_project_context(session, baseline, current)
+        await assign_latest_security_policy(session, baseline, current)
         await session.commit()
     await process_scan("current", reviewer=reviewer, session_factory=factory, pipeline_settings=settings)
 
@@ -74,6 +83,11 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         comparison = build_scan_comparison(scans["baseline"], scans["current"])
         lineage = await build_lineage_response(session, scans["current"])
         current_context = await load_context_snapshot(session, "current")
+        current_policy = await load_policy_snapshot(session, "current")
+        assert current_policy is not None
+        policy_compliance = evaluate_security_policy(
+            "current", list(scans["current"].findings), current_policy, current_context
+        )
 
     assert scans["baseline"].status == "completed"
     assert scans["current"].status == "completed"
@@ -81,6 +95,10 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
     assert current_context is not None
     assert current_context.source == "built_in"
     assert current_context.version == 1
+    assert current_policy.source == "built_in"
+    assert current_policy.version == 1
+    assert policy_compliance.state == "blocked"
+    assert policy_compliance.summary.blocking_findings == 2
     assert {
         finding.risk_intelligence.context_asset_id
         for finding in scans["current"].findings

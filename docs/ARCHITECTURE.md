@@ -225,3 +225,7 @@ Attack Graph v2 adds affected-asset and business-impact nodes before the existin
 ## Project context boundary
 
 `ProjectContextProfile` stores immutable JSON documents per lineage root, while `ScanContextAssignment` binds each scan to one exact profile version. Risk Intelligence receives a read-only snapshot and persists the profile version, context hash, resolution source, and matched asset ID inside its scoring factors. Profile updates apply only to future rescans; preview uses an in-memory snapshot and never rewrites evidence.
+
+## Security policy layer
+
+The security-policy module is a deterministic decision layer above the ordinary release gate. It reads persisted finding state plus the scan-assigned project context and policy versions. It never executes repository source, mutates findings, approves remediation, or weakens the base gate. Profiles and scan assignments are stored separately so historical compliance remains reproducible.

@@ -14,6 +14,7 @@ from app.services.lineage import ensure_root_lineage
 from app.services.progress import add_scan_event
 from app.services.project_context import demo_project_context, ensure_project_context
 from app.services.scanner import process_scan
+from app.services.security_policy import demo_security_policy, ensure_security_policy
 
 router = APIRouter(prefix="/scan", tags=["demo"])
 
@@ -49,6 +50,7 @@ async def create_demo_scan(
     await db.flush()
     await ensure_root_lineage(db, scan)
     await ensure_project_context(db, scan, demo_project_context(), source="built_in")
+    await ensure_security_policy(db, scan, demo_security_policy(), source="built_in")
     await add_scan_event(
         db,
         scan.id,

@@ -118,3 +118,11 @@ Before submitting, add the primary Codex `/feedback` Session ID to the Devpost f
 - Added initial-scan profile ingestion, automatic rescan inheritance, and built-in demo context.
 - Added JSON/HTML profile history, safe preview, and future-version editing.
 - Added context version/hash/source to Risk Intelligence and Executive Reports.
+
+## Sentinel 1.4 — Security Policy Profiles
+
+- Added immutable, versioned security policy profiles per scan lineage.
+- Added context-sensitive release thresholds for production, public, restricted-data, and critical assets.
+- Added deterministic override matching and persisted policy hashes.
+- Added policy preview, compliance HTML/JSON, and cross-generation compliance comparison.
+- Kept the ordinary release gate authoritative and unchanged.

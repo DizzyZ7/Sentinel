@@ -7,6 +7,7 @@ from app.models.project_context import ProjectContextProfile, ScanContextAssignm
 from app.models.risk_intelligence import RiskIntelligence
 from app.models.scan import Scan
 from app.models.scan_event import ScanEvent
+from app.models.security_policy import ScanPolicyAssignment, SecurityPolicyProfile
 from app.models.verification import RegressionVerification
 
 __all__ = [
@@ -17,6 +18,8 @@ __all__ = [
     "ReviewDecision",
     "ProjectContextProfile",
     "RiskIntelligence",
+    "ScanPolicyAssignment",
+    "SecurityPolicyProfile",
     "ScanContextAssignment",
     "ScanLineage",
     "Scan",
