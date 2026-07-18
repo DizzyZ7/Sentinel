@@ -31,6 +31,8 @@ def _request(url: str, token: str | None = None) -> tuple[int, dict[str, str], b
             return response.status, dict(response.headers.items()), response.read()
     except urllib.error.HTTPError as exc:
         return exc.code, dict(exc.headers.items()), exc.read()
+    except urllib.error.URLError as exc:
+        return 0, {}, str(exc.reason).encode("utf-8", "replace")
 
 
 def check_public_image(image: str, tag: str = "latest") -> dict:
