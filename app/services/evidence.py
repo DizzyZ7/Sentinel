@@ -25,11 +25,13 @@ from app.schemas.evidence import (
     StaticEvidence,
 )
 from app.schemas.llm_audit import LLMReviewRunResponse
+from app.schemas.risk_intelligence import RiskIntelligenceResponse
 from app.schemas.verification import RegressionVerificationResponse
 from app.services.attack_paths import build_attack_path_response
 from app.services.context_sanitizer import sanitize_context
 from app.services.llm_review import PROMPT_VERSION, SCHEMA_VERSION
 from app.services.policy import evaluate_gate
+from app.services.risk_intelligence import RISK_ENGINE_VERSION, build_risk_intelligence
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -96,6 +98,7 @@ def build_finding_evidence_bundle(
             patch_validator=PATCH_VALIDATOR_VERSION,
             regression_verifier=verification.verifier_version if verification else None,
             policy=POLICY_VERSION,
+            risk_engine=RISK_ENGINE_VERSION,
         ).model_dump(mode="json"),
         "scan": EvidenceScan(
             id=scan.id,
@@ -165,6 +168,13 @@ def build_finding_evidence_bundle(
         ),
         "release_gate": gate.model_dump(mode="json"),
         "attack_path": attack_path.model_dump(mode="json") if attack_path else None,
+        "risk_intelligence": (
+            RiskIntelligenceResponse.model_validate(
+                getattr(finding, "risk_intelligence", None) or build_risk_intelligence(finding)
+            ).model_dump(mode="json")
+            if finding.confirmed and finding.severity
+            else None
+        ),
     }
     section_sha256 = {name: _sha256(value) for name, value in sections.items()}
     payload_sha256 = _sha256(sections)

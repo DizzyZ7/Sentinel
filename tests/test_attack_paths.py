@@ -35,12 +35,17 @@ def test_attack_path_exposes_evidence_chain() -> None:
         "source",
         "triage",
         "sink",
+        "asset",
+        "impact",
         "verdict",
         "patch",
         "verification",
         "human",
     ]
-    assert len(path.edges) == 6
+    assert len(path.edges) == 8
+    assert path.asset_type == "application_component"
+    assert path.business_impact is not None
+    assert path.risk_score is not None
 
 
 def test_attack_path_tracks_dismissal_and_approval() -> None:

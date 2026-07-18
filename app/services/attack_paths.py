@@ -10,6 +10,7 @@ from app.schemas.attack_path import (
     AttackPathResponse,
     AttackPathSummary,
 )
+from app.services.risk_intelligence import build_risk_intelligence
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,7 +125,7 @@ RULE_PROFILES: tuple[tuple[str, RuleProfile], ...] = (
 
 
 def _profile(rule_id: str) -> RuleProfile:
-    return next((profile for marker, profile in RULE_PROFILES if marker in rule_id), DEFAULT_PROFILE)
+    return next((profile for marker, profile in RULE_PROFILES if marker in rule_id.upper()), DEFAULT_PROFILE)
 
 
 def _path_status(finding: Finding) -> str:
@@ -180,6 +181,8 @@ def _node_statuses(finding: Finding, path_status: str) -> dict[str, str]:
         "source": "danger" if finding.confirmed else "neutral",
         "triage": "warning",
         "sink": "danger" if finding.confirmed else "neutral",
+        "asset": "danger" if finding.confirmed else "neutral",
+        "impact": "danger" if finding.confirmed else "neutral",
         "verdict": verdict,
         "patch": patch,
         "verification": verification,
@@ -191,6 +194,7 @@ def _build_path(finding: Finding) -> AttackPath:
     profile = _profile(finding.rule_id)
     status = _path_status(finding)
     statuses = _node_statuses(finding, status)
+    risk = getattr(finding, "risk_intelligence", None) or build_risk_intelligence(finding)
     prefix = finding.id
     verdict_detail = {
         "dismissed": "GPT-5.6 rejected the static candidate using the supplied local evidence.",
@@ -241,6 +245,28 @@ def _build_path(finding: Finding) -> AttackPath:
             status=statuses["sink"],
         ),
         AttackPathNode(
+            id=f"{prefix}:asset",
+            stage="asset",
+            label=risk.asset_name if risk else "Affected application asset",
+            detail=(
+                f"{risk.asset_type} in {risk.component}; importance {risk.asset_importance_score:.0f}/100."
+                if risk
+                else "Contextual review did not confirm a material affected asset."
+            ),
+            status=statuses["asset"],
+        ),
+        AttackPathNode(
+            id=f"{prefix}:impact",
+            stage="impact",
+            label="Business impact",
+            detail=(
+                f"{risk.business_impact} Residual risk {risk.residual_risk_score:.1f}/100."
+                if risk
+                else "No confirmed business-impact path is established by the supplied evidence."
+            ),
+            status=statuses["impact"],
+        ),
+        AttackPathNode(
             id=f"{prefix}:verdict",
             stage="verdict",
             label="GPT-5.6 verdict",
@@ -269,7 +295,16 @@ def _build_path(finding: Finding) -> AttackPath:
             status=statuses["human"],
         ),
     ]
-    edge_labels = ["observed as", "reaches", "reviewed by", "mitigated by", "proved by", "requires"]
+    edge_labels = [
+        "observed as",
+        "reaches",
+        "affects",
+        "creates",
+        "reviewed by",
+        "mitigated by",
+        "proved by",
+        "requires",
+    ]
     edges = [
         AttackPathEdge(source=nodes[index].id, target=nodes[index + 1].id, label=label)
         for index, label in enumerate(edge_labels)
@@ -283,7 +318,11 @@ def _build_path(finding: Finding) -> AttackPath:
         line=finding.line,
         severity=finding.severity,
         status=status,
-        attack_surface=profile.attack_surface,
+        attack_surface=risk.attack_surface if risk else profile.attack_surface,
+        asset_name=risk.asset_name if risk else None,
+        asset_type=risk.asset_type if risk else None,
+        business_impact=risk.business_impact if risk else None,
+        risk_score=risk.residual_risk_score if risk else None,
         nodes=nodes,
         edges=edges,
     )

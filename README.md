@@ -43,7 +43,8 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 4. **Non-executing regression proof** checks whether the original deterministic signal disappeared in an isolated temporary copy.
 5. **Human approval** remains mandatory.
 6. **Fail-closed release policy** blocks unresolved high/critical exposure.
-7. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+7. **Risk Intelligence** maps confirmed evidence to an affected asset, business impact, residual score, and remediation plan.
+8. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 
@@ -78,17 +79,21 @@ GPT-5.6 Responses API
                     human decision + release gate
                               │
                               ▼
-                    report / SARIF / Evidence Bundle
+                    deterministic risk intelligence
+                              │
+                              ▼
+          technical / executive report / SARIF / Evidence Bundle
 ```
 
 Sentinel remains a modular monolith: FastAPI, PostgreSQL, SQLAlchemy, Pydantic, Jinja, and isolated local artifacts. The trust model and module boundaries are documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Evidence chain
 
-Every candidate is represented as seven stages:
+Every candidate is represented as nine stages:
 
 ```text
 trust-boundary source → deterministic triage → dangerous sink
+                      → affected asset → business impact
                       → GPT-5.6 verdict → patch escrow
                       → regression proof → human decision
 ```
@@ -109,8 +114,9 @@ The bundle includes:
 - GPT-5.6 verdict and model-call audit;
 - patch SHA-256, size, changed-line count, and sanitized diff;
 - regression proof and before/after hashes;
-- human decision, release gate, and attack path;
-- prompt, schema, ruleset, validator, verifier, policy, and app versions;
+- human decision, release gate, and Attack Graph v2;
+- deterministic risk intelligence and scoring factors;
+- prompt, schema, ruleset, validator, verifier, risk engine, policy, and app versions;
 - SHA-256 for every top-level section and the canonical payload.
 
 See [`docs/EVIDENCE_BUNDLE.md`](docs/EVIDENCE_BUNDLE.md).
@@ -178,6 +184,18 @@ sentinel-check-delta --current-scan-id <current_scan_id>
 
 The CLI exits `0` when the delta passes, `1` for a blocking security regression, and `2` for operational failure. Full lineage and CI semantics are documented in [`docs/LINEAGE_AND_CI.md`](docs/LINEAGE_AND_CI.md).
 
+
+## Risk intelligence and executive decision
+
+Sentinel 1.2 turns each confirmed finding into a reproducible business-risk record. GPT-5.6 supplies the contextual verdict, while Sentinel calculates the score locally from technical severity, exploitability, exposure, asset importance, confidence, and verified remediation state.
+
+```bash
+curl http://localhost:8000/scan/<scan_id>/risk-intelligence
+curl 'http://localhost:8000/scan/<scan_id>/executive-report?format=html'
+```
+
+The executive report prioritizes affected assets, public attack surfaces, residual risk, estimated effort, and ordered remediation actions. The business score never overrides the ordinary fail-closed release gate. Full semantics and limitations are documented in [`docs/RISK_INTELLIGENCE.md`](docs/RISK_INTELLIGENCE.md).
+
 ## API highlights
 
 ```text
@@ -188,6 +206,9 @@ POST /scan/{baseline_scan_id}/rescan
 GET  /scan/{current_scan_id}/compare/{baseline_scan_id}
 GET  /scan/{scan_id}/lineage
 GET  /scan/{current_scan_id}/ci-gate
+GET  /scan/{scan_id}/risk-intelligence
+GET  /scan/{scan_id}/executive-report
+GET  /scan/{scan_id}/findings/{finding_id}/risk-intelligence
 GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
 GET  /scan/{scan_id}/report

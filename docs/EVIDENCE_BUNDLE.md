@@ -11,8 +11,9 @@ The evidence bundle is the portable trust artifact for one finding.
 - non-executing regression proof;
 - explicit human decision;
 - fail-closed release policy result;
-- seven-stage attack path;
-- versions of every security-sensitive boundary.
+- nine-stage Attack Graph v2 with affected asset and business impact;
+- deterministic risk intelligence and scoring factors;
+- versions of every security-sensitive boundary, including the risk engine.
 
 ## Integrity model
 

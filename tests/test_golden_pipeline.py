@@ -53,6 +53,7 @@ async def test_golden_pipeline_covers_confirm_reject_and_failed_proof(tmp_path: 
                 selectinload(Scan.findings).selectinload(Finding.verification),
                 selectinload(Scan.findings).selectinload(Finding.llm_review),
                 selectinload(Scan.findings).selectinload(Finding.decision),
+                selectinload(Scan.findings).selectinload(Finding.risk_intelligence),
             )
             .where(Scan.id == "golden-scan")
         )
@@ -60,6 +61,7 @@ async def test_golden_pipeline_covers_confirm_reject_and_failed_proof(tmp_path: 
         findings = {finding.file_path: finding for finding in scan.findings}
 
         assert scan.status == "completed"
+        assert sum(finding.risk_intelligence is not None for finding in scan.findings) == 2
         assert scan.candidate_count == 3
         assert scan.finding_count == 2
 

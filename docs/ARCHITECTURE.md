@@ -211,3 +211,12 @@ A rescan always creates a new isolated workspace and runs the ordinary ingestion
 `ScanLineage` is a small persistence aggregate separate from `Scan`. It stores `scan_id`, `parent_scan_id`, `root_scan_id`, and `generation`, allowing branches and repeated rescans without modifying the original scan schema. New root scans are registered at creation; pre-1.1 scans are registered lazily when first used as a rescan baseline.
 
 The lineage read model exposes only scan metadata and eligibility, not source snippets. The CI gate resolves the immediate parent by default and rejects an explicit baseline outside the same earlier completed lineage. Security regression, operational error, and successful evaluation remain distinct states.
+
+
+## Deterministic risk intelligence boundary
+
+`RiskIntelligence` is a one-to-one persistence aggregate for confirmed findings. It translates the existing contextual verdict into asset, exposure, impact, scoring factors, residual risk, priority, and remediation guidance. The calculation is local and versioned; it does not introduce another model call or execute repository source.
+
+Inherent risk is calculated from technical severity, exploitability, exposure, asset importance, and review confidence. Residual risk applies a transparent multiplier based on patch validation, non-executing regression proof, and explicit human approval. The ordinary release gate remains authoritative and cannot be bypassed by an executive score.
+
+Attack Graph v2 adds affected-asset and business-impact nodes before the existing verdict, patch, proof, and human-decision chain. The executive report and Evidence Bundle consume the same persisted scoring record.

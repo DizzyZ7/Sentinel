@@ -47,3 +47,6 @@ class Finding(Base):
     llm_review = relationship(
         "LLMReviewRun", back_populates="finding", cascade="all, delete-orphan", uselist=False
     )
+    risk_intelligence = relationship(
+        "RiskIntelligence", back_populates="finding", cascade="all, delete-orphan", uselist=False
+    )

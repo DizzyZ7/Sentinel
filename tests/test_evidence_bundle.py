@@ -6,6 +6,7 @@ from app.models.finding import Finding
 from app.models.scan import Scan
 from app.models.verification import RegressionVerification
 from app.services.evidence import build_finding_evidence_bundle
+from app.services.risk_intelligence import ensure_risk_intelligence
 
 
 def canonical_sha256(value: object) -> str:
@@ -87,6 +88,7 @@ def test_evidence_bundle_is_secret_safe_and_self_verifying(tmp_path):
         verified_at=now,
     )
     scan.findings = [finding]
+    ensure_risk_intelligence(finding)
 
     bundle = build_finding_evidence_bundle(scan, finding, [finding], generated_at=now)
     payload = bundle.model_dump(mode="json")
@@ -99,6 +101,8 @@ def test_evidence_bundle_is_secret_safe_and_self_verifying(tmp_path):
     assert bundle.release_gate.passed is False
     assert bundle.release_gate.blockers[0].finding_id == finding.id
     assert bundle.attack_path is not None
+    assert bundle.risk_intelligence is not None
+    assert bundle.risk_intelligence.attack_surface == "supply_chain"
 
     section_names = [
         "versions",
@@ -112,6 +116,7 @@ def test_evidence_bundle_is_secret_safe_and_self_verifying(tmp_path):
         "human_decision",
         "release_gate",
         "attack_path",
+        "risk_intelligence",
     ]
     sections = {name: payload[name] for name in section_names}
     assert bundle.integrity.payload_sha256 == canonical_sha256(sections)
