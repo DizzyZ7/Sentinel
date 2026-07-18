@@ -28,6 +28,7 @@ from app.services.patches import validate_and_store_patch
 from app.services.progress import add_scan_event
 from app.services.regression import verify_patch_regression
 from app.services.reporting import calculate_risk_score
+from app.services.risk_intelligence import ensure_risk_intelligence
 from app.services.static_analysis import Candidate, analyze_repository, surrounding_context
 
 settings = get_settings()
@@ -340,7 +341,11 @@ async def process_scan(
                 await session.commit()
 
         async with session_factory() as session:
-            result = await session.execute(select(Scan).options(selectinload(Scan.findings)).where(Scan.id == scan_id))
+            result = await session.execute(select(Scan).options(
+                selectinload(Scan.findings).selectinload(Finding.risk_intelligence),
+                selectinload(Scan.findings).selectinload(Finding.decision),
+                selectinload(Scan.findings).selectinload(Finding.verification),
+            ).where(Scan.id == scan_id))
             scan = result.scalar_one()
             await add_scan_event(
                 session,
@@ -349,6 +354,8 @@ async def process_scan(
                 "Building reports and evaluating release policy.",
                 percent=92,
             )
+            for finding in scan.findings:
+                ensure_risk_intelligence(finding)
             confirmed = [
                 finding.severity for finding in scan.findings if finding.confirmed and finding.severity is not None
             ]

@@ -98,3 +98,13 @@ Every merged product slice was required to pass:
 ## Submission evidence
 
 Before submitting, add the primary Codex `/feedback` Session ID to the Devpost form. Commit history and merged pull requests document the implementation timeline and the features added during Build Week.
+
+
+### 1.2 — deterministic security intelligence
+
+- one-to-one persisted risk intelligence for confirmed findings
+- transparent inherent and residual scoring factors
+- affected-asset, business-impact, priority, effort, and remediation-plan model
+- executive JSON and responsive HTML report
+- Attack Graph v2 with asset and impact stages
+- Evidence Bundle integrity coverage for the risk section and engine version

@@ -24,6 +24,7 @@ async def get_finding_evidence_bundle(
             selectinload(Scan.findings).selectinload(Finding.decision),
             selectinload(Scan.findings).selectinload(Finding.verification),
             selectinload(Scan.findings).selectinload(Finding.llm_review),
+            selectinload(Scan.findings).selectinload(Finding.risk_intelligence),
         )
         .where(Scan.id == scan_id)
     )

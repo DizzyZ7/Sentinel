@@ -6,6 +6,7 @@ from app.schemas.attack_path import AttackPath
 from app.schemas.decision import DecisionResponse
 from app.schemas.llm_audit import LLMReviewRunResponse
 from app.schemas.policy import GateResponse
+from app.schemas.risk_intelligence import RiskIntelligenceResponse
 from app.schemas.verification import RegressionVerificationResponse
 
 
@@ -18,6 +19,7 @@ class EvidenceVersions(BaseModel):
     patch_validator: str
     regression_verifier: str | None
     policy: str
+    risk_engine: str
 
 
 class EvidenceScan(BaseModel):
@@ -101,4 +103,5 @@ class FindingEvidenceBundle(BaseModel):
     human_decision: DecisionResponse | None
     release_gate: GateResponse
     attack_path: AttackPath | None
+    risk_intelligence: RiskIntelligenceResponse | None
     integrity: EvidenceIntegrity

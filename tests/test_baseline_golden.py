@@ -58,6 +58,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
                 .options(
                     selectinload(Scan.findings).selectinload(Finding.verification),
                     selectinload(Scan.findings).selectinload(Finding.decision),
+                    selectinload(Scan.findings).selectinload(Finding.risk_intelligence),
                 )
                 .where(Scan.id == scan_id)
             )
@@ -67,6 +68,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
 
     assert scans["baseline"].status == "completed"
     assert scans["current"].status == "completed"
+    assert sum(finding.risk_intelligence is not None for finding in scans["current"].findings) == 2
     assert comparison.summary.persistent == 3
     assert comparison.summary.introduced == 0
     assert comparison.summary.resolved == 0

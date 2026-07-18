@@ -18,6 +18,8 @@ Open `http://localhost:8000`, then select **Run the 60-second security demo**.
 
 The replay is explicitly labelled as deterministic and makes no external model call. It still exercises the real repository ingestion, static analysis, patch validation, regression verification, persistence, attack-path reporting, release gate, and Evidence Bundle code paths.
 
+After the judge view loads, open **Executive risk** to show affected assets, residual business risk, factor breakdowns, and remediation priority.
+
 Expected outcomes:
 
 1. one SQL injection receives a valid parameterized patch and a passed regression proof;
@@ -45,6 +47,8 @@ GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
 GET  /scan/{scan_id}/report?format=html
 GET  /scan/{scan_id}/attack-paths
+GET  /scan/{scan_id}/executive-report?format=html
+GET  /scan/{scan_id}/risk-intelligence
 GET  /scan/{scan_id}/gate
 GET  /scan/{scan_id}/llm-reviews
 GET  /scan/{scan_id}/findings/{finding_id}/evidence-bundle
