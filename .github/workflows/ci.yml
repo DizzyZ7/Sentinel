@@ -37,5 +37,11 @@ jobs:
       - name: Run Ruff
         run: ruff check app tests
 
+      - name: Validate demo compose
+        run: docker compose -f compose.demo.yml config --quiet
+
       - name: Build container
         run: docker build --tag sentinel:ci .
+
+      - name: Verify judge fixture is packaged
+        run: docker run --rm --entrypoint /bin/sh sentinel:ci -c 'test -f /app/demo/judge-demo/confirmed_sql.py'
