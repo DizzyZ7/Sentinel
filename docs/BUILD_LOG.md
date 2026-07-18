@@ -49,6 +49,22 @@ Traditional SAST has deterministic evidence but often creates noise. Unconstrain
 - CI regression gate and downloadable result artifact
 - judge guide, timed video script, and Devpost-ready project copy
 
+
+### 0.9 — judge decision view and submission preflight
+
+- focused read-only judge decision surface
+- automated release-readiness artifact
+- anonymous GHCR verification workflow
+- final recording and submission guides
+
+### 1.0 — baseline deltas and incremental security policy
+
+- stable finding fingerprints independent of line movement
+- introduced, resolved, changed, and persistent classifications
+- ordinary full gate plus a no-new-risk delta gate
+- ZIP/Git rescan workflow through the unchanged security pipeline
+- responsive HTML delta report and judge-view rescan action
+
 ## Key engineering decisions made with Codex
 
 1. Keep a modular monolith instead of adding premature microservices.

@@ -9,6 +9,7 @@ from app.core.config import get_settings
 from app.core.database import engine
 from app.core.version import APP_VERSION
 from app.models import Base
+from app.routers.comparison import router as comparison_router
 from app.routers.demo import router as demo_router
 from app.routers.evidence import router as evidence_router
 from app.routers.health import router as health_router
@@ -38,6 +39,7 @@ app = FastAPI(
 )
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(health_router)
+app.include_router(comparison_router)
 app.include_router(demo_router)
 app.include_router(evidence_router)
 app.include_router(judge_router)
