@@ -229,3 +229,8 @@ Attack Graph v2 adds affected-asset and business-impact nodes before the existin
 ## Security policy layer
 
 The security-policy module is a deterministic decision layer above the ordinary release gate. It reads persisted finding state plus the scan-assigned project context and policy versions. It never executes repository source, mutates findings, approves remediation, or weakens the base gate. Profiles and scan assignments are stored separately so historical compliance remains reproducible.
+
+
+## Risk-exception governance layer
+
+The risk-exception module is an additive governance boundary above raw security-policy compliance. It persists lineage-scoped exception requests and append-only lifecycle events, resolves stable finding/rule/asset scopes, and calculates a separate `passed`, `accepted_risk`, or `blocked` decision. Raw findings, the ordinary release gate, policy compliance, patch proof, and human remediation decisions are never mutated. Critical and fail-closed unreviewed evidence are non-waivable.

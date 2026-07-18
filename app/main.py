@@ -18,6 +18,7 @@ from app.routers.lineage import router as lineage_router
 from app.routers.llm_audit import router as llm_audit_router
 from app.routers.progress import router as progress_router
 from app.routers.project_context import router as project_context_router
+from app.routers.risk_exception import router as risk_exception_router
 from app.routers.risk_intelligence import router as risk_intelligence_router
 from app.routers.scans import router as scans_router
 from app.routers.security_policy import router as security_policy_router
@@ -51,6 +52,7 @@ app.include_router(lineage_router)
 app.include_router(llm_audit_router)
 app.include_router(progress_router)
 app.include_router(project_context_router)
+app.include_router(risk_exception_router)
 app.include_router(risk_intelligence_router)
 app.include_router(security_policy_router)
 app.include_router(scans_router)

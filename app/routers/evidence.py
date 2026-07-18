@@ -6,9 +6,11 @@ from sqlalchemy.orm import selectinload
 
 from app.core.database import get_db
 from app.models.finding import Finding
+from app.models.lineage import ScanLineage
 from app.models.scan import Scan
 from app.services.evidence import build_finding_evidence_bundle
 from app.services.project_context import load_context_snapshot
+from app.services.risk_exception import evaluate_exception_aware_compliance, list_root_exceptions
 from app.services.security_policy import (
     ensure_security_policy,
     evaluate_security_policy,
@@ -52,9 +54,23 @@ async def get_finding_evidence_bundle(
         if policy is not None
         else None
     )
+    lineage = await db.get(ScanLineage, scan.id)
+    root_scan_id = lineage.root_scan_id if lineage else scan.id
+    exceptions = await list_root_exceptions(db, root_scan_id)
+    governance = (
+        evaluate_exception_aware_compliance(
+            scan.id, ordered_findings, compliance, exceptions
+        )
+        if compliance is not None
+        else None
+    )
     await db.commit()
     bundle = build_finding_evidence_bundle(
-        scan, finding, ordered_findings, security_policy_compliance=compliance
+        scan,
+        finding,
+        ordered_findings,
+        security_policy_compliance=compliance,
+        exception_governance=governance,
     )
     return JSONResponse(
         bundle.model_dump(mode="json"),
