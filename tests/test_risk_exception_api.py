@@ -70,7 +70,7 @@ async def build_app(tmp_path: Path):
 async def test_exception_api_lifecycle_json_html_and_audit(tmp_path: Path) -> None:
     app, engine = await build_app(tmp_path)
     transport = ASGITransport(app=app)
-    future = datetime.now(UTC) + timedelta(days=30)
+    future = datetime.now(UTC) + timedelta(hours=12)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         created = await client.post(
             "/scan/scan-1/risk-exceptions",

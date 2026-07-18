@@ -9,6 +9,7 @@ from app.schemas.policy import GateResponse
 from app.schemas.risk_exception import ExceptionAwareCompliance
 from app.schemas.risk_intelligence import RiskIntelligenceResponse
 from app.schemas.security_policy import SecurityPolicyCompliance
+from app.schemas.security_sla import SecurityDebtDashboard
 from app.schemas.verification import RegressionVerificationResponse
 
 
@@ -24,6 +25,7 @@ class EvidenceVersions(BaseModel):
     risk_engine: str
     security_policy_engine: str
     risk_exception_engine: str
+    security_sla_engine: str
 
 
 class EvidenceScan(BaseModel):
@@ -110,4 +112,5 @@ class FindingEvidenceBundle(BaseModel):
     risk_intelligence: RiskIntelligenceResponse | None
     security_policy_compliance: SecurityPolicyCompliance | None
     exception_governance: ExceptionAwareCompliance | None
+    security_sla: SecurityDebtDashboard | None
     integrity: EvidenceIntegrity

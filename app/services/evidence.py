@@ -36,6 +36,7 @@ from app.services.policy import evaluate_gate
 from app.services.risk_exception import EXCEPTION_ENGINE_VERSION
 from app.services.risk_intelligence import RISK_ENGINE_VERSION, build_risk_intelligence
 from app.services.security_policy import POLICY_ENGINE_VERSION
+from app.services.security_sla import SLA_ENGINE_VERSION
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -80,6 +81,7 @@ def build_finding_evidence_bundle(
     generated_at: datetime | None = None,
     security_policy_compliance: SecurityPolicyCompliance | None = None,
     exception_governance: ExceptionAwareCompliance | None = None,
+    security_sla=None,
 ) -> FindingEvidenceBundle:
     generated_at = generated_at or datetime.now(UTC)
     sanitized_snippet = sanitize_context(finding.snippet)
@@ -107,6 +109,7 @@ def build_finding_evidence_bundle(
             risk_engine=RISK_ENGINE_VERSION,
             security_policy_engine=POLICY_ENGINE_VERSION,
             risk_exception_engine=EXCEPTION_ENGINE_VERSION,
+            security_sla_engine=SLA_ENGINE_VERSION,
         ).model_dump(mode="json"),
         "scan": EvidenceScan(
             id=scan.id,
@@ -186,6 +189,7 @@ def build_finding_evidence_bundle(
             if exception_governance is not None
             else None
         ),
+        "security_sla": (security_sla.model_dump(mode="json") if security_sla is not None else None),
         "risk_intelligence": (
             RiskIntelligenceResponse.model_validate(
                 getattr(finding, "risk_intelligence", None) or build_risk_intelligence(finding)

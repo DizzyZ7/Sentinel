@@ -234,3 +234,8 @@ The security-policy module is a deterministic decision layer above the ordinary 
 ## Risk-exception governance layer
 
 The risk-exception module is an additive governance boundary above raw security-policy compliance. It persists lineage-scoped exception requests and append-only lifecycle events, resolves stable finding/rule/asset scopes, and calculates a separate `passed`, `accepted_risk`, or `blocked` decision. Raw findings, the ordinary release gate, policy compliance, patch proof, and human remediation decisions are never mutated. Critical and fail-closed unreviewed evidence are non-waivable.
+
+
+## Security SLA Engine
+
+An additive profile/assignment model versions remediation rules per lineage. Finding SLA rows preserve the first-seen fingerprint, immutable due date, accountable team, risk owner, escalation contact, and originating profile. Dashboards derive current on-track, at-risk, overdue, and accepted-risk states without mutating evidence.

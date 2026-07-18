@@ -30,6 +30,7 @@ from app.services.project_context import load_context_snapshot
 from app.services.regression import verify_patch_regression
 from app.services.reporting import calculate_risk_score
 from app.services.risk_intelligence import ensure_risk_intelligence
+from app.services.security_sla import persist_finding_slas
 from app.services.static_analysis import Candidate, analyze_repository, surrounding_context
 
 settings = get_settings()
@@ -358,6 +359,7 @@ async def process_scan(
             context_snapshot = await load_context_snapshot(session, scan_id)
             for finding in scan.findings:
                 ensure_risk_intelligence(finding, context_snapshot)
+            await persist_finding_slas(session, scan, context_snapshot)
             confirmed = [
                 finding.severity for finding in scan.findings if finding.confirmed and finding.severity is not None
             ]

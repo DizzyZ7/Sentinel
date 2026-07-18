@@ -136,3 +136,8 @@ Before submitting, add the primary Codex `/feedback` Session ID to the Devpost f
 - Added exception-aware governance with explicit `accepted_risk` state.
 - Kept critical and fail-closed unreviewed evidence non-waivable.
 - Added cross-generation exception-debt comparison and Evidence Bundle coverage.
+
+
+## Sentinel 1.6
+
+Added immutable security SLA profiles, lineage-stable finding clocks, ownership routing, overdue enforcement, debt comparison, Evidence Bundle coverage, SLA-bound exception expiry, and independently approved renewal requests.

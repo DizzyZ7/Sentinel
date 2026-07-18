@@ -46,6 +46,11 @@
           <textarea id="security_policy" name="security_policy" placeholder='{"policy_name":"Production release policy","base_block_on":"high","public_asset_block_on":"medium","restricted_data_block_on":"medium","require_valid_patch_from":"high","require_passed_proof_from":"high","require_human_approval_from":"high"}'></textarea>
         </details>
         <details class="context-input">
+          <summary>Optional security ownership and SLA profile</summary>
+          <p>Declare remediation deadlines, team ownership, escalation contacts, and context-sensitive SLA overrides.</p>
+          <textarea id="security_sla" name="security_sla" placeholder='{"profile_name":"Production remediation SLA","critical_hours":12,"high_hours":72,"medium_hours":336,"low_hours":1440,"default_team":"Application Security","default_risk_owner":"Security Lead"}'></textarea>
+        </details>
+        <details class="context-input">
           <summary>Optional project context profile</summary>
           <p>Declare production exposure, data sensitivity, and asset path patterns before the scan. The profile is hashed and assigned to this scan.</p>
           <textarea id="project_context" name="project_context" placeholder='{"project_name":"Payments API","environment":"production","internet_exposed":true,"assets":[{"asset_id":"payments","name":"Payment service","asset_type":"financial_service","path_patterns":["payments/**"],"criticality":"critical","exposure":"public","data_classification":"restricted","data_types":["payment records"]}]}'></textarea>
@@ -184,6 +189,11 @@ form.addEventListener('submit', async event => {
   if (policy) {
     try { JSON.parse(policy); } catch (error) { return showError(`Security policy JSON is invalid: ${error.message}`); }
     data.append('security_policy', policy);
+  }
+  const sla = document.querySelector('#security_sla').value.trim();
+  if (sla) {
+    try { JSON.parse(sla); } catch (error) { return showError(`Security SLA JSON is invalid: ${error.message}`); }
+    data.append('security_sla', sla);
   }
   await startRequest('/scan/repo', {body: data});
 });

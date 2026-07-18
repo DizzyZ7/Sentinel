@@ -27,6 +27,13 @@ from app.services.security_policy import (
     evaluate_security_policy,
     load_policy_snapshot,
 )
+from app.services.security_sla import (
+    assign_latest_security_sla,
+    build_security_debt_dashboard,
+    demo_security_sla,
+    ensure_security_sla,
+    load_sla_snapshot,
+)
 
 
 async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_path: Path) -> None:
@@ -53,6 +60,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         await ensure_root_lineage(session, baseline)
         await ensure_project_context(session, baseline, demo_project_context(), source="built_in")
         await ensure_security_policy(session, baseline, demo_security_policy(), source="built_in")
+        await ensure_security_sla(session, baseline, demo_security_sla(), source="built_in")
         await session.commit()
 
     reviewer = DemoReviewer(settings)
@@ -64,6 +72,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         await link_rescan(session, baseline, current)
         await assign_latest_project_context(session, baseline, current)
         await assign_latest_security_policy(session, baseline, current)
+        await assign_latest_security_sla(session, baseline, current)
         await session.commit()
     await process_scan("current", reviewer=reviewer, session_factory=factory, pipeline_settings=settings)
 
@@ -88,6 +97,8 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         policy_compliance = evaluate_security_policy(
             "current", list(scans["current"].findings), current_policy, current_context
         )
+        current_sla = await load_sla_snapshot(session, "current")
+        sla_dashboard = await build_security_debt_dashboard(session, scans["current"])
 
     assert scans["baseline"].status == "completed"
     assert scans["current"].status == "completed"
@@ -96,6 +107,15 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
     assert current_context.source == "built_in"
     assert current_context.version == 1
     assert current_policy.source == "built_in"
+    assert current_sla is not None
+    assert current_sla.source == "built_in"
+    assert current_sla.version == 1
+    assert sla_dashboard.summary.total == 2
+    assert {item.assigned_team for item in sla_dashboard.findings} == {
+        "Customer Platform",
+        "Inventory Services",
+    }
+    assert all(item.assignment_source == "lineage_inherited" for item in sla_dashboard.findings)
     assert current_policy.version == 1
     assert policy_compliance.state == "blocked"
     assert policy_compliance.summary.blocking_findings == 2
