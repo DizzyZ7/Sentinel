@@ -29,7 +29,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .sentinel-1.3.part-* > /tmp/sentinel-1.3.tar.gz
+          cat \
+            .sentinel-1.3.part-00 \
+            .sentinel-1.3.part-01 \
+            .sentinel-1.3.part-02-0 \
+            .sentinel-1.3.part-02-1 \
+            .sentinel-1.3.part-02-2 \
+            .sentinel-1.3.part-02-3 \
+            .sentinel-1.3.part-03 \
+            > /tmp/sentinel-1.3.tar.gz
           echo "0410e7c41279b7897e62edbed0c592ec7a0cacdf61c4c5b6df1ead30b5e7be17  /tmp/sentinel-1.3.tar.gz" | sha256sum -c -
           tar -tzf /tmp/sentinel-1.3.tar.gz > /tmp/sentinel-1.3-files.txt
           test "$(wc -l < /tmp/sentinel-1.3-files.txt)" -eq 32
