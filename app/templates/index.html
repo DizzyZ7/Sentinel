@@ -108,7 +108,7 @@ async function pollScan(created) {
   polling = true;
   try {
     while (true) {
-      const response = await fetch(created.status_url);
+      const response = await fetch(`${created.status_url}/progress`);
       if (!response.ok) throw new Error('Could not read scan status');
       const scan = await response.json();
       renderProgress(scan);

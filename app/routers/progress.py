@@ -12,7 +12,7 @@ from app.services.progress import latest_scan_event
 router = APIRouter(prefix="/scan", tags=["progress"])
 
 
-@router.get("/{scan_id}", response_model=ScanStatus)
+@router.get("/{scan_id}/progress", response_model=ScanStatus)
 async def get_scan_progress(scan_id: str, db: AsyncSession = Depends(get_db)) -> ScanStatus:
     scan = await db.get(Scan, scan_id)
     if not scan:
