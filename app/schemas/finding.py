@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from app.schemas.decision import DecisionResponse
+from app.schemas.verification import RegressionVerificationResponse
 
 
 class FindingResponse(BaseModel):
@@ -29,3 +30,4 @@ class FindingResponse(BaseModel):
     patch_valid: bool | None
     patch_error: str | None
     decision: DecisionResponse | None
+    verification: RegressionVerificationResponse | None

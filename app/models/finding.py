@@ -41,3 +41,6 @@ class Finding(Base):
     decision = relationship(
         "ReviewDecision", back_populates="finding", cascade="all, delete-orphan", uselist=False
     )
+    verification = relationship(
+        "RegressionVerification", back_populates="finding", cascade="all, delete-orphan", uselist=False
+    )

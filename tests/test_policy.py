@@ -14,6 +14,7 @@ def finding(**overrides):
         "severity": "high",
         "patch_valid": True,
         "decision": None,
+        "verification": SimpleNamespace(status="passed"),
         "llm_status": "completed",
         "static_confidence": 0.96,
     }

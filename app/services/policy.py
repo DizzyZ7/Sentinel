@@ -20,15 +20,24 @@ def evaluate_gate(
     for finding in findings:
         if finding.confirmed and finding.severity and SEVERITY_RANK[finding.severity] >= threshold:
             evaluated += 1
-            if finding.patch_valid and finding.decision and finding.decision.decision == "approved":
+            verified = bool(finding.verification and finding.verification.status == "passed")
+            approved = bool(finding.decision and finding.decision.decision == "approved")
+            if finding.patch_valid and verified and approved:
                 remediated += 1
                 continue
             if finding.decision and finding.decision.decision == "rejected":
                 reason = "A human rejected the proposed remediation; the confirmed exposure remains open."
             elif not finding.patch_valid:
                 reason = "The confirmed finding has no validated patch in escrow."
+            elif not finding.verification:
+                reason = "The validated patch has no non-executing regression proof."
+            elif finding.verification.status != "passed":
+                reason = (
+                    "The regression proof did not pass; Sentinel cannot demonstrate that the original "
+                    "source-to-sink path was removed."
+                )
             else:
-                reason = "The validated patch is awaiting explicit human approval."
+                reason = "The verified patch is awaiting explicit human approval."
             blockers.append(
                 GateBlocker(
                     finding_id=finding.id,
