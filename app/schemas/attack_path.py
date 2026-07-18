@@ -2,9 +2,17 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-NodeStage = Literal["source", "triage", "sink", "verdict", "patch", "human"]
+NodeStage = Literal["source", "triage", "sink", "verdict", "patch", "verification", "human"]
 NodeStatus = Literal["danger", "warning", "neutral", "safe", "blocked"]
-PathStatus = Literal["dismissed", "exposed", "patch_ready", "approved", "rejected", "unreviewed"]
+PathStatus = Literal[
+    "dismissed",
+    "exposed",
+    "patch_ready",
+    "verified",
+    "approved",
+    "rejected",
+    "unreviewed",
+]
 
 
 class AttackPathNode(BaseModel):
@@ -39,6 +47,7 @@ class AttackPathSummary(BaseModel):
     total: int
     exposed: int
     patch_ready: int
+    verified: int
     approved: int
     rejected: int
     dismissed: int

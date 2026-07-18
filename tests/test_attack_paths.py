@@ -18,6 +18,9 @@ def finding(**overrides):
         "patch_valid": True,
         "patch_error": None,
         "decision": None,
+        "verification": SimpleNamespace(
+            status="passed", before_detected=True, after_detected=False, source_executed=False
+        ),
     }
     values.update(overrides)
     return SimpleNamespace(**values)
@@ -26,7 +29,7 @@ def finding(**overrides):
 def test_attack_path_exposes_evidence_chain() -> None:
     response = build_attack_path_response("scan-1", [finding()])
     path = response.paths[0]
-    assert path.status == "patch_ready"
+    assert path.status == "verified"
     assert path.attack_surface == "code_execution"
     assert [node.stage for node in path.nodes] == [
         "source",
@@ -34,9 +37,10 @@ def test_attack_path_exposes_evidence_chain() -> None:
         "sink",
         "verdict",
         "patch",
+        "verification",
         "human",
     ]
-    assert len(path.edges) == 5
+    assert len(path.edges) == 6
 
 
 def test_attack_path_tracks_dismissal_and_approval() -> None:
