@@ -1,0 +1,175 @@
+# Sentinel architecture
+
+## Architectural style
+
+Sentinel is a local-first modular monolith. FastAPI exposes the API and report UI, PostgreSQL stores scan state and audit metadata, and a local artifact store keeps immutable source snapshots, patch proposals, SARIF, and regression proofs.
+
+The design optimizes for a small trusted deployment surface, reproducible evidence, and explicit human control. It deliberately avoids executing repository source or automatically applying model-generated changes.
+
+## System context
+
+```text
+User / CI
+    |
+    v
+FastAPI API + report UI
+    |
+    v
+Scan orchestration
+    |
+    +--> source ingestion and isolation
+    +--> deterministic Python / JS / TS analysis
+    +--> context sanitization
+    +--> GPT-5.6 structured review
+    +--> patch escrow and validation
+    +--> non-executing regression proof
+    +--> human decision
+    +--> fail-closed release policy
+    |
+    +--> PostgreSQL metadata
+    +--> local immutable artifacts
+```
+
+## Trust boundaries
+
+1. Uploaded archives, cloned repositories, filenames, source text, comments, strings, and generated patches are untrusted input.
+2. Repository source is never imported or executed by the default pipeline.
+3. Source-borne text is never treated as an instruction to GPT-5.6.
+4. Secret-like values are replaced with typed placeholders before external model transmission.
+5. Original secret values are not stored in LLM audit records.
+6. Model output is data, not an action. It must pass strict schema validation and patch validation.
+7. Human approval records intent but never modifies the scanned repository.
+8. Release decisions fail closed when review or proof is incomplete.
+
+## Pipeline
+
+```text
+Git URL / ZIP
+    |
+    v
+Isolated repository snapshot
+    |
+    v
+Deterministic candidates
+    |
+    v
+50-line evidence context
+    |
+    v
+ContextSanitizer
+    |  typed placeholders + redaction metadata
+    v
+GPT-5.6 Responses API
+    |  strict Pydantic JSON schema
+    v
+LLMReviewRun audit record
+    |  model, response id, versions, latency, retries, usage
+    v
+Confirmed finding + minimal unified diff
+    |
+    v
+Patch validator
+    |  one expected file, size limits, git apply --check, syntax checks
+    v
+Regression verifier
+    |  isolated one-file copy, before/after static signal, SHA-256
+    v
+Human decision + release gate
+```
+
+## Modules
+
+```text
+app/
+├── core/       configuration and async database lifecycle
+├── models/     persisted scan, finding, decision, proof, and audit facts
+├── routers/    HTTP transport and content negotiation
+├── schemas/    API DTOs and strict model-output contracts
+├── services/   ingestion, analysis, review, validation, proof, policy
+├── templates/  local report and dashboard
+└── static/     report styles
+```
+
+The service layer is split by capability rather than framework endpoint. Routers should not contain security-analysis rules or model prompts.
+
+## Primary entities
+
+### Scan
+
+Owns the repository snapshot, lifecycle, aggregate risk score, and findings.
+
+### Finding
+
+Represents one deterministic candidate and the evidence accumulated around it:
+
+```text
+static candidate
+  + GPT-5.6 verdict
+  + patch proposal
+  + patch validation
+  + regression proof
+  + human decision
+```
+
+### LLMReviewRun
+
+One auditable model review per finding. It stores operational metadata, not source context or secret values:
+
+- model and response ID;
+- prompt and schema versions;
+- SHA-256 of the sanitized context;
+- typed redaction counts and line numbers;
+- retries, latency, and token usage;
+- terminal status and sanitized error.
+
+### RegressionVerification
+
+A non-executing structural proof. It applies a validated patch only to a temporary copy and records whether the original deterministic source-to-sink candidate disappears.
+
+### ReviewDecision
+
+An explicit human approval or rejection. Approval is permitted only for a validated patch with a passed regression proof.
+
+## Approval invariant
+
+A finding may be approved only when all of the following are true:
+
+```text
+confirmed by GPT-5.6
+AND patch_valid = true
+AND regression_verification.status = passed
+AND human decision = approved
+```
+
+No API or UI path may bypass this invariant.
+
+## Audit and privacy
+
+Sentinel sends only the minimum local evidence needed for one candidate. Before transmission, `ContextSanitizer` redacts credential assignments, private keys, common provider tokens, bearer tokens, JWTs, and credentials embedded in connection strings.
+
+Placeholders retain evidence structure and line numbers, for example:
+
+```text
+OPENAI_API_KEY = "<REDACTED_SECRET_1:CREDENTIAL_ASSIGNMENT>"
+```
+
+Audit records contain the redaction type, count, and affected lines but never the original value. The sanitized context is identified by SHA-256 for reproducibility without storing the context itself.
+
+## Deployment model
+
+The contest deployment uses one API process, PostgreSQL, and a persistent local artifact volume. Scan work currently runs through FastAPI background tasks to keep the demo installation small.
+
+A production evolution should introduce a durable PostgreSQL-backed job queue and a separate worker while preserving the same application contracts. Microservices are not required until workload isolation or independent scaling justifies the operational cost.
+
+## Versioned boundaries
+
+Security-sensitive components are versioned independently:
+
+- static ruleset;
+- GPT review prompt;
+- structured-output schema;
+- patch validator;
+- regression verifier;
+- release policy.
+
+Every exported evidence bundle should eventually include all component versions so a result can be reproduced and compared across releases.

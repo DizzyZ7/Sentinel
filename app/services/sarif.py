@@ -63,7 +63,7 @@ def build_sarif(findings: Iterable[Finding]) -> dict[str, Any]:
                     "driver": {
                         "name": "Sentinel",
                         "informationUri": "https://github.com/DizzyZ7/Sentinel",
-                        "semanticVersion": "0.4.0",
+                        "semanticVersion": "0.5.0",
                         "rules": list(rules.values()),
                     }
                 },

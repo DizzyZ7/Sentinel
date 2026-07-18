@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sentinel GPT-5.6 audit {{ scan.id }}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    .audit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0}
+    .audit-metric,.audit-row{border:1px solid #263247;border-radius:16px;background:#0d131d;padding:18px}
+    .audit-metric strong{display:block;font-size:32px}.audit-metric span,.muted{color:#8c98a9}
+    .audit-row{margin:14px 0}.audit-row header{display:flex;justify-content:space-between;gap:20px}
+    .audit-row h2{font-size:22px;margin:8px 0}.audit-status{font:700 11px ui-monospace,monospace;text-transform:uppercase}
+    .audit-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.audit-facts span{border:1px solid #263247;border-radius:999px;padding:7px 10px;font-size:12px}
+    .safe-note{border:1px solid #28584d;background:#0c211c;border-radius:14px;padding:16px;color:#b9ffe9}
+    @media(max-width:760px){.audit-grid{grid-template-columns:1fr 1fr}.audit-row header{display:block}}
+  </style>
+</head>
+<body>
+<main class="shell report-shell">
+  <header class="report-header">
+    <div>
+      <a class="back" href="/scan/{{ scan.id }}/report?format=html">← Repository report</a>
+      <div class="eyebrow">GPT-5.6 AUDIT TRAIL</div>
+      <h1>Evidence-bound model review</h1>
+      <p>Operational metadata for every structured review. Original secret values and full source context are never stored here.</p>
+    </div>
+  </header>
+
+  <section class="audit-grid">
+    <article class="audit-metric"><strong>{{ audit.summary.completed }}</strong><span>completed</span></article>
+    <article class="audit-metric"><strong>{{ audit.summary.failed }}</strong><span>failed</span></article>
+    <article class="audit-metric"><strong>{{ audit.summary.redactions }}</strong><span>secret redactions</span></article>
+    <article class="audit-metric"><strong>{{ audit.summary.input_tokens + audit.summary.output_tokens }}</strong><span>total tokens</span></article>
+  </section>
+
+  <section class="safe-note">
+    ContextSanitizer replaces credential-like values with typed placeholders before GPT-5.6 receives the evidence window. Audit records retain types and line numbers, never original values.
+  </section>
+
+  <section>
+    {% for row in rows %}
+    <article class="audit-row">
+      <header>
+        <div>
+          <span class="audit-status">{{ row.review.status if row.review else 'not available' }}</span>
+          <h2>{{ row.finding.title }}</h2>
+          <code>{{ row.finding.file_path }}:{{ row.finding.line }}</code>
+        </div>
+        {% if row.review %}<code>{{ row.review.model }}</code>{% endif %}
+      </header>
+      {% if row.review %}
+      <div class="audit-facts">
+        <span>{{ row.review.latency_ms or 0 }} ms</span>
+        <span>{{ row.review.retry_count }} retries</span>
+        <span>{{ (row.review.input_tokens or 0) + (row.review.output_tokens or 0) }} tokens</span>
+        <span>{{ row.review.redaction_count }} redactions</span>
+        <span>{{ row.review.prompt_version }}</span>
+        <span>{{ row.review.schema_version }}</span>
+      </div>
+      <p class="muted">Sanitized context SHA-256: <code>{{ row.review.context_sha256 or 'not generated' }}</code></p>
+      {% if row.review.response_id %}<p class="muted">OpenAI response ID: <code>{{ row.review.response_id }}</code></p>{% endif %}
+      {% if row.review.redaction_count %}<p class="muted">Sanitized lines: {{ row.review.redaction_summary.lines|join(', ') }}</p>{% endif %}
+      {% if row.review.error %}<p class="error-text">{{ row.review.error }}</p>{% endif %}
+      {% else %}
+      <p class="muted">No external model call was recorded for this finding.</p>
+      {% endif %}
+    </article>
+    {% else %}
+    <article class="audit-row"><h2>No model reviews</h2><p class="muted">This scan did not produce review candidates.</p></article>
+    {% endfor %}
+  </section>
+</main>
+</body>
+</html>

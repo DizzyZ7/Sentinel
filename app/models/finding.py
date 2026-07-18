@@ -44,3 +44,6 @@ class Finding(Base):
     verification = relationship(
         "RegressionVerification", back_populates="finding", cascade="all, delete-orphan", uselist=False
     )
+    llm_review = relationship(
+        "LLMReviewRun", back_populates="finding", cascade="all, delete-orphan", uselist=False
+    )
