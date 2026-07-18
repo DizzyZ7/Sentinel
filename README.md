@@ -200,7 +200,7 @@ POST /scan/{scan_id}/findings/{finding_id}/decision
 GET  /scan/{scan_id}/findings/{finding_id}/evidence-bundle
 ```
 
-OpenAPI is available at `http://localhost:8000/docs .
+OpenAPI is available at `http://localhost:8000/docs`.
 
 ## Safety controls
 
