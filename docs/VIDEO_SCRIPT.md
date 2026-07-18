@@ -26,15 +26,23 @@ Target duration: **2 minutes 45 seconds**. Keep the final upload below three min
 
 > For a reliable judge path, this button runs an explicitly labelled deterministic replay. It does not pretend to call GPT-5.6, but it exercises the real ingestion, analysis, patch, proof, policy, and reporting pipeline. A separate button runs the same fixture through the live GPT-5.6 API boundary.
 
-## 0:48–1:18 — successful proof
+## 0:48–1:03 — decision brief
 
-**Screen:** open the first confirmed SQL injection. Show source, verdict, patch, and `passed` proof.
+**Screen:** pause on the report header. Show release state, recommended next action, review coverage, and the five-step trust chain.
+
+**Voiceover:**
+
+> The report begins with the decision, not a wall of findings. The release is blocked, the next action is explicit, and every stage from deterministic evidence to human approval is visible in one trust chain.
+
+## 1:03–1:27 — successful proof
+
+**Screen:** open the first confirmed SQL injection. Show the verified-fix outcome, patch, and `passed` proof.
 
 **Voiceover:**
 
 > Here request data reaches an interpolated SQL query. The proposed parameterized patch passes path and syntax checks. Sentinel applies it only to a temporary copy, re-runs the original rule, and records that the signal existed before and disappeared after. The repository itself is never modified.
 
-## 1:18–1:37 — false positive
+## 1:27–1:44 — false positive
 
 **Screen:** show the rejected constant-expression candidate.
 
@@ -42,7 +50,7 @@ Target duration: **2 minutes 45 seconds**. Keep the final upload below three min
 
 > The second case demonstrates why GPT-5.6 matters. The deterministic rule notices dynamic execution, but the evidence shows a fixed constant with no attacker-controlled path, so the candidate is rejected instead of becoming noisy security debt.
 
-## 1:37–1:57 — failed patch and release gate
+## 1:44–2:02 — failed patch and release gate
 
 **Screen:** show the cosmetic patch, failed regression proof, disabled approval, and blocked gate.
 
@@ -50,7 +58,7 @@ Target duration: **2 minutes 45 seconds**. Keep the final upload below three min
 
 > The third patch is syntactically valid and applies cleanly, but it only changes formatting. The same SQL injection remains. Regression proof fails, approval stays disabled, and the release gate remains blocked. Sentinel fails closed.
 
-## 1:57–2:13 — Evidence Bundle
+## 2:02–2:17 — Evidence Bundle
 
 **Screen:** download/open the Evidence Bundle JSON and highlight integrity hashes.
 
@@ -58,7 +66,7 @@ Target duration: **2 minutes 45 seconds**. Keep the final upload below three min
 
 > Every finding can be exported as one privacy-safe Evidence Bundle containing deterministic evidence, the GPT audit, patch digest, regression proof, human decision, release policy, attack path, and SHA-256 hashes for independent integrity checking.
 
-## 2:13–2:31 — GPT-5.6 integration
+## 2:17–2:32 — GPT-5.6 integration
 
 **Screen:** show the LLM audit page and, if available, a live-demo audit row.
 
@@ -66,7 +74,7 @@ Target duration: **2 minutes 45 seconds**. Keep the final upload below three min
 
 > In live mode, GPT-5.6 receives a secret-sanitized fifty-line evidence window and must return strict structured JSON. Sentinel records the model, response ID, prompt and schema versions, latency, retries, usage, and redaction metadata without storing original credentials.
 
-## 2:31–2:43 — Codex collaboration
+## 2:32–2:43 — Codex collaboration
 
 **Screen:** show GitHub pull requests, tests, and Build Week engineering log.
 
