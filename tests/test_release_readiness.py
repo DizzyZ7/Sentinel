@@ -38,3 +38,13 @@ def test_parse_bearer_challenge() -> None:
         "service": "ghcr.io",
         "scope": "repository:dizzyz7/sentinel:pull",
     }
+
+
+def test_public_image_check_reports_network_failure(monkeypatch) -> None:
+    from app.services import public_image
+
+    monkeypatch.setattr(public_image, "_request", lambda url, token=None: (0, {}, b"temporary DNS failure"))
+    result = public_image.check_public_image("dizzyz7/sentinel")
+    assert result["public"] is False
+    assert result["status"] == 0
+    assert "DNS" in result["detail"]
