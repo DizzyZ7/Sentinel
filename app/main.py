@@ -12,6 +12,7 @@ from app.models import Base
 from app.routers.demo import router as demo_router
 from app.routers.evidence import router as evidence_router
 from app.routers.health import router as health_router
+from app.routers.judge import router as judge_router
 from app.routers.llm_audit import router as llm_audit_router
 from app.routers.progress import router as progress_router
 from app.routers.scans import router as scans_router
@@ -39,6 +40,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(health_router)
 app.include_router(demo_router)
 app.include_router(evidence_router)
+app.include_router(judge_router)
 app.include_router(llm_audit_router)
 app.include_router(progress_router)
 app.include_router(scans_router)

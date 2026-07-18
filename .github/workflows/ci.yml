@@ -51,6 +51,17 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Check release readiness
+        run: python -m scripts.check_release --output /tmp/sentinel-release-readiness.json
+
+      - name: Upload release readiness
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-release-readiness
+          path: /tmp/sentinel-release-readiness.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Validate demo compose
         run: docker compose -f compose.demo.yml config --quiet
 

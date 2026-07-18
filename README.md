@@ -257,6 +257,23 @@ Key decisions and the implementation timeline are documented in [`docs/BUILD_LOG
 - [`docs/DEVPOST_SUBMISSION.md`](docs/DEVPOST_SUBMISSION.md)
 - [`docs/BUILD_LOG.md`](docs/BUILD_LOG.md)
 
+
+## Final submission preflight
+
+Sentinel includes a repository-side readiness checker that verifies version alignment, required judge files, committed eval results, prebuilt-image configuration, multi-architecture publishing, and release-tree hygiene.
+
+```bash
+python -m scripts.check_release
+```
+
+The four external steps—anonymous GHCR access, public video URL, Codex Session ID, and final Devpost review—remain explicitly manual. After completing them, run the strict check described in [`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md).
+
+Anonymous GHCR access can be probed without Docker credentials:
+
+```bash
+python -m scripts.check_public_image
+```
+
 ## License
 
 MIT

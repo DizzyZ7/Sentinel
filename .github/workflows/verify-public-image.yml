@@ -1,0 +1,29 @@
+name: verify-public-image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  anonymous-pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Verify anonymous registry access
+        run: python -m scripts.check_public_image
+
+      - name: Pull image without registry login
+        run: docker pull ghcr.io/dizzyz7/sentinel:latest
+
+      - name: Verify packaged judge fixture
+        run: >-
+          docker run --rm --entrypoint /bin/sh
+          ghcr.io/dizzyz7/sentinel:latest
+          -c 'test -f /app/demo/judge-demo/confirmed_sql.py'

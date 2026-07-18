@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070a0f">
+  <title>Sentinel judge view</title>
+  <style>
+    :root{color-scheme:dark;--bg:#070a0f;--card:#101722;--line:#263344;--text:#f6f8fb;--muted:#9aabba;--cyan:#55e6d7;--red:#ff6b7a;--amber:#ffcb6b;--green:#71e39a}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% 0,#142637 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,sans-serif}
+    main{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}a{color:var(--cyan);text-decoration:none}.top{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:22px}.eyebrow{font-size:11px;letter-spacing:.18em;color:var(--cyan);font-weight:800}.top h1{font-size:clamp(34px,6vw,68px);line-height:.98;margin:10px 0}.top p,.muted{color:var(--muted)}.score{min-width:150px;border:1px solid var(--line);background:#0b1119;padding:18px;border-radius:18px;text-align:center}.score strong{font-size:44px;display:block}.decision{border:1px solid var(--red);background:linear-gradient(135deg,rgba(255,107,122,.14),rgba(16,23,34,.96));border-radius:22px;padding:24px;display:grid;grid-template-columns:1.1fr .9fr;gap:24px}.decision.passed{border-color:var(--green);background:linear-gradient(135deg,rgba(113,227,154,.14),rgba(16,23,34,.96))}.decision h2{font-size:clamp(26px,4vw,44px);line-height:1.05;margin:8px 0}.action{border-left:1px solid var(--line);padding-left:24px}.action strong{display:block;font-size:18px;margin-top:8px}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}.metric,.chain article,.outcome,.finding{border:1px solid var(--line);background:rgba(16,23,34,.92);border-radius:16px;padding:16px}.metric strong{font-size:30px;display:block}.metric span,.metric small{color:var(--muted)}section{margin-top:24px}.section-title{display:flex;justify-content:space-between;align-items:end;gap:16px}.section-title h2{font-size:28px;margin:5px 0}.chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.chain article{position:relative}.chain b{display:block;margin-bottom:6px}.chain span{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#172334;color:var(--cyan);font-weight:800;margin-bottom:14px}.chain .blocked{border-color:var(--red)}.chain .passed{border-color:rgba(113,227,154,.65)}.outcomes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.outcome.good{border-color:var(--green)}.outcome.neutral{border-color:var(--cyan)}.outcome.bad{border-color:var(--red)}.outcome strong{display:block;font-size:20px;margin:8px 0}.findings{display:grid;gap:14px}.finding header{display:flex;justify-content:space-between;gap:16px}.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 9px;text-transform:uppercase;font-size:11px}.finding h3{font-size:22px;margin:8px 0}.finding code{color:var(--muted)}.finding .result{margin:14px 0;padding:12px;border-left:3px solid var(--amber);background:#0b1119}.result.good{border-color:var(--green)}.result.bad{border-color:var(--red)}.result.neutral{border-color:var(--cyan)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.button{border:1px solid var(--line);background:#111a26;color:var(--text);padding:9px 12px;border-radius:10px;cursor:pointer}.footer{margin-top:32px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted)}
+    @media(max-width:850px){.decision{grid-template-columns:1fr}.action{border-left:0;border-top:1px solid var(--line);padding:18px 0 0}.metrics,.chain{grid-template-columns:repeat(2,1fr)}.outcomes{grid-template-columns:1fr}.top{display:block}.score{margin-top:16px}.finding header{display:block}}
+    @media print{body{background:white;color:#111}main{width:100%;padding:0}.metric,.chain article,.outcome,.finding,.decision{background:white;color:#111;break-inside:avoid}.actions{display:none}}
+  </style>
+</head>
+<body>
+<main>
+  <a href="/">← New scan</a>
+  <header class="top">
+    <div><div class="eyebrow">SENTINEL · JUDGE DECISION VIEW</div><h1>Evidence before approval.</h1><p>{{ scan.file_count }} files · {{ scan.candidate_count }} candidates · {{ scan.finding_count }} confirmed · {{ scan.original_filename or scan.source_url }}</p></div>
+    <div class="score"><span>Risk score</span><strong>{{ scan.risk_score|round|int }}</strong><small>/ 100</small></div>
+  </header>
+
+  <section class="decision {{ 'passed' if gate.passed else 'blocked' }}">
+    <div><div class="eyebrow">CURRENT RELEASE DECISION</div><h2>{{ 'Release evidence is complete' if gate.passed else ('Release is blocked by failed proof' if metrics.get('proof_failed',0) else 'Release policy still has blockers') }}</h2><p>{{ gate.blockers|length }} unresolved policy blocker{{ '' if gate.blockers|length == 1 else 's' }}.</p></div>
+    <div class="action"><span class="muted">Recommended next action</span><strong>{% if gate.passed %}Export the Evidence Bundle or SARIF and continue the release process.{% elif metrics.get('proof_failed',0) %}Replace or reject patches where the original vulnerability signal remains.{% elif metrics.get('proof_passed',0) > metrics.get('approved',0) %}Review and explicitly approve the verified patch proposals.{% else %}Inspect the blockers and complete the missing evidence stage.{% endif %}</strong></div>
+  </section>
+
+  <section class="metrics">
+    <article class="metric"><span>Context reviewed</span><strong>{{ metrics.review_coverage }}%</strong><small>{{ metrics.get('reviewed',0) }}/{{ metrics.total }}</small></article>
+    <article class="metric"><span>Confirmed</span><strong>{{ metrics.get('confirmed',0) }}</strong><small>findings</small></article>
+    <article class="metric"><span>Dismissed</span><strong>{{ metrics.get('dismissed',0) }}</strong><small>candidates</small></article>
+    <article class="metric"><span>Valid patches</span><strong>{{ metrics.get('valid_patches',0) }}</strong><small>in escrow</small></article>
+    <article class="metric"><span>Proof passed / failed</span><strong>{{ metrics.get('proof_passed',0) }} / {{ metrics.get('proof_failed',0) }}</strong><small>non-executing</small></article>
+  </section>
+
+  <section>
+    <div class="section-title"><div><div class="eyebrow">AUDITABLE TRUST CHAIN</div><h2>Every layer has one limited responsibility</h2></div><a href="/scan/{{ scan.id }}/report?format=html">Full technical report →</a></div>
+    <div class="chain">
+      <article class="passed"><span>01</span><b>Deterministic triage</b><small>{{ scan.candidate_count }} evidence candidates.</small></article>
+      <article class="{{ 'passed' if metrics.get('reviewed',0)==metrics.total else '' }}"><span>02</span><b>Contextual review</b><small>{{ metrics.get('reviewed',0) }}/{{ metrics.total }} structured verdicts.</small></article>
+      <article class="{{ 'passed' if metrics.get('valid_patches',0)==metrics.get('confirmed',0) else 'blocked' }}"><span>03</span><b>Patch escrow</b><small>{{ metrics.get('valid_patches',0) }}/{{ metrics.get('confirmed',0) }} validated.</small></article>
+      <article class="{{ 'blocked' if metrics.get('proof_failed',0) else 'passed' }}"><span>04</span><b>Regression proof</b><small>{{ metrics.get('proof_passed',0) }} passed · {{ metrics.get('proof_failed',0) }} failed.</small></article>
+      <article class="{{ 'passed' if gate.passed else '' }}"><span>05</span><b>Human boundary</b><small>{{ metrics.get('approved',0) }} approved · gate {{ gate.state }}.</small></article>
+    </div>
+  </section>
+
+  {% if scan.original_filename and 'sentinel-judge-demo' in scan.original_filename %}
+  <section><div class="section-title"><div><div class="eyebrow">THE THREE-OUTCOME DEMO</div><h2>Judgment, not automatic patching</h2></div><span class="badge">{{ 'LIVE GPT-5.6' if 'live-gpt' in scan.original_filename else 'DETERMINISTIC REPLAY' }}</span></div>
+    <div class="outcomes"><article class="outcome good"><span>01 · VERIFIED FIX</span><strong>{{ metrics.get('proof_passed',0) }} patch removed the signal</strong><p>Validation and non-executing proof both passed.</p></article><article class="outcome neutral"><span>02 · FALSE POSITIVE</span><strong>{{ metrics.get('dismissed',0) }} candidate dismissed</strong><p>Context owns the final exploitability verdict.</p></article><article class="outcome bad"><span>03 · BLOCKED PATCH</span><strong>{{ metrics.get('proof_failed',0) }} patch failed proof</strong><p>The diff applies, but the vulnerability remains.</p></article></div>
+  </section>
+  {% endif %}
+
+  <section><div class="section-title"><div><div class="eyebrow">DETAILED EVIDENCE</div><h2>Findings and outcomes</h2></div><button class="button" onclick="window.print()">Print view</button></div>
+    <div class="findings">
+    {% for finding in findings %}
+      <article class="finding" id="finding-{{ finding.id }}"><header><div><span class="badge">{{ finding.severity or finding.llm_status }}</span><h3>{{ finding.title }}</h3><code>{{ finding.file_path }}:{{ finding.line }}</code></div><strong>{{ ((finding.confidence or finding.static_confidence)*100)|round|int }}%</strong></header>
+      {% if finding.confirmed and finding.verification and finding.verification.status=='passed' %}<div class="result good"><b>Verified fix.</b> The original deterministic signal disappeared in the isolated virtual patch copy.</div>{% elif finding.confirmed and finding.verification and finding.verification.status=='failed' %}<div class="result bad"><b>Patch blocked.</b> The diff applies, but the original signal remains.</div>{% elif finding.confirmed==false %}<div class="result neutral"><b>Candidate dismissed.</b> Contextual review did not confirm an attacker-controlled path.</div>{% else %}<div class="result"><b>Evidence incomplete.</b> More review, patch validation, or proof is required.</div>{% endif %}
+      <p>{{ finding.explanation or finding.static_rationale }}</p><div class="actions"><a class="button" href="/scan/{{ scan.id }}/findings/{{ finding.id }}/evidence-bundle">Evidence Bundle</a>{% if finding.verification %}<a class="button" href="/scan/{{ scan.id }}/findings/{{ finding.id }}/verification/artifact">Regression proof</a>{% endif %}{% if finding.patch_valid %}<a class="button" href="/scan/{{ scan.id }}/findings/{{ finding.id }}/patch">Patch</a>{% endif %}</div></article>
+    {% endfor %}
+    </div>
+  </section>
+  <div class="footer"><b>Sentinel does not ask you to trust AI.</b> It gives you evidence you can verify.</div>
+</main>
+</body>
+</html>

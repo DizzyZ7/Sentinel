@@ -81,10 +81,14 @@ The prebuilt container targets linux/amd64 and linux/arm64 and runs through Dock
 
 - [ ] GHCR `sentinel` package is public and anonymously pullable
 - [ ] clean-machine `compose.demo.yml` test completed
-- [ ] README screenshots or GIF added
+- [ ] decision brief and three-outcome report are visible in the final video
 - [ ] final video is public on YouTube and shorter than three minutes
 - [ ] voiceover explains the product, Codex workflow, and GPT-5.6 integration
 - [ ] repository URL and MIT license confirmed
 - [ ] primary `/feedback` Codex Session ID added
 - [ ] project entered in Developer Tools
 - [ ] submission sent before July 21, 2026 at 5:00 PM Pacific Time
+
+## Final repository preflight
+
+Use [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) and [`RECORDING_GUIDE.md`](RECORDING_GUIDE.md) and require `python -m scripts.check_release --strict` to exit with code 0 before submission.

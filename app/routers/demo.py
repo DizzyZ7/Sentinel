@@ -63,5 +63,5 @@ async def create_demo_scan(
         scan_id=scan.id,
         status=scan.status,
         status_url=f"/scan/{scan.id}",
-        report_url=f"/scan/{scan.id}/report",
+        report_url=f"/scan/{scan.id}/judge",
     )
