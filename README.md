@@ -367,3 +367,15 @@ curl 'http://localhost:8000/scan/<scan_id>/exception-aware-compliance?format=htm
 ```
 
 Approved exceptions produce a separate `accepted_risk` governance state, automatically stop applying at expiry or revocation, and are included in the Evidence Bundle integrity chain. See [`docs/SECURITY_EXCEPTIONS.md`](docs/SECURITY_EXCEPTIONS.md).
+
+
+## Security Ownership and SLA Enforcement
+
+Sentinel 1.6 assigns lineage-stable remediation clocks to confirmed and fail-closed findings. Severity deadlines are shortened by production exposure, public assets, restricted data, criticality, and deterministic overrides.
+
+```bash
+curl 'http://localhost:8000/scan/<scan_id>/security-sla?format=html'
+curl 'http://localhost:8000/scan/<scan_id>/security-debt?format=html'
+```
+
+Persistent findings keep their original owner and deadline across rescans. Exceptions do not pause the clock, and renewal cannot exceed the remediation deadline. See [`docs/SECURITY_SLA.md`](docs/SECURITY_SLA.md).

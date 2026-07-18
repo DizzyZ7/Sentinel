@@ -22,6 +22,7 @@ from app.schemas.risk_exception import (
     RiskExceptionDecisionRequest,
     RiskExceptionEventResponse,
     RiskExceptionList,
+    RiskExceptionRenewRequest,
     RiskExceptionResponse,
     RiskExceptionRevokeRequest,
 )
@@ -216,6 +217,7 @@ async def create_risk_exception(
     context: ProjectContextSnapshot | None,
     *,
     created_at: datetime | None = None,
+    latest_allowed_expiry: datetime | None = None,
 ) -> RiskException:
     moment = _now(created_at)
     expires_at = _utc(request.expires_at)
@@ -224,6 +226,11 @@ async def create_risk_exception(
         raise ValueError("Risk exceptions must remain valid for at least one hour")
     if duration > MAX_EXCEPTION_DURATION:
         raise ValueError("Risk exceptions cannot exceed 90 days")
+    if latest_allowed_expiry is not None and expires_at > _utc(latest_allowed_expiry):
+        raise ValueError(
+            "Risk exception expiry cannot exceed the remediation SLA deadline "
+            f"{_utc(latest_allowed_expiry).isoformat()}"
+        )
     scope_type, scope_value = _resolve_scope(request, list(scan.findings), context)
     root_scan_id = await _root_scan_id(db, scan)
     item = RiskException(
@@ -328,6 +335,86 @@ async def revoke_risk_exception(
     await db.flush()
     return item
 
+
+
+async def request_risk_exception_renewal(
+    db: AsyncSession,
+    item: RiskException,
+    request: RiskExceptionRenewRequest,
+    *,
+    requested_at: datetime | None = None,
+    latest_allowed_expiry: datetime | None = None,
+) -> RiskException:
+    moment = _now(requested_at)
+    if not exception_active_at(item, moment):
+        raise ValueError("Only active approved exceptions can be renewed")
+    expires_at = _utc(request.expires_at)
+    if expires_at <= _utc(item.expires_at):
+        raise ValueError("A renewal must extend beyond the current exception expiry")
+    duration = expires_at - moment
+    if duration < MIN_EXCEPTION_DURATION:
+        raise ValueError("Risk exception renewals must remain valid for at least one hour")
+    if duration > MAX_EXCEPTION_DURATION:
+        raise ValueError("Risk exception renewals cannot exceed 90 days from the request time")
+    if latest_allowed_expiry is not None and expires_at > _utc(latest_allowed_expiry):
+        raise ValueError(
+            "Risk exception renewal cannot exceed the remediation SLA deadline "
+            f"{_utc(latest_allowed_expiry).isoformat()}"
+        )
+    renewed = RiskException(
+        id=str(uuid.uuid4()),
+        root_scan_id=item.root_scan_id,
+        created_scan_id=item.created_scan_id,
+        scope_type=item.scope_type,
+        scope_value=item.scope_value,
+        title=f"Renewal: {item.title}"[:180],
+        justification=request.reason,
+        risk_owner=item.risk_owner,
+        requested_by=request.actor,
+        maximum_severity=item.maximum_severity,
+        expires_at=expires_at,
+        status="pending",
+        created_at=moment,
+    )
+    db.add(renewed)
+    await db.flush()
+    db.add_all(
+        [
+            RiskExceptionEvent(
+                id=str(uuid.uuid4()),
+                exception_id=item.id,
+                event_type="renewal_requested",
+                actor=request.actor,
+                reason=request.reason,
+                event_metadata=json.dumps(
+                    {"successor_exception_id": renewed.id, "requested_expiry": expires_at.isoformat()},
+                    sort_keys=True,
+                ),
+                created_at=moment,
+            ),
+            RiskExceptionEvent(
+                id=str(uuid.uuid4()),
+                exception_id=renewed.id,
+                event_type="requested",
+                actor=request.actor,
+                reason=request.reason,
+                event_metadata=json.dumps(
+                    {
+                        "renews_exception_id": item.id,
+                        "scope_type": item.scope_type,
+                        "scope_value": item.scope_value,
+                        "risk_owner": item.risk_owner,
+                        "maximum_severity": item.maximum_severity,
+                        "expires_at": expires_at.isoformat(),
+                    },
+                    sort_keys=True,
+                ),
+                created_at=moment,
+            ),
+        ]
+    )
+    await db.flush()
+    return renewed
 
 def _exception_matches(
     item: RiskException,

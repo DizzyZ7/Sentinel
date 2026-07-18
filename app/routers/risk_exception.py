@@ -18,6 +18,7 @@ from app.schemas.risk_exception import (
     RiskExceptionCreate,
     RiskExceptionDecisionRequest,
     RiskExceptionList,
+    RiskExceptionRenewRequest,
     RiskExceptionResponse,
     RiskExceptionRevokeRequest,
 )
@@ -29,6 +30,7 @@ from app.services.risk_exception import (
     decide_risk_exception,
     evaluate_exception_aware_compliance,
     list_root_exceptions,
+    request_risk_exception_renewal,
     revoke_risk_exception,
 )
 from app.services.security_policy import (
@@ -36,6 +38,7 @@ from app.services.security_policy import (
     evaluate_security_policy,
     load_policy_snapshot,
 )
+from app.services.security_sla import exception_deadline_for_scope, exception_deadline_for_target
 
 router = APIRouter(prefix="/scan", tags=["risk-exceptions"])
 templates = Jinja2Templates(directory="app/templates")
@@ -135,7 +138,12 @@ async def request_risk_exception(
     scan = await _load_scan(scan_id, db, finished=True)
     context = await load_context_snapshot(db, scan.id)
     try:
-        item = await create_risk_exception(db, scan, body, context)
+        deadline = await exception_deadline_for_target(
+            db, scan, target_type=body.target_type, target_value=body.target_value
+        )
+        item = await create_risk_exception(
+            db, scan, body, context, latest_allowed_expiry=deadline
+        )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     await db.commit()
@@ -183,6 +191,33 @@ async def revoke_exception(
     await db.commit()
     payload = await build_exception_list(db, scan)
     return next(entry for entry in payload.exceptions if entry.id == item.id)
+
+
+@router.post(
+    "/{scan_id}/risk-exceptions/{exception_id}/renew",
+    response_model=RiskExceptionResponse,
+    status_code=201,
+)
+async def renew_exception(
+    scan_id: str,
+    exception_id: str,
+    body: RiskExceptionRenewRequest,
+    db: AsyncSession = Depends(get_db),
+) -> RiskExceptionResponse:
+    scan = await _load_scan(scan_id, db, finished=True)
+    item = await _load_exception_for_scan(scan, exception_id, db)
+    try:
+        deadline = await exception_deadline_for_scope(
+            db, scan, scope_type=item.scope_type, scope_value=item.scope_value
+        )
+        renewed = await request_risk_exception_renewal(
+            db, item, body, latest_allowed_expiry=deadline
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await db.commit()
+    payload = await build_exception_list(db, scan)
+    return next(entry for entry in payload.exceptions if entry.id == renewed.id)
 
 
 @router.get("/{scan_id}/exception-aware-compliance", response_model=None)

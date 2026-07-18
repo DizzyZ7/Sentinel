@@ -50,6 +50,17 @@ class RiskExceptionRevokeRequest(BaseModel):
         return value.strip()
 
 
+class RiskExceptionRenewRequest(BaseModel):
+    actor: str = Field(min_length=2, max_length=180)
+    reason: str = Field(min_length=20, max_length=2000)
+    expires_at: datetime
+
+    @field_validator("actor", "reason")
+    @classmethod
+    def strip_text(cls, value: str) -> str:
+        return value.strip()
+
+
 class RiskExceptionEventResponse(BaseModel):
     id: str
     event_type: str

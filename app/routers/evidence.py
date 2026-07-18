@@ -16,6 +16,7 @@ from app.services.security_policy import (
     evaluate_security_policy,
     load_policy_snapshot,
 )
+from app.services.security_sla import build_security_debt_dashboard
 
 router = APIRouter(prefix="/scan", tags=["evidence"])
 
@@ -64,6 +65,9 @@ async def get_finding_evidence_bundle(
         if compliance is not None
         else None
     )
+    sla_dashboard = await build_security_debt_dashboard(
+        db, scan, governance=governance
+    )
     await db.commit()
     bundle = build_finding_evidence_bundle(
         scan,
@@ -71,6 +75,7 @@ async def get_finding_evidence_bundle(
         ordered_findings,
         security_policy_compliance=compliance,
         exception_governance=governance,
+        security_sla=sla_dashboard,
     )
     return JSONResponse(
         bundle.model_dump(mode="json"),

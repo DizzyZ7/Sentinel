@@ -9,6 +9,7 @@ from app.models.risk_intelligence import RiskIntelligence
 from app.models.scan import Scan
 from app.models.scan_event import ScanEvent
 from app.models.security_policy import ScanPolicyAssignment, SecurityPolicyProfile
+from app.models.security_sla import FindingSLA, ScanSLAAssignment, SecuritySLAProfile
 from app.models.verification import RegressionVerification
 
 __all__ = [
@@ -21,6 +22,9 @@ __all__ = [
     "RiskException",
     "RiskExceptionEvent",
     "RiskIntelligence",
+    "FindingSLA",
+    "ScanSLAAssignment",
+    "SecuritySLAProfile",
     "ScanPolicyAssignment",
     "SecurityPolicyProfile",
     "ScanContextAssignment",

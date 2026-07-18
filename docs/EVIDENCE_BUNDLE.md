@@ -45,3 +45,8 @@ Project-context provenance is included inside the risk-intelligence section: ass
 ## Risk-exception governance
 
 Sentinel 1.5 adds the exception-engine version and exception-aware governance result to the bundle. Applied exception IDs, scopes, expiry timestamps, and non-waivable reasons are covered by the section and canonical payload SHA-256 values. The raw policy-compliance and release-gate sections remain present and unchanged.
+
+
+## Security SLA section
+
+The bundle records the SLA engine version and complete security-debt dashboard, including immutable due dates, ownership, accepted-risk overlays, exception/SLA conflicts, and overdue blockers. The section is independently hashed and included in the canonical payload SHA-256.

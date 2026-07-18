@@ -89,3 +89,8 @@ Open **Project context** from the judge view. The built-in demo declares product
 ### Risk acceptance path
 
 Open **Risk exceptions** from the judge view. Create a finding-, rule-, or asset-scoped request, approve it with a different actor, and open **Governance**. The raw policy report remains blocked while the separate governance result becomes `accepted_risk`. Revoke the exception to show the blocker returning immediately.
+
+
+## Security debt
+
+Open **SLA profile** to show immutable ownership rules, then **Security debt** to demonstrate inherited deadlines, team routing, accepted-risk visibility, and overdue enforcement.
