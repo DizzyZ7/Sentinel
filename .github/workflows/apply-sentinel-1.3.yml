@@ -6,6 +6,11 @@ on:
     paths:
       - ".sentinel-1.3.part-*"
       - ".github/workflows/apply-sentinel-1.3.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".sentinel-1.3.part-*"
+      - ".github/workflows/apply-sentinel-1.3.yml"
 
 permissions:
   contents: write
@@ -15,8 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Check out branch
+      - name: Check out head branch
         uses: actions/checkout@v6
+        with:
+          ref: codex/sentinel-1.3
 
       - name: Verify and apply release payload
         shell: bash
