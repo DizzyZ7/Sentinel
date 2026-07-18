@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from app.schemas.decision import DecisionResponse
+from app.schemas.llm_audit import LLMReviewRunResponse
 from app.schemas.verification import RegressionVerificationResponse
 
 
@@ -31,3 +32,4 @@ class FindingResponse(BaseModel):
     patch_error: str | None
     decision: DecisionResponse | None
     verification: RegressionVerificationResponse | None
+    llm_review: LLMReviewRunResponse | None
