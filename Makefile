@@ -1,4 +1,4 @@
-.PHONY: up down logs test lint demo-archives
+.PHONY: up down logs test lint eval demo-archives
 
 up:
 	docker compose up --build -d
@@ -13,7 +13,10 @@ test:
 	pytest -q
 
 lint:
-	ruff check app tests
+	ruff check app tests scripts
+
+eval:
+	python -m scripts.run_evals --fail-on-regression
 
 demo-archives:
 	python scripts/create_demo_archives.py

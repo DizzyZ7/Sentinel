@@ -1,0 +1,347 @@
+{
+  "cases": [
+    {
+      "expected_rules": [
+        "PY_SQL_INTERPOLATION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_sql_interpolation.py",
+      "id": "py-sql-interpolation",
+      "language": "python",
+      "observed_rules": [
+        "PY_SQL_INTERPOLATION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "JS_SQL_INTERPOLATION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "js_sql_interpolation.js",
+      "id": "js-sql-interpolation",
+      "language": "javascript",
+      "observed_rules": [
+        "JS_SQL_INTERPOLATION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "JS_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_dynamic_execution.py",
+      "id": "py-dynamic-execution",
+      "language": "python",
+      "observed_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "js_dynamic_execution.js",
+      "id": "js-dynamic-execution",
+      "language": "javascript",
+      "observed_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "JS_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_COMMAND_INJECTION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_command_injection.py",
+      "id": "py-command-injection",
+      "language": "python",
+      "observed_rules": [
+        "PY_COMMAND_INJECTION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "JS_COMMAND_INJECTION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "js_command_injection.js",
+      "id": "js-command-injection",
+      "language": "javascript",
+      "observed_rules": [
+        "JS_COMMAND_INJECTION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "JS_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_PATH_TRAVERSAL"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_path_traversal.py",
+      "id": "py-path-traversal",
+      "language": "python",
+      "observed_rules": [
+        "PY_PATH_TRAVERSAL"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "expected_rules": [
+        "JS_PATH_TRAVERSAL"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "js_path_traversal.js",
+      "id": "js-path-traversal",
+      "language": "javascript",
+      "observed_rules": [
+        "JS_PATH_TRAVERSAL"
+      ],
+      "passed": true,
+      "true_positives": [
+        "JS_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_SSRF"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_ssrf.py",
+      "id": "py-ssrf",
+      "language": "python",
+      "observed_rules": [
+        "PY_SSRF"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_SSRF"
+      ]
+    },
+    {
+      "expected_rules": [
+        "JS_SSRF"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "js_ssrf.js",
+      "id": "js-ssrf",
+      "language": "javascript",
+      "observed_rules": [
+        "JS_SSRF"
+      ],
+      "passed": true,
+      "true_positives": [
+        "JS_SSRF"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_unsafe_deserialization.py",
+      "id": "py-unsafe-deserialization",
+      "language": "python",
+      "observed_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_unsafe_yaml.py",
+      "id": "py-unsafe-yaml",
+      "language": "python",
+      "observed_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "expected_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "py_sensitive_route_no_auth.py",
+      "id": "py-sensitive-route-no-auth",
+      "language": "python",
+      "observed_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "passed": true,
+      "true_positives": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "expected_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "js_sensitive_route_no_auth.js",
+      "id": "js-sensitive-route-no-auth",
+      "language": "javascript",
+      "observed_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "passed": true,
+      "true_positives": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "expected_rules": [
+        "SECRET_GENERIC"
+      ],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "generic_hardcoded_secret.py",
+      "id": "generic-hardcoded-secret",
+      "language": "python",
+      "observed_rules": [
+        "SECRET_GENERIC"
+      ],
+      "passed": true,
+      "true_positives": [
+        "SECRET_GENERIC"
+      ]
+    },
+    {
+      "expected_rules": [],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "safe_parameterized_sql.py",
+      "id": "safe-parameterized-sql",
+      "language": "python",
+      "observed_rules": [],
+      "passed": true,
+      "true_positives": []
+    },
+    {
+      "expected_rules": [],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "safe_subprocess_argv.py",
+      "id": "safe-subprocess-argv",
+      "language": "python",
+      "observed_rules": [],
+      "passed": true,
+      "true_positives": []
+    },
+    {
+      "expected_rules": [],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "safe_constant_fetch.js",
+      "id": "safe-constant-fetch",
+      "language": "javascript",
+      "observed_rules": [],
+      "passed": true,
+      "true_positives": []
+    },
+    {
+      "expected_rules": [],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "safe_python_authorized_route.py",
+      "id": "safe-python-authorized-route",
+      "language": "python",
+      "observed_rules": [],
+      "passed": true,
+      "true_positives": []
+    },
+    {
+      "expected_rules": [],
+      "false_negatives": [],
+      "false_positives": [],
+      "filename": "safe_javascript_authorized_route.js",
+      "id": "safe-javascript-authorized-route",
+      "language": "javascript",
+      "observed_rules": [],
+      "passed": true,
+      "true_positives": []
+    }
+  ],
+  "metrics": {
+    "case_count": 20,
+    "case_pass_rate": 1.0,
+    "failed_cases": 0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "negative_case_count": 5,
+    "passed_cases": 20,
+    "positive_case_count": 15,
+    "precision": 1.0,
+    "recall": 1.0,
+    "true_positives": 15
+  },
+  "per_rule": {
+    "JS_COMMAND_INJECTION": {"fn": 0, "fp": 0, "tp": 1},
+    "JS_DYNAMIC_EXECUTION": {"fn": 0, "fp": 0, "tp": 1},
+    "JS_PATH_TRAVERSAL": {"fn": 0, "fp": 0, "tp": 1},
+    "JS_SENSITIVE_ROUTE_NO_AUTH": {"fn": 0, "fp": 0, "tp": 1},
+    "JS_SQL_INTERPOLATION": {"fn": 0, "fp": 0, "tp": 1},
+    "JS_SSRF": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_COMMAND_INJECTION": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_DYNAMIC_EXECUTION": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_PATH_TRAVERSAL": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_SENSITIVE_ROUTE_NO_AUTH": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_SQL_INTERPOLATION": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_SSRF": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_UNSAFE_DESERIALIZATION": {"fn": 0, "fp": 0, "tp": 1},
+    "PY_YAML_UNSAFE_LOAD": {"fn": 0, "fp": 0, "tp": 1},
+    "SECRET_GENERIC": {"fn": 0, "fp": 0, "tp": 1}
+  },
+  "ruleset_version": "sentinel-rules-2026.07",
+  "schema_version": "sentinel-static-eval-v1",
+  "scope": "Curated deterministic rule-regression corpus. These metrics validate the included fixtures and must not be interpreted as general-world vulnerability detection accuracy."
+}
