@@ -1,4 +1,4 @@
-APP_VERSION = "0.7.0"
+APP_VERSION = "0.8.0"
 EVIDENCE_SCHEMA_VERSION = "sentinel-evidence-v1"
 STATIC_RULESET_VERSION = "sentinel-rules-2026.07"
 PATCH_VALIDATOR_VERSION = "sentinel-patch-v2"

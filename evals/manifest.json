@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "py-sql-interpolation",
+      "filename": "py_sql_interpolation.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "id": "js-sql-interpolation",
+      "filename": "js_sql_interpolation.js",
+      "language": "javascript",
+      "expected_rules": [
+        "JS_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "id": "py-dynamic-execution",
+      "filename": "py_dynamic_execution.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "id": "js-dynamic-execution",
+      "filename": "js_dynamic_execution.js",
+      "language": "javascript",
+      "expected_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "id": "py-command-injection",
+      "filename": "py_command_injection.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "id": "js-command-injection",
+      "filename": "js_command_injection.js",
+      "language": "javascript",
+      "expected_rules": [
+        "JS_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "id": "py-path-traversal",
+      "filename": "py_path_traversal.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "id": "js-path-traversal",
+      "filename": "js_path_traversal.js",
+      "language": "javascript",
+      "expected_rules": [
+        "JS_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "id": "py-ssrf",
+      "filename": "py_ssrf.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_SSRF"
+      ]
+    },
+    {
+      "id": "js-ssrf",
+      "filename": "js_ssrf.js",
+      "language": "javascript",
+      "expected_rules": [
+        "JS_SSRF"
+      ]
+    },
+    {
+      "id": "py-unsafe-deserialization",
+      "filename": "py_unsafe_deserialization.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ]
+    },
+    {
+      "id": "py-unsafe-yaml",
+      "filename": "py_unsafe_yaml.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "id": "py-sensitive-route-no-auth",
+      "filename": "py_sensitive_route_no_auth.py",
+      "language": "python",
+      "expected_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "id": "js-sensitive-route-no-auth",
+      "filename": "js_sensitive_route_no_auth.js",
+      "language": "javascript",
+      "expected_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "id": "generic-hardcoded-secret",
+      "filename": "generic_hardcoded_secret.py",
+      "language": "python",
+      "expected_rules": [
+        "SECRET_GENERIC"
+      ]
+    },
+    {
+      "id": "safe-parameterized-sql",
+      "filename": "safe_parameterized_sql.py",
+      "language": "python",
+      "expected_rules": []
+    },
+    {
+      "id": "safe-subprocess-argv",
+      "filename": "safe_subprocess_argv.py",
+      "language": "python",
+      "expected_rules": []
+    },
+    {
+      "id": "safe-constant-fetch",
+      "filename": "safe_constant_fetch.js",
+      "language": "javascript",
+      "expected_rules": []
+    },
+    {
+      "id": "safe-python-authorized-route",
+      "filename": "safe_python_authorized_route.py",
+      "language": "python",
+      "expected_rules": []
+    },
+    {
+      "id": "safe-javascript-authorized-route",
+      "filename": "safe_javascript_authorized_route.js",
+      "language": "javascript",
+      "expected_rules": []
+    }
+  ]
+}
