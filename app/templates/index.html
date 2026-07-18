@@ -11,7 +11,7 @@
     <section class="hero">
       <div class="eyebrow">GPT-5.6 · EVIDENCE-BOUND · HUMAN-IN-THE-LOOP</div>
       <h1>Sentinel turns suspicious code into reviewable evidence and safe patches.</h1>
-      <p>Upload a repository ZIP or provide a public Git URL. Sentinel performs deterministic triage, asks GPT-5.6 for a conservative verdict, checks every diff with <code>git apply --check</code>, and never changes source code automatically.</p>
+      <p>Upload a repository ZIP or provide a public Git URL. Sentinel performs deterministic triage, asks GPT-5.6 for a conservative verdict, checks every diff with <code>git apply --check</code>, proves the original source-to-sink signal disappears without executing repository code, and never changes source code automatically.</p>
     </section>
 
     <section class="panel">
@@ -36,7 +36,7 @@
     <section class="principles">
       <article><strong>01</strong><h2>Evidence first</h2><p>Regex and AST rules produce candidates, not verdicts.</p></article>
       <article><strong>02</strong><h2>Model as reviewer</h2><p>GPT-5.6 confirms exploitability and explains risk in plain language.</p></article>
-      <article><strong>03</strong><h2>Patch escrow</h2><p>Diffs are validated, exported and explicitly approved or rejected, never auto-applied.</p></article>
+      <article><strong>03</strong><h2>Proof before approval</h2><p>Diffs are validated, regression-checked without source execution, then explicitly approved or rejected.</p></article>
     </section>
   </main>
 <script>
