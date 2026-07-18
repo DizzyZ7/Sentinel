@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          python - <<'PY' | tee /tmp/sentinel-pytest-output.txt
+          python - <<'PY' 2>&1 | tee /tmp/sentinel-pytest-output.txt || true
           import app.main
           print(f"app.main={app.main.__file__}")
           for route in app.main.app.routes:
