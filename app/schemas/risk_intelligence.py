@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.policy import GateResponse
 
@@ -44,6 +44,11 @@ class RiskIntelligenceResponse(BaseModel):
     remediation_plan: list[str]
     estimated_effort: str
     scoring_factors: dict
+    context_profile_version: int | None = None
+    context_sha256: str | None = None
+    context_source: str = "heuristic"
+    context_asset_id: str | None = None
+    context_project_name: str | None = None
     created_at: datetime | None = None
 
 
@@ -71,11 +76,23 @@ class ExecutiveSummary(BaseModel):
     release_recommendation: str
 
 
+class ExecutiveContextSummary(BaseModel):
+    project_name: str | None = None
+    environment: str = "unknown"
+    profile_version: int | None = None
+    context_sha256: str | None = None
+    source: str = "heuristic"
+    declared_assets: int = 0
+    matched_assets: int = 0
+    compliance_frameworks: list[str] = Field(default_factory=list)
+
+
 class ExecutiveReport(BaseModel):
-    schema_version: str = "sentinel-executive-risk-v1"
+    schema_version: str = "sentinel-executive-risk-v2"
     scan_id: str
     generated_at: datetime
     engine_version: str
+    context: ExecutiveContextSummary
     gate: GateResponse
     summary: ExecutiveSummary
     top_risks: list[ExecutiveRiskItem]

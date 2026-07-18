@@ -79,3 +79,8 @@ Source-build fallback:
 cp .env.example .env
 docker compose up --build -d
 ```
+
+
+### Project context profile
+
+Open **Project context** from the judge view. The built-in demo declares production assets for the customer-data API and inventory query service. Previewing a changed profile recalculates the executive posture without altering evidence; saving creates a new immutable version for the next rescan.

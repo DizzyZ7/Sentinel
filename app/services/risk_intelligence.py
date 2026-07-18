@@ -8,14 +8,16 @@ from pathlib import PurePosixPath
 from app.models.finding import Finding
 from app.models.risk_intelligence import RiskIntelligence
 from app.schemas.risk_intelligence import (
+    ExecutiveContextSummary,
     ExecutiveReport,
     ExecutiveRiskItem,
     ExecutiveSummary,
     RiskIntelligenceResponse,
 )
 from app.services.policy import evaluate_gate
+from app.services.project_context import ProjectContextSnapshot, resolve_project_context
 
-RISK_ENGINE_VERSION = "sentinel-risk-intelligence-v1"
+RISK_ENGINE_VERSION = "sentinel-risk-intelligence-v2"
 
 SEVERITY_SCORE = {"critical": 100.0, "high": 82.0, "medium": 58.0, "low": 30.0}
 
@@ -290,26 +292,42 @@ def _remediation_multiplier(finding: Finding) -> float:
     return 1.0
 
 
-def build_risk_intelligence(finding: Finding) -> RiskIntelligence | None:
+def build_risk_intelligence(
+    finding: Finding,
+    context: ProjectContextSnapshot | None = None,
+) -> RiskIntelligence | None:
     if not finding.confirmed or not finding.severity:
         return None
 
     profile = _profile(finding.rule_id)
-    asset_name, asset_type, component, asset_importance = _asset(finding)
+    fallback_name, fallback_type, fallback_component, fallback_importance = _asset(finding)
+    resolved = resolve_project_context(
+        context,
+        file_path=finding.file_path,
+        fallback_asset_name=fallback_name,
+        fallback_asset_type=fallback_type,
+        fallback_component=fallback_component,
+        fallback_asset_importance=fallback_importance,
+        fallback_exposure=profile.exposure,
+        fallback_exposure_score=profile.exposure_score,
+        fallback_data_exposure=profile.data_exposure,
+        fallback_privilege_required=profile.privilege_required,
+        fallback_business_impact=profile.impact,
+    )
     technical = SEVERITY_SCORE[finding.severity]
     confidence = max(0.0, min(1.0, getattr(finding, "confidence", None) or getattr(finding, "static_confidence", 0.9)))
     inherent = round(
         technical * 0.4
         + profile.exploitability * 100 * 0.2
-        + profile.exposure_score * 100 * 0.15
-        + asset_importance * 100 * 0.15
+        + resolved.exposure_score * 100 * 0.15
+        + resolved.asset_importance * 100 * 0.15
         + confidence * 100 * 0.1,
         1,
     )
     multiplier = _remediation_multiplier(finding)
     residual = round(inherent * multiplier, 1)
     priority = _priority(residual)
-    impact_summary = f"{asset_name}: {profile.impact}"
+    impact_summary = f"{resolved.asset_name}: {resolved.business_impact}"
     recommended_action = profile.action
     if multiplier < 1:
         recommended_action = (
@@ -321,41 +339,53 @@ def build_risk_intelligence(finding: Finding) -> RiskIntelligence | None:
     return RiskIntelligence(
         finding_id=finding.id,
         engine_version=RISK_ENGINE_VERSION,
-        asset_name=asset_name,
-        asset_type=asset_type,
-        component=component,
+        asset_name=resolved.asset_name,
+        asset_type=resolved.asset_type,
+        component=resolved.component,
         attack_surface=profile.attack_surface,
-        exposure=profile.exposure,
-        data_exposure=profile.data_exposure,
-        privilege_required=profile.privilege_required,
+        exposure=resolved.exposure,
+        data_exposure=resolved.data_exposure,
+        privilege_required=resolved.privilege_required,
         blast_radius=profile.blast_radius,
         technical_score=technical,
         exploitability_score=round(profile.exploitability * 100, 1),
-        exposure_score=round(profile.exposure_score * 100, 1),
-        asset_importance_score=round(asset_importance * 100, 1),
+        exposure_score=round(resolved.exposure_score * 100, 1),
+        asset_importance_score=round(resolved.asset_importance * 100, 1),
         confidence_score=round(confidence * 100, 1),
         inherent_risk_score=inherent,
         residual_risk_score=residual,
         priority=priority,
         impact_summary=impact_summary,
-        business_impact=profile.impact,
+        business_impact=resolved.business_impact,
         recommended_action=recommended_action,
         remediation_plan=list(profile.remediation),
         estimated_effort=profile.effort,
         scoring_factors={
             "technical": technical,
             "exploitability": round(profile.exploitability * 100, 1),
-            "exposure": round(profile.exposure_score * 100, 1),
-            "asset_importance": round(asset_importance * 100, 1),
+            "exposure": round(resolved.exposure_score * 100, 1),
+            "asset_importance": round(resolved.asset_importance * 100, 1),
             "confidence": round(confidence * 100, 1),
             "remediation_multiplier": multiplier,
             "formula": "40% technical + 20% exploitability + 15% exposure + 15% asset + 10% confidence",
+            "context": {
+                "profile_id": context.profile_id if context else None,
+                "profile_version": context.version if context else None,
+                "context_sha256": context.context_sha256 if context else None,
+                "profile_source": context.source if context else "none",
+                "resolution_source": resolved.source,
+                "asset_id": resolved.asset_id,
+                "project_name": context.document.project_name if context else None,
+                "environment": context.document.environment if context else "unknown",
+            },
         },
     )
 
 
-def ensure_risk_intelligence(finding: Finding) -> RiskIntelligence | None:
-    generated = build_risk_intelligence(finding)
+def ensure_risk_intelligence(
+    finding: Finding, context: ProjectContextSnapshot | None = None
+) -> RiskIntelligence | None:
+    generated = build_risk_intelligence(finding, context)
     if generated is None:
         finding.risk_intelligence = None
         return None
@@ -396,11 +426,19 @@ def _risk_response(risk: RiskIntelligence) -> RiskIntelligenceResponse:
     return RiskIntelligenceResponse.model_validate(risk)
 
 
-def build_executive_report(scan_id: str, findings: list[Finding]) -> ExecutiveReport:
+def build_executive_report(
+    scan_id: str,
+    findings: list[Finding],
+    context: ProjectContextSnapshot | None = None,
+) -> ExecutiveReport:
     confirmed = [finding for finding in findings if finding.confirmed and finding.severity]
     risks: list[ExecutiveRiskItem] = []
     for finding in confirmed:
-        risk = finding.risk_intelligence or build_risk_intelligence(finding)
+        risk = (
+            build_risk_intelligence(finding, context)
+            if context
+            else (finding.risk_intelligence or build_risk_intelligence(finding))
+        )
         if risk is None:
             continue
         risks.append(
@@ -449,10 +487,22 @@ def build_executive_report(scan_id: str, findings: list[Finding]) -> ExecutiveRe
         top_attack_surface=attack_surfaces.most_common(1)[0][0] if attack_surfaces else None,
         release_recommendation=release_recommendation,
     )
+    matched_assets = sum(item.risk.context_source == "asset_profile" for item in risks)
+    context_summary = ExecutiveContextSummary(
+        project_name=context.document.project_name if context else None,
+        environment=context.document.environment if context else "unknown",
+        profile_version=context.version if context else None,
+        context_sha256=context.context_sha256 if context else None,
+        source=context.source if context else "heuristic",
+        declared_assets=len(context.document.assets) if context else 0,
+        matched_assets=matched_assets,
+        compliance_frameworks=context.document.compliance_frameworks if context else [],
+    )
     return ExecutiveReport(
         scan_id=scan_id,
         generated_at=datetime.now(UTC),
         engine_version=RISK_ENGINE_VERSION,
+        context=context_summary,
         gate=gate,
         summary=summary,
         top_risks=risks[:5],

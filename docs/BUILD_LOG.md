@@ -108,3 +108,13 @@ Before submitting, add the primary Codex `/feedback` Session ID to the Devpost f
 - executive JSON and responsive HTML report
 - Attack Graph v2 with asset and impact stages
 - Evidence Bundle integrity coverage for the risk section and engine version
+
+
+## Sentinel 1.3 — Project Context Profiles
+
+- Added immutable profile versions and per-scan assignments.
+- Added declared asset catalog with repository-relative path matching.
+- Added deterministic criticality, environment, exposure, and data-classification overrides.
+- Added initial-scan profile ingestion, automatic rescan inheritance, and built-in demo context.
+- Added JSON/HTML profile history, safe preview, and future-version editing.
+- Added context version/hash/source to Risk Intelligence and Executive Reports.

@@ -17,6 +17,7 @@ from app.routers.judge import router as judge_router
 from app.routers.lineage import router as lineage_router
 from app.routers.llm_audit import router as llm_audit_router
 from app.routers.progress import router as progress_router
+from app.routers.project_context import router as project_context_router
 from app.routers.risk_intelligence import router as risk_intelligence_router
 from app.routers.scans import router as scans_router
 
@@ -48,6 +49,7 @@ app.include_router(judge_router)
 app.include_router(lineage_router)
 app.include_router(llm_audit_router)
 app.include_router(progress_router)
+app.include_router(project_context_router)
 app.include_router(risk_intelligence_router)
 app.include_router(scans_router)
 

@@ -12,6 +12,12 @@ from app.services.comparison import build_scan_comparison
 from app.services.demo_fixture import create_judge_demo_archive
 from app.services.demo_reviewer import DemoReviewer
 from app.services.lineage import build_lineage_response, ensure_root_lineage, link_rescan
+from app.services.project_context import (
+    assign_latest_project_context,
+    demo_project_context,
+    ensure_project_context,
+    load_context_snapshot,
+)
 from app.services.rescan import prepare_rescan
 from app.services.scanner import process_scan
 
@@ -38,6 +44,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         session.add(baseline)
         await session.flush()
         await ensure_root_lineage(session, baseline)
+        await ensure_project_context(session, baseline, demo_project_context(), source="built_in")
         await session.commit()
 
     reviewer = DemoReviewer(settings)
@@ -47,6 +54,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
         session.add(current)
         await session.flush()
         await link_rescan(session, baseline, current)
+        await assign_latest_project_context(session, baseline, current)
         await session.commit()
     await process_scan("current", reviewer=reviewer, session_factory=factory, pipeline_settings=settings)
 
@@ -65,10 +73,19 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
             scans[scan_id] = result.scalar_one()
         comparison = build_scan_comparison(scans["baseline"], scans["current"])
         lineage = await build_lineage_response(session, scans["current"])
+        current_context = await load_context_snapshot(session, "current")
 
     assert scans["baseline"].status == "completed"
     assert scans["current"].status == "completed"
     assert sum(finding.risk_intelligence is not None for finding in scans["current"].findings) == 2
+    assert current_context is not None
+    assert current_context.source == "built_in"
+    assert current_context.version == 1
+    assert {
+        finding.risk_intelligence.context_asset_id
+        for finding in scans["current"].findings
+        if finding.risk_intelligence is not None
+    } == {"customer-data-api", "inventory-query-service"}
     assert comparison.summary.persistent == 3
     assert comparison.summary.introduced == 0
     assert comparison.summary.resolved == 0

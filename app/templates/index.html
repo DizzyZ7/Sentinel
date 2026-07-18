@@ -40,6 +40,11 @@
           <label for="git_url">Public repository URL</label>
           <input id="git_url" name="git_url" type="url" placeholder="https://github.com/org/repo.git">
         </div>
+        <details class="context-input">
+          <summary>Optional project context profile</summary>
+          <p>Declare production exposure, data sensitivity, and asset path patterns before the scan. The profile is hashed and assigned to this scan.</p>
+          <textarea id="project_context" name="project_context" placeholder='{"project_name":"Payments API","environment":"production","internet_exposed":true,"assets":[{"asset_id":"payments","name":"Payment service","asset_type":"financial_service","path_patterns":["payments/**"],"criticality":"critical","exposure":"public","data_classification":"restricted","data_types":["payment records"]}]}'></textarea>
+        </details>
         <button class="primary" type="submit">Start security review</button>
       </form>
 
@@ -164,6 +169,11 @@ form.addEventListener('submit', async event => {
     const url = document.querySelector('#git_url').value.trim();
     if (!url) return showError('Enter a public Git URL first');
     data.append('git_url', url);
+  }
+  const context = document.querySelector('#project_context').value.trim();
+  if (context) {
+    try { JSON.parse(context); } catch (error) { return showError(`Project context JSON is invalid: ${error.message}`); }
+    data.append('project_context', context);
   }
   await startRequest('/scan/repo', {body: data});
 });

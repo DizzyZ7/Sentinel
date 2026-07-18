@@ -60,6 +60,7 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
         "docs/BASELINE_COMPARISON.md",
         "docs/LINEAGE_AND_CI.md",
         "docs/RISK_INTELLIGENCE.md",
+    "docs/PROJECT_CONTEXT.md",
         "evals/results/latest.json",
         ".github/workflows/ci.yml",
         ".github/workflows/publish-image.yml",

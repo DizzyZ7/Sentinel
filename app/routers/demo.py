@@ -12,6 +12,7 @@ from app.services.demo_fixture import create_judge_demo_archive
 from app.services.demo_reviewer import DemoReviewer
 from app.services.lineage import ensure_root_lineage
 from app.services.progress import add_scan_event
+from app.services.project_context import demo_project_context, ensure_project_context
 from app.services.scanner import process_scan
 
 router = APIRouter(prefix="/scan", tags=["demo"])
@@ -47,6 +48,7 @@ async def create_demo_scan(
     db.add(scan)
     await db.flush()
     await ensure_root_lineage(db, scan)
+    await ensure_project_context(db, scan, demo_project_context(), source="built_in")
     await add_scan_event(
         db,
         scan.id,

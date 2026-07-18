@@ -220,3 +220,8 @@ The lineage read model exposes only scan metadata and eligibility, not source sn
 Inherent risk is calculated from technical severity, exploitability, exposure, asset importance, and review confidence. Residual risk applies a transparent multiplier based on patch validation, non-executing regression proof, and explicit human approval. The ordinary release gate remains authoritative and cannot be bypassed by an executive score.
 
 Attack Graph v2 adds affected-asset and business-impact nodes before the existing verdict, patch, proof, and human-decision chain. The executive report and Evidence Bundle consume the same persisted scoring record.
+
+
+## Project context boundary
+
+`ProjectContextProfile` stores immutable JSON documents per lineage root, while `ScanContextAssignment` binds each scan to one exact profile version. Risk Intelligence receives a read-only snapshot and persists the profile version, context hash, resolution source, and matched asset ID inside its scoring factors. Profile updates apply only to future rescans; preview uses an in-memory snapshot and never rewrites evidence.

@@ -16,6 +16,7 @@ from app.services.comparison import build_scan_comparison
 from app.services.demo_reviewer import DemoReviewer
 from app.services.lineage import link_rescan
 from app.services.progress import add_scan_event
+from app.services.project_context import assign_latest_project_context
 from app.services.rescan import RescanError, prepare_rescan
 from app.services.scanner import process_scan
 
@@ -61,6 +62,7 @@ async def create_rescan(
     db.add(scan)
     await db.flush()
     await link_rescan(db, baseline, scan)
+    await assign_latest_project_context(db, baseline, scan)
     await add_scan_event(
         db,
         scan.id,

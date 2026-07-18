@@ -204,3 +204,8 @@ pre { margin: 0; padding: 18px; overflow: auto; background: #05080d; color: #d5e
   .demo-panel { display: block; }
   .demo-actions { margin-top: 22px; min-width: 0; }
 }
+
+.context-input { margin: 8px 0 20px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.context-input summary { padding: 14px 16px; cursor: pointer; font-weight: 700; }
+.context-input p { margin: 0; padding: 0 16px 12px; color: var(--muted); }
+.context-input textarea { width: calc(100% - 32px); min-height: 180px; margin: 0 16px 16px; border: 1px solid var(--line); border-radius: 12px; background: #080c13; color: #fff; padding: 14px; font: 12px/1.5 ui-monospace, SFMono-Regular, monospace; resize: vertical; }

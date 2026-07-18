@@ -26,6 +26,7 @@ from app.services.llm_review import (
 )
 from app.services.patches import validate_and_store_patch
 from app.services.progress import add_scan_event
+from app.services.project_context import load_context_snapshot
 from app.services.regression import verify_patch_regression
 from app.services.reporting import calculate_risk_score
 from app.services.risk_intelligence import ensure_risk_intelligence
@@ -354,8 +355,9 @@ async def process_scan(
                 "Building reports and evaluating release policy.",
                 percent=92,
             )
+            context_snapshot = await load_context_snapshot(session, scan_id)
             for finding in scan.findings:
-                ensure_risk_intelligence(finding)
+                ensure_risk_intelligence(finding, context_snapshot)
             confirmed = [
                 finding.severity for finding in scan.findings if finding.confirmed and finding.severity is not None
             ]

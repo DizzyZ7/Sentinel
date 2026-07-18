@@ -41,6 +41,7 @@ from app.services.attack_paths import build_attack_path_response, to_mermaid
 from app.services.ingestion import IngestionError, save_upload, validate_git_url
 from app.services.lineage import ensure_root_lineage
 from app.services.policy import evaluate_gate
+from app.services.project_context import ensure_project_context, parse_project_context
 from app.services.regression import RegressionResult, verify_patch_regression
 from app.services.reporting import severity_summary
 from app.services.sarif import build_sarif
@@ -121,11 +122,17 @@ async def create_scan(
     background_tasks: BackgroundTasks,
     git_url: Annotated[str | None, Form()] = None,
     archive: Annotated[UploadFile | None, File()] = None,
+    project_context: Annotated[str | None, Form()] = None,
     db: AsyncSession = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> ScanCreated:
     if bool(git_url) == bool(archive):
         raise HTTPException(status_code=422, detail="Provide exactly one of git_url or archive")
+
+    try:
+        context_document = parse_project_context(project_context)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     scan_id = str(uuid.uuid4())
     workspace = settings.scans_dir / scan_id
@@ -160,6 +167,9 @@ async def create_scan(
     db.add(scan)
     await db.flush()
     await ensure_root_lineage(db, scan)
+    await ensure_project_context(
+        db, scan, context_document, source="declared" if context_document is not None else "inferred"
+    )
     await db.commit()
     background_tasks.add_task(process_scan, scan.id)
     return _scan_created(scan)
@@ -228,7 +238,7 @@ async def get_attack_paths(
         return PlainTextResponse(
             to_mermaid(payload),
             media_type="text/plain",
-            headers={"Content-Disposition": f'attachment; filename="sentinel-{scan.id}-attack-paths.mmd"'},
+            headers={"Content-Disposition": f'attachment; filename="sentinel-{scan.id}.mmd"'},
         )
     return payload
 
