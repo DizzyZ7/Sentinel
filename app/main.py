@@ -8,8 +8,10 @@ from fastapi.templating import Jinja2Templates
 from app.core.config import get_settings
 from app.core.database import engine
 from app.models import Base
+from app.routers.demo import router as demo_router
 from app.routers.health import router as health_router
 from app.routers.llm_audit import router as llm_audit_router
+from app.routers.progress import router as progress_router
 from app.routers.scans import router as scans_router
 
 settings = get_settings()
@@ -27,13 +29,15 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="Sentinel",
-    version="0.5.0",
+    version="0.6.0",
     description="Human-in-the-loop security review agent powered by GPT-5.6",
     lifespan=lifespan,
 )
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(health_router)
+app.include_router(demo_router)
 app.include_router(llm_audit_router)
+app.include_router(progress_router)
 app.include_router(scans_router)
 
 
