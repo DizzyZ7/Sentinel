@@ -44,6 +44,12 @@ def build_sarif(findings: Iterable[Finding]) -> dict[str, Any]:
                     "cwe": finding.cwe,
                     "patchValid": finding.patch_valid,
                     "humanDecision": decision,
+                    "regressionVerification": (
+                        finding.verification.status if finding.verification else "not_available"
+                    ),
+                    "sourceExecutedDuringVerification": (
+                        finding.verification.source_executed if finding.verification else False
+                    ),
                 },
             }
         )
@@ -57,7 +63,7 @@ def build_sarif(findings: Iterable[Finding]) -> dict[str, Any]:
                     "driver": {
                         "name": "Sentinel",
                         "informationUri": "https://github.com/DizzyZ7/Sentinel",
-                        "semanticVersion": "0.2.0",
+                        "semanticVersion": "0.4.0",
                         "rules": list(rules.values()),
                     }
                 },

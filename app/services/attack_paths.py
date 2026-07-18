@@ -132,8 +132,13 @@ def _path_status(finding: Finding) -> str:
         return "unreviewed"
     if not finding.confirmed:
         return "dismissed"
-    if finding.decision:
-        return "approved" if finding.decision.decision == "approved" else "rejected"
+    if finding.decision and finding.decision.decision == "rejected":
+        return "rejected"
+    verified = bool(finding.verification and finding.verification.status == "passed")
+    if finding.decision and finding.decision.decision == "approved" and verified:
+        return "approved"
+    if verified:
+        return "verified"
     if finding.patch_valid:
         return "patch_ready"
     return "exposed"
@@ -152,6 +157,17 @@ def _node_statuses(finding: Finding, path_status: str) -> dict[str, str]:
     if finding.confirmed:
         patch = "safe" if finding.patch_valid else "warning"
 
+    verification = "neutral"
+    if finding.verification:
+        verification = {
+            "passed": "safe",
+            "failed": "blocked",
+            "inconclusive": "warning",
+            "skipped": "warning",
+        }.get(finding.verification.status, "warning")
+    elif finding.patch_valid:
+        verification = "warning"
+
     human = "neutral"
     if path_status == "approved":
         human = "safe"
@@ -166,6 +182,7 @@ def _node_statuses(finding: Finding, path_status: str) -> dict[str, str]:
         "sink": "danger" if finding.confirmed else "neutral",
         "verdict": verdict,
         "patch": patch,
+        "verification": verification,
         "human": human,
     }
 
@@ -184,6 +201,17 @@ def _build_path(finding: Finding) -> AttackPath:
         if finding.patch_valid
         else finding.patch_error or "No validated patch is available yet."
     )
+    if finding.verification:
+        verification_detail = (
+            f"Regression proof {finding.verification.status}: "
+            f"before_detected={finding.verification.before_detected}, "
+            f"after_detected={finding.verification.after_detected}. "
+            "Repository source was not executed."
+        )
+    elif finding.patch_valid:
+        verification_detail = "The validated patch has not yet produced a regression proof."
+    else:
+        verification_detail = "Regression verification requires a validated patch."
     human_detail = (
         f"A reviewer recorded: {finding.decision.decision}."
         if finding.decision
@@ -227,6 +255,13 @@ def _build_path(finding: Finding) -> AttackPath:
             status=statuses["patch"],
         ),
         AttackPathNode(
+            id=f"{prefix}:verification",
+            stage="verification",
+            label="Regression proof",
+            detail=verification_detail,
+            status=statuses["verification"],
+        ),
+        AttackPathNode(
             id=f"{prefix}:human",
             stage="human",
             label="Human decision",
@@ -234,12 +269,10 @@ def _build_path(finding: Finding) -> AttackPath:
             status=statuses["human"],
         ),
     ]
+    edge_labels = ["observed as", "reaches", "reviewed by", "mitigated by", "proved by", "requires"]
     edges = [
-        AttackPathEdge(source=nodes[0].id, target=nodes[1].id, label="observed as"),
-        AttackPathEdge(source=nodes[1].id, target=nodes[2].id, label="reaches"),
-        AttackPathEdge(source=nodes[2].id, target=nodes[3].id, label="reviewed by"),
-        AttackPathEdge(source=nodes[3].id, target=nodes[4].id, label="mitigated by"),
-        AttackPathEdge(source=nodes[4].id, target=nodes[5].id, label="requires"),
+        AttackPathEdge(source=nodes[index].id, target=nodes[index + 1].id, label=label)
+        for index, label in enumerate(edge_labels)
     ]
     return AttackPath(
         id=f"path:{finding.id}",
@@ -265,6 +298,7 @@ def build_attack_path_response(scan_id: str, findings: Iterable[Finding]) -> Att
             total=len(paths),
             exposed=counts["exposed"],
             patch_ready=counts["patch_ready"],
+            verified=counts["verified"],
             approved=counts["approved"],
             rejected=counts["rejected"],
             dismissed=counts["dismissed"],
@@ -285,10 +319,10 @@ def to_mermaid(response: AttackPathResponse) -> str:
 
     lines = ["flowchart LR"]
     for index, path in enumerate(response.paths, start=1):
-        lines.append(f"  subgraph P{index}[\"{clean(path.title)}\"]")
+        lines.append(f'  subgraph P{index}["{clean(path.title)}"]')
         for node_index, node in enumerate(path.nodes):
             node_id = f"P{index}N{node_index}"
-            lines.append(f"    {node_id}[\"{clean(node.label)}\"]")
+            lines.append(f'    {node_id}["{clean(node.label)}"]')
         for edge_index, edge in enumerate(path.edges):
             lines.append(
                 f"    P{index}N{edge_index} -->|{clean(edge.label)}| P{index}N{edge_index + 1}"

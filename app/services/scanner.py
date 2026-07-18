@@ -11,9 +11,11 @@ from app.core.config import get_settings
 from app.core.database import SessionLocal
 from app.models.finding import Finding
 from app.models.scan import Scan
+from app.models.verification import RegressionVerification
 from app.services.ingestion import prepare_source
 from app.services.llm_review import LLMReviewer, ReviewRequest
 from app.services.patches import validate_and_store_patch
+from app.services.regression import verify_patch_regression
 from app.services.reporting import calculate_risk_score
 from app.services.static_analysis import Candidate, analyze_repository, surrounding_context
 
@@ -79,6 +81,28 @@ async def _review_one(
             finding.patch_valid = validation.valid
             finding.patch_path = str(validation.path) if validation.path else None
             finding.patch_error = validation.error
+            if validation.valid and validation.path:
+                proof = await verify_patch_regression(
+                    repository=repository,
+                    workspace=workspace,
+                    finding=finding,
+                    patch_path=validation.path,
+                )
+                finding.verification = RegressionVerification(
+                    finding_id=finding.id,
+                    status=proof.status,
+                    mode=proof.mode,
+                    verifier_version=proof.verifier_version,
+                    before_detected=proof.before_detected,
+                    after_detected=proof.after_detected,
+                    patch_applied=proof.patch_applied,
+                    source_executed=proof.source_executed,
+                    before_digest=proof.before_digest,
+                    after_digest=proof.after_digest,
+                    checks=proof.checks,
+                    artifact_path=str(proof.artifact_path) if proof.artifact_path else None,
+                    error=proof.error,
+                )
         elif output.confirmed:
             finding.patch_valid = False
             finding.patch_error = "Confirmed finding did not include a patch"

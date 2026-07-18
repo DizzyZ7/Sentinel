@@ -1,5 +1,6 @@
 import re
 import uuid
+from collections import Counter
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -26,13 +27,20 @@ from app.core.database import get_db
 from app.models.decision import ReviewDecision
 from app.models.finding import Finding
 from app.models.scan import Scan
+from app.models.verification import RegressionVerification
 from app.schemas.decision import DecisionRequest, DecisionResponse
 from app.schemas.finding import FindingResponse
 from app.schemas.policy import GateResponse
 from app.schemas.scan import ReportResponse, ScanCreated, ScanStatus, SeveritySummary
+from app.schemas.verification import (
+    RegressionVerificationResponse,
+    ScanVerificationResponse,
+    VerificationSummary,
+)
 from app.services.attack_paths import build_attack_path_response, to_mermaid
 from app.services.ingestion import IngestionError, save_upload, validate_git_url
 from app.services.policy import evaluate_gate
+from app.services.regression import RegressionResult, verify_patch_regression
 from app.services.reporting import severity_summary
 from app.services.sarif import build_sarif
 from app.services.scanner import process_scan
@@ -54,7 +62,10 @@ def _scan_created(scan: Scan) -> ScanCreated:
 def _scan_query(scan_id: str):
     return (
         select(Scan)
-        .options(selectinload(Scan.findings).selectinload(Finding.decision))
+        .options(
+            selectinload(Scan.findings).selectinload(Finding.decision),
+            selectinload(Scan.findings).selectinload(Finding.verification),
+        )
         .where(Scan.id == scan_id)
     )
 
@@ -67,6 +78,29 @@ async def _load_completed_scan(scan_id: str, db: AsyncSession) -> Scan:
     if scan.status not in {"completed", "failed"}:
         raise HTTPException(status_code=409, detail=f"Scan is still {scan.status}")
     return scan
+
+
+def _apply_verification_result(
+    finding: Finding,
+    proof: RegressionResult,
+) -> RegressionVerification:
+    verification = finding.verification
+    if verification is None:
+        verification = RegressionVerification(finding_id=finding.id)
+        finding.verification = verification
+    verification.status = proof.status
+    verification.mode = proof.mode
+    verification.verifier_version = proof.verifier_version
+    verification.before_detected = proof.before_detected
+    verification.after_detected = proof.after_detected
+    verification.patch_applied = proof.patch_applied
+    verification.source_executed = proof.source_executed
+    verification.before_digest = proof.before_digest
+    verification.after_digest = proof.after_digest
+    verification.checks = proof.checks
+    verification.artifact_path = str(proof.artifact_path) if proof.artifact_path else None
+    verification.error = proof.error
+    return verification
 
 
 def _ordered_findings(scan: Scan) -> list[Finding]:
@@ -211,6 +245,113 @@ async def get_release_gate(
     )
 
 
+@router.get("/{scan_id}/verifications", response_model=ScanVerificationResponse)
+async def get_verifications(
+    scan_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> ScanVerificationResponse:
+    scan = await _load_completed_scan(scan_id, db)
+    verifications = [finding.verification for finding in _ordered_findings(scan) if finding.verification]
+    counts = Counter(item.status for item in verifications)
+    return ScanVerificationResponse(
+        scan_id=scan.id,
+        summary=VerificationSummary(
+            total=len(verifications),
+            passed=counts["passed"],
+            failed=counts["failed"],
+            inconclusive=counts["inconclusive"],
+            skipped=counts["skipped"],
+        ),
+        verifications=[RegressionVerificationResponse.model_validate(item) for item in verifications],
+    )
+
+
+@router.get(
+    "/{scan_id}/findings/{finding_id}/verification",
+    response_model=RegressionVerificationResponse,
+)
+async def get_finding_verification(
+    scan_id: str,
+    finding_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> RegressionVerificationResponse:
+    result = await db.execute(
+        select(Finding)
+        .options(selectinload(Finding.verification))
+        .where(Finding.id == finding_id, Finding.scan_id == scan_id)
+    )
+    finding = result.scalar_one_or_none()
+    if not finding:
+        raise HTTPException(status_code=404, detail="Finding not found")
+    if not finding.verification:
+        raise HTTPException(status_code=404, detail="Regression verification not available")
+    return RegressionVerificationResponse.model_validate(finding.verification)
+
+
+@router.get(
+    "/{scan_id}/findings/{finding_id}/verification/artifact",
+    response_class=FileResponse,
+)
+async def download_verification_artifact(
+    scan_id: str,
+    finding_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> FileResponse:
+    result = await db.execute(
+        select(Finding)
+        .options(selectinload(Finding.verification))
+        .where(Finding.id == finding_id, Finding.scan_id == scan_id)
+    )
+    finding = result.scalar_one_or_none()
+    if not finding or not finding.verification or not finding.verification.artifact_path:
+        raise HTTPException(status_code=404, detail="Verification artifact not found")
+    scan = await db.get(Scan, scan_id)
+    assert scan is not None
+    workspace = Path(scan.workspace_path).resolve()
+    artifact = Path(finding.verification.artifact_path).resolve()
+    if not artifact.is_relative_to(workspace) or not artifact.is_file():
+        raise HTTPException(status_code=409, detail="Verification artifact is unavailable")
+    return FileResponse(
+        artifact,
+        media_type="application/json",
+        filename=f"sentinel-regression-{finding.id}.json",
+    )
+
+
+@router.post(
+    "/{scan_id}/findings/{finding_id}/verification/recheck",
+    response_model=RegressionVerificationResponse,
+)
+async def recheck_finding_verification(
+    scan_id: str,
+    finding_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> RegressionVerificationResponse:
+    result = await db.execute(
+        select(Finding)
+        .options(selectinload(Finding.verification))
+        .where(Finding.id == finding_id, Finding.scan_id == scan_id)
+    )
+    finding = result.scalar_one_or_none()
+    if not finding:
+        raise HTTPException(status_code=404, detail="Finding not found")
+    if not finding.patch_valid or not finding.patch_path:
+        raise HTTPException(status_code=409, detail="A validated patch is required for regression verification")
+    scan = await db.get(Scan, scan_id)
+    assert scan is not None
+    workspace = Path(scan.workspace_path).resolve()
+    repository = workspace / "repo"
+    patch_path = Path(finding.patch_path).resolve()
+    if not patch_path.is_relative_to(workspace) or not patch_path.is_file():
+        raise HTTPException(status_code=409, detail="Patch artifact is unavailable")
+    proof = await verify_patch_regression(repository, workspace, finding, patch_path)
+    verification = _apply_verification_result(finding, proof)
+    db.add(verification)
+    await db.commit()
+    await db.refresh(verification)
+    return RegressionVerificationResponse.model_validate(verification)
+
+
 @router.get("/{scan_id}/findings/{finding_id}/patch", response_class=FileResponse)
 async def download_patch(scan_id: str, finding_id: str, db: AsyncSession = Depends(get_db)) -> FileResponse:
     result = await db.execute(
@@ -247,7 +388,7 @@ async def decide_finding(
 ) -> DecisionResponse:
     result = await db.execute(
         select(Finding)
-        .options(selectinload(Finding.decision))
+        .options(selectinload(Finding.decision), selectinload(Finding.verification))
         .where(Finding.id == finding_id, Finding.scan_id == scan_id)
     )
     finding = result.scalar_one_or_none()
@@ -257,6 +398,13 @@ async def decide_finding(
         raise HTTPException(status_code=409, detail="Only confirmed findings require a human decision")
     if payload.decision == "approved" and not finding.patch_valid:
         raise HTTPException(status_code=409, detail="Only a validated patch can be approved")
+    if payload.decision == "approved" and (
+        not finding.verification or finding.verification.status != "passed"
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail="Only a patch with a passed non-executing regression proof can be approved",
+        )
 
     decision = finding.decision
     if decision is None:

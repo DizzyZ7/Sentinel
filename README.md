@@ -134,7 +134,7 @@ The MVP uses FastAPI background tasks and one API worker. A production version s
 
 ## Human review and CI export
 
-Sentinel 0.3 formalizes the human boundary and turns each finding into an inspectable attack path:
+Sentinel 0.4 formalizes the human boundary, turns each finding into an inspectable attack path, and proves proposed remediations without executing repository source:
 
 ```bash
 # Download a validated patch without applying it
@@ -155,11 +155,12 @@ Additional deterministic candidates cover request-derived OS commands, filesyste
 
 ## Attack paths and release policy
 
-Every candidate is represented as a six-stage evidence chain:
+Every candidate is represented as a seven-stage evidence chain:
 
 ```text
 trust-boundary source → deterministic triage → dangerous sink
-                      → GPT-5.6 verdict → patch escrow → human decision
+                      → GPT-5.6 verdict → patch escrow
+                      → regression proof → human decision
 ```
 
 ```bash
@@ -173,7 +174,34 @@ curl -o attack-paths.mmd 'http://localhost:8000/scan/<scan_id>/attack-paths?form
 curl 'http://localhost:8000/scan/<scan_id>/gate?block_on=high&fail_closed_on_unreviewed=true'
 ```
 
-The release gate treats an in-scope finding as remediated only when the model confirmed it, the patch passed validation, and a human explicitly approved it. High-confidence static candidates whose deep review failed or was skipped block the gate by default.
+The release gate treats an in-scope finding as remediated only when the model confirmed it, the patch passed validation, the non-executing regression proof passed, and a human explicitly approved it. High-confidence static candidates whose deep review failed or was skipped block the gate by default.
+
+## Non-executing regression proof
+
+For every validated patch, Sentinel creates an isolated one-file copy, applies the unified diff there, and re-runs the deterministic analyzer around the changed hunk. Repository code is never imported or executed, dependencies are never installed, and network access is not required.
+
+The proof records:
+
+- SHA-256 of the reviewed file before and after the virtual patch
+- whether the original candidate was reproduced
+- whether the same rule remains near the patched hunk
+- patch application and scope checks
+- an explicit `source_executed=false` safety claim
+- a downloadable JSON artifact for audit or demos
+
+```bash
+# All regression proofs for a scan
+curl http://localhost:8000/scan/<scan_id>/verifications
+
+# One proof and its downloadable artifact
+curl http://localhost:8000/scan/<scan_id>/findings/<finding_id>/verification
+curl -OJ http://localhost:8000/scan/<scan_id>/findings/<finding_id>/verification/artifact
+
+# Safely rebuild the proof after a verifier update
+curl -X POST http://localhost:8000/scan/<scan_id>/findings/<finding_id>/verification/recheck
+```
+
+Approval is fail-closed: a reviewer cannot approve a patch until the regression proof status is `passed`. This is a structural proof that the original deterministic source-to-sink signal disappeared; it does not claim that arbitrary application behavior was executed or fully tested.
 
 ## Build Week narrative
 

@@ -20,6 +20,7 @@
         <a href="/scan/{{ report.id }}/attack-paths">Attack paths JSON</a>
         <a href="/scan/{{ report.id }}/attack-paths?format=mermaid">Mermaid graph</a>
         <a href="/scan/{{ report.id }}/gate">Release gate JSON</a>
+        <a href="/scan/{{ report.id }}/verifications">Regression proofs JSON</a>
       </nav>
     </div>
     <div class="score" data-score="{{ report.risk_score }}">
@@ -44,7 +45,7 @@
       <h2>{{ 'Release gate passed' if gate.passed else 'Release gate blocked' }}</h2>
       <p>
         {% if gate.passed %}
-        All findings at or above the policy threshold have a validated patch and explicit human approval.
+        All findings at or above the policy threshold have a validated patch, a passed regression proof, and explicit human approval.
         {% else %}
         {{ gate.blockers|length }} blocker{{ '' if gate.blockers|length == 1 else 's' }} must be resolved before release.
         {% endif %}
@@ -68,7 +69,7 @@
 
   <section class="trust-boundary">
     <strong>Human-in-the-loop boundary</strong>
-    <p>Approval records intent only. Sentinel never applies a patch to the scanned repository.</p>
+    <p>Approval records intent only. Sentinel never applies a patch to the scanned repository and never executes repository source during regression verification.</p>
   </section>
 
   <section class="attack-path-section">
@@ -80,6 +81,7 @@
       <div class="path-summary">
         <span>{{ attack_paths.summary.exposed }} exposed</span>
         <span>{{ attack_paths.summary.patch_ready }} patch-ready</span>
+        <span>{{ attack_paths.summary.verified }} verified</span>
         <span>{{ attack_paths.summary.approved }} approved</span>
         <span>{{ attack_paths.summary.dismissed }} dismissed</span>
       </div>
@@ -136,16 +138,53 @@
         <div><dt>CWE</dt><dd>{{ finding.cwe }}</dd></div>
         <div><dt>CVSS-like score</dt><dd>{{ finding.cvss_score }}</dd></div>
         <div><dt>Patch check</dt><dd>{{ 'valid' if finding.patch_valid else 'needs review' }}</dd></div>
+        <div><dt>Regression proof</dt><dd>{{ finding.verification.status if finding.verification else 'not available' }}</dd></div>
       </dl>
       <h3>Attack scenario</h3><p>{{ finding.attack_scenario }}</p>
       <h3>Recommended change</h3><p>{{ finding.recommendation }}</p>
       {% if finding.unified_diff %}
       <details><summary>Review proposed patch</summary><pre>{{ finding.unified_diff }}</pre></details>
       {% endif %}
+      {% if finding.verification %}
+      <section class="verification-card verification-{{ finding.verification.status }}">
+        <header>
+          <div>
+            <span class="eyebrow">NON-EXECUTING REGRESSION PROOF</span>
+            <h3>{{ finding.verification.status|upper }}</h3>
+          </div>
+          <span class="verification-mode">{{ finding.verification.mode|replace('_', ' ') }}</span>
+        </header>
+        <p>
+          Candidate before patch: {{ finding.verification.before_detected }} ·
+          after patch: {{ finding.verification.after_detected }} ·
+          repository source executed: {{ finding.verification.source_executed }}
+        </p>
+        <div class="verification-checks">
+          {% for check in finding.verification.checks %}
+          <div class="verification-check check-{{ check.status }}">
+            <strong>{{ check.name|replace('_', ' ') }}</strong>
+            <span>{{ check.detail }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="verification-actions">
+          <a class="secondary" href="/scan/{{ report.id }}/findings/{{ finding.id }}/verification/artifact">Download proof</a>
+          <button class="verification-button secondary" data-finding="{{ finding.id }}">Recheck proof</button>
+        </div>
+      </section>
+      {% elif finding.patch_valid %}
+      <section class="verification-card verification-inconclusive">
+        <h3>Regression proof unavailable</h3>
+        <p>The patch cannot be approved until Sentinel proves that the original deterministic path disappears.</p>
+        <button class="verification-button secondary" data-finding="{{ finding.id }}">Run verification</button>
+      </section>
+      {% endif %}
       <div class="decision-panel" data-finding="{{ finding.id }}">
         {% if finding.patch_valid %}
         <a class="secondary" href="/scan/{{ report.id }}/findings/{{ finding.id }}/patch">Download patch</a>
-        <button class="decision-button approve" data-decision="approved">Approve patch</button>
+        {% endif %}
+        {% if finding.patch_valid and finding.verification and finding.verification.status == 'passed' %}
+        <button class="decision-button approve" data-decision="approved">Approve verified patch</button>
         {% endif %}
         <button class="decision-button reject" data-decision="rejected">Reject</button>
         <span class="decision-state">
@@ -162,6 +201,24 @@
   </section>
 </main>
 <script>
+document.querySelectorAll('.verification-button').forEach(button => {
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    button.textContent = 'Verifying without execution…';
+    const findingId = button.dataset.finding;
+    const response = await fetch(`/scan/{{ report.id }}/findings/${findingId}/verification/recheck`, {
+      method: 'POST'
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      button.disabled = false;
+      button.textContent = error.detail || 'Verification failed';
+      return;
+    }
+    window.location.reload();
+  });
+});
+
 document.querySelectorAll('.decision-button').forEach(button => {
   button.addEventListener('click', async () => {
     const panel = button.closest('.decision-panel');
