@@ -12,6 +12,8 @@ Traditional SAST is noisy; unconstrained AI code review can hallucinate. Sentine
 2. **Evidence-bound GPT-5.6 review** — the model receives the finding plus 50 surrounding lines and must return strict JSON.
 3. **Executable patch verification** — every diff is path-restricted and checked against the repository.
 4. **Human-in-the-loop boundary** — patches are stored, never applied automatically.
+5. **Secret-safe model context** — credential-like values are replaced with typed placeholders before GPT-5.6 receives source evidence.
+6. **Auditable model calls** — every review records model, response ID, prompt/schema versions, retries, latency, token usage, and redaction metadata.
 
 ## Run in 3 commands
 
@@ -75,7 +77,11 @@ Isolated workspace ── zip-slip, size and host checks
 Python AST + JS/TS regex pre-filter
       │ candidates only
       ▼
+Secret-safe context sanitizer
+      │ typed placeholders, preserved line numbers
+      ▼
 GPT-5.6 structured review (strict JSON)
+      │ model call audit trail
       │
       ├── rejected candidate
       └── confirmed finding + unified diff
@@ -119,6 +125,9 @@ Do not deploy these applications.
 - generated diff restricted to the reviewed file
 - `git apply --check` only; no automatic patch application
 - API keys loaded only from environment variables
+- secret-like values redacted before external model transmission
+- no original secret values stored in LLM audit records
+- model calls tracked by response ID, prompt/schema version, latency, retries, and usage
 
 ## Development
 
@@ -134,7 +143,7 @@ The MVP uses FastAPI background tasks and one API worker. A production version s
 
 ## Human review and CI export
 
-Sentinel 0.4 formalizes the human boundary, turns each finding into an inspectable attack path, and proves proposed remediations without executing repository source:
+Sentinel 0.5 formalizes the human boundary, turns each finding into an inspectable attack path, and proves proposed remediations without executing repository source:
 
 ```bash
 # Download a validated patch without applying it
@@ -203,9 +212,22 @@ curl -X POST http://localhost:8000/scan/<scan_id>/findings/<finding_id>/verifica
 
 Approval is fail-closed: a reviewer cannot approve a patch until the regression proof status is `passed`. This is a structural proof that the original deterministic source-to-sink signal disappeared; it does not claim that arbitrary application behavior was executed or fully tested.
 
+## Secret-safe GPT-5.6 audit trail
+
+Sentinel 0.5 sanitizes the 50-line evidence window before calling the OpenAI Responses API. Private keys, common provider tokens, bearer tokens, JWTs, credential assignments, and connection-string passwords are replaced with typed placeholders while preserving line numbers and code structure.
+
+```bash
+# Review-level operational audit for a completed scan
+curl http://localhost:8000/scan/<scan_id>/llm-reviews
+```
+
+The audit stores the model and response ID, prompt/schema versions, SHA-256 of the sanitized context, retry count, latency, token usage, and typed redaction counts. It never stores original secret values or the full transmitted source context.
+
+The complete trust model and module boundaries are documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
 ## Build Week narrative
 
-Sentinel was built iteratively with Codex in four working slices: ingestion, deterministic triage, GPT-5.6 review with patch escrow, and the report experience. The product thesis is simple: **AI should not silently rewrite critical code; it should produce evidence that a human can safely approve.**
+Sentinel was built iteratively with Codex in focused working slices: ingestion, deterministic triage, GPT-5.6 review with patch escrow, attack-path reporting, non-executing regression proof, and secret-safe model auditing. The product thesis is simple: **AI should not silently rewrite critical code; it should produce evidence that a human can safely approve.**
 
 ## License
 
