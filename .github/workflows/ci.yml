@@ -35,7 +35,13 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          pytest -q 2>&1 | tee /tmp/sentinel-pytest-output.txt
+          python - <<'PY' | tee /tmp/sentinel-pytest-output.txt
+          import app.main
+          print(f"app.main={app.main.__file__}")
+          for route in app.main.app.routes:
+              print(route.path, sorted(getattr(route, "methods", set())))
+          PY
+          pytest -q 2>&1 | tee -a /tmp/sentinel-pytest-output.txt
 
       - name: Upload pytest diagnostics
         if: always()
