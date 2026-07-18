@@ -151,3 +151,27 @@ pre { margin: 0; padding: 18px; overflow: auto; background: #05080d; color: #d5e
   .path-summary { justify-content: flex-start; margin-top: 14px; }
   .gate-count { text-align: left; margin-top: 18px; }
 }
+
+.attack-path.status-verified { border-color: #327160; box-shadow: inset 0 0 0 1px rgba(140, 247, 203, .08); }
+.verification-card { margin-top: 20px; border: 1px solid var(--line); border-radius: 16px; padding: 18px; background: #0a1018; }
+.verification-card.verification-passed { border-color: #28584d; background: linear-gradient(130deg, #0b1d19, #0a1118); }
+.verification-card.verification-failed { border-color: #6d2933; background: linear-gradient(130deg, #251116, #0f1117); }
+.verification-card.verification-inconclusive { border-color: #66542d; background: linear-gradient(130deg, #1d190e, #0f1117); }
+.verification-card > header { display: flex; justify-content: space-between; gap: 18px; align-items: start; }
+.verification-card h3 { margin: 4px 0 0; font-size: 24px; }
+.verification-mode { border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.verification-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.verification-check { display: grid; gap: 5px; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.verification-check strong { text-transform: uppercase; letter-spacing: .08em; font-size: 10px; }
+.verification-check span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.verification-check.check-passed { border-color: #28584d; }
+.verification-check.check-failed { border-color: #6d2933; }
+.verification-check.check-inconclusive { border-color: #66542d; }
+.verification-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.verification-button:disabled { opacity: .65; cursor: progress; }
+
+@media (max-width: 760px) {
+  .verification-card > header { display: block; }
+  .verification-mode { display: inline-block; margin-top: 10px; }
+  .verification-checks { grid-template-columns: 1fr; }
+}
