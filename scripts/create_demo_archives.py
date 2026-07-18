@@ -6,7 +6,7 @@ DEMO = ROOT / "demo"
 ARCHIVES = DEMO / "archives"
 ARCHIVES.mkdir(exist_ok=True)
 
-for source in ("python-vulnerable", "node-vulnerable", "mixed-vulnerable"):
+for source in ("python-vulnerable", "node-vulnerable", "mixed-vulnerable", "judge-demo"):
     source_dir = DEMO / source
     archive_path = ARCHIVES / f"{source}.zip"
     with ZipFile(archive_path, "w", ZIP_DEFLATED) as archive:
