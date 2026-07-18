@@ -37,3 +37,6 @@ GET /scan/{scan_id}/findings/{finding_id}/evidence-bundle
 ```
 
 The response is downloadable JSON and includes the canonical payload digest in the `X-Sentinel-Evidence-SHA256` header.
+
+
+Project-context provenance is included inside the risk-intelligence section: assigned profile version, context SHA-256, profile source, resolution source, project name, and matched asset ID. The full mutable profile catalog is not duplicated; its canonical hash provides the audit link to the immutable profile record.

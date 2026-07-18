@@ -92,3 +92,8 @@ The asset and impact nodes are derived from the same versioned risk engine used 
 - Effort ranges are prioritization hints, not delivery commitments.
 - The model does not claim financial-loss estimates.
 - Repository file renames and organization-specific data classifications require explicit external context in a future version.
+
+
+## Project context in engine v2
+
+Sentinel risk engine v2 accepts an immutable `ProjectContextSnapshot`. Explicit assets override the heuristic asset, exposure, data classification, privilege requirement, and business-impact inputs. Every persisted risk row records the profile version, context SHA-256, profile source, resolution source, and selected asset ID in `scoring_factors.context`. If no declared profile is assigned, the v1 heuristic remains the fallback.

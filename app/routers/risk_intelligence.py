@@ -10,6 +10,7 @@ from app.core.database import get_db
 from app.models.finding import Finding
 from app.models.scan import Scan
 from app.schemas.risk_intelligence import ExecutiveReport, RiskIntelligenceResponse
+from app.services.project_context import load_context_snapshot
 from app.services.risk_intelligence import build_executive_report, build_risk_intelligence
 
 router = APIRouter(prefix="/scan", tags=["risk-intelligence"])
@@ -44,9 +45,10 @@ async def get_scan_risk_intelligence(
     db: AsyncSession = Depends(get_db),
 ) -> list[RiskIntelligenceResponse]:
     scan = await _load_finished_scan(scan_id, db)
+    context = await load_context_snapshot(db, scan.id)
     rows = []
     for finding in scan.findings:
-        risk = finding.risk_intelligence or build_risk_intelligence(finding)
+        risk = finding.risk_intelligence or build_risk_intelligence(finding, context)
         if risk is not None:
             rows.append(RiskIntelligenceResponse.model_validate(risk))
     return sorted(rows, key=lambda item: (-item.residual_risk_score, item.finding_id))
@@ -65,7 +67,8 @@ async def get_finding_risk_intelligence(
     finding = next((item for item in scan.findings if item.id == finding_id), None)
     if not finding:
         raise HTTPException(status_code=404, detail="Finding not found")
-    risk = finding.risk_intelligence or build_risk_intelligence(finding)
+    context = await load_context_snapshot(db, scan.id)
+    risk = finding.risk_intelligence or build_risk_intelligence(finding, context)
     if risk is None:
         raise HTTPException(status_code=409, detail="Risk intelligence requires a confirmed finding")
     return RiskIntelligenceResponse.model_validate(risk)
@@ -79,7 +82,8 @@ async def get_executive_report(
     db: AsyncSession = Depends(get_db),
 ):
     scan = await _load_finished_scan(scan_id, db)
-    report = build_executive_report(scan.id, list(scan.findings))
+    context = await load_context_snapshot(db, scan.id)
+    report = build_executive_report(scan.id, list(scan.findings), context)
     wants_html = format == "html" or (format is None and "text/html" in request.headers.get("accept", ""))
     if wants_html:
         return templates.TemplateResponse(

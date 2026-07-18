@@ -43,8 +43,9 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 4. **Non-executing regression proof** checks whether the original deterministic signal disappeared in an isolated temporary copy.
 5. **Human approval** remains mandatory.
 6. **Fail-closed release policy** blocks unresolved high/critical exposure.
-7. **Risk Intelligence** maps confirmed evidence to an affected asset, business impact, residual score, and remediation plan.
-8. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+7. **Project Context Profiles** version real assets, production exposure, and data sensitivity without rewriting history.
+8. **Risk Intelligence** maps confirmed evidence to an affected asset, business impact, residual score, and remediation plan.
+9. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 
@@ -196,6 +197,19 @@ curl 'http://localhost:8000/scan/<scan_id>/executive-report?format=html'
 
 The executive report prioritizes affected assets, public attack surfaces, residual risk, estimated effort, and ordered remediation actions. The business score never overrides the ordinary fail-closed release gate. Full semantics and limitations are documented in [`docs/RISK_INTELLIGENCE.md`](docs/RISK_INTELLIGENCE.md).
 
+## Project Context Profiles
+
+Sentinel 1.3 can attach an immutable, versioned project profile to every scan. Profiles declare production environment, internet exposure, compliance frameworks, and path-matched assets with criticality and data classification.
+
+```bash
+curl http://localhost:8000/scan/<scan_id>/project-context
+curl -X POST http://localhost:8000/scan/<scan_id>/project-context/preview \
+  -H 'Content-Type: application/json' \
+  --data @project-context.json
+```
+
+Saving a new profile version never changes historical scores. The next rescan inherits the latest version, while the current scan retains its assigned profile and SHA-256. See [`docs/PROJECT_CONTEXT.md`](docs/PROJECT_CONTEXT.md).
+
 ## API highlights
 
 ```text
@@ -206,6 +220,9 @@ POST /scan/{baseline_scan_id}/rescan
 GET  /scan/{current_scan_id}/compare/{baseline_scan_id}
 GET  /scan/{scan_id}/lineage
 GET  /scan/{current_scan_id}/ci-gate
+GET  /scan/{scan_id}/project-context
+PUT  /scan/{scan_id}/project-context
+POST /scan/{scan_id}/project-context/preview
 GET  /scan/{scan_id}/risk-intelligence
 GET  /scan/{scan_id}/executive-report
 GET  /scan/{scan_id}/findings/{finding_id}/risk-intelligence

@@ -40,3 +40,24 @@ class RiskIntelligence(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     finding = relationship("Finding", back_populates="risk_intelligence")
+
+
+    @property
+    def context_profile_version(self) -> int | None:
+        return (self.scoring_factors or {}).get("context", {}).get("profile_version")
+
+    @property
+    def context_sha256(self) -> str | None:
+        return (self.scoring_factors or {}).get("context", {}).get("context_sha256")
+
+    @property
+    def context_source(self) -> str:
+        return (self.scoring_factors or {}).get("context", {}).get("resolution_source", "heuristic")
+
+    @property
+    def context_asset_id(self) -> str | None:
+        return (self.scoring_factors or {}).get("context", {}).get("asset_id")
+
+    @property
+    def context_project_name(self) -> str | None:
+        return (self.scoring_factors or {}).get("context", {}).get("project_name")
