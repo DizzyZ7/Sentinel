@@ -21,6 +21,7 @@ def test_sarif_contains_only_confirmed_findings() -> None:
         confidence=0.95,
         patch_valid=True,
         decision=SimpleNamespace(decision="approved"),
+        verification=SimpleNamespace(status="passed", source_executed=False),
     )
     rejected = SimpleNamespace(confirmed=False, severity=None)
     sarif = build_sarif([confirmed, rejected])
