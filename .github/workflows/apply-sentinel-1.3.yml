@@ -1,0 +1,37 @@
+name: apply-sentinel-1.3
+
+on:
+  push:
+    branches: [codex/sentinel-1.3]
+    paths:
+      - ".sentinel-1.3.part-*"
+      - ".github/workflows/apply-sentinel-1.3.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v6
+
+      - name: Verify and apply release payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .sentinel-1.3.part-* > /tmp/sentinel-1.3.tar.gz
+          echo "0410e7c41279b7897e62edbed0c592ec7a0cacdf61c4c5b6df1ead30b5e7be17  /tmp/sentinel-1.3.tar.gz" | sha256sum -c -
+          tar -tzf /tmp/sentinel-1.3.tar.gz > /tmp/sentinel-1.3-files.txt
+          test "$(wc -l < /tmp/sentinel-1.3-files.txt)" -eq 32
+          tar -xzf /tmp/sentinel-1.3.tar.gz
+          while IFS= read -r path; do
+            git add -- "$path"
+          done < /tmp/sentinel-1.3-files.txt
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sentinel 1.3: immutable project context profiles"
+          git push origin HEAD:codex/sentinel-1.3
