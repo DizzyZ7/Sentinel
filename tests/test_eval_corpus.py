@@ -1,11 +1,14 @@
 import json
 from pathlib import Path
 
-from scripts.run_evals import DEFAULT_MANIFEST, evaluate_manifest
+from app.services.evaluation import evaluate_manifest
+
+ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = ROOT / "evals" / "manifest.json"
 
 
 def test_eval_manifest_is_unique_and_complete() -> None:
-    manifest = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     ids = [case["id"] for case in manifest["cases"]]
     filenames = [case["filename"] for case in manifest["cases"]]
 
@@ -13,11 +16,11 @@ def test_eval_manifest_is_unique_and_complete() -> None:
     assert len(ids) == 20
     assert len(ids) == len(set(ids))
     assert len(filenames) == len(set(filenames))
-    assert all((DEFAULT_MANIFEST.parent / "cases" / filename).is_file() for filename in filenames)
+    assert all((MANIFEST.parent / "cases" / filename).is_file() for filename in filenames)
 
 
 def test_curated_static_eval_has_no_regressions() -> None:
-    result = evaluate_manifest(Path(DEFAULT_MANIFEST))
+    result = evaluate_manifest(MANIFEST)
     metrics = result["metrics"]
 
     assert metrics["case_count"] == 20
