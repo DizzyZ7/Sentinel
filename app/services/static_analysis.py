@@ -92,7 +92,7 @@ class PythonAnalyzer(ast.NodeVisitor):
     def _target_names(target: ast.AST) -> set[str]:
         if isinstance(target, ast.Name):
             return {target.id}
-        if isinstance(target, (ast.Tuple, ast.List)):
+        if isinstance(target, ast.Tuple | ast.List):
             names: set[str] = set()
             for item in target.elts:
                 names.update(PythonAnalyzer._target_names(item))
@@ -108,7 +108,7 @@ class PythonAnalyzer(ast.NodeVisitor):
     def _is_interpolated(self, node: ast.AST) -> bool:
         if isinstance(node, ast.JoinedStr):
             return True
-        if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Mod)):
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add | ast.Mod):
             return True
         return isinstance(node, ast.Name) and node.id in self.interpolated_names
 
