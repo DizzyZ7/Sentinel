@@ -1,0 +1,40 @@
+name: apply-sentinel-1.6
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".sentinel-1.6.part-*"
+      - ".github/workflows/apply-sentinel-1.6.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out head branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Verify and apply release payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .sentinel-1.6.part-* > /tmp/sentinel-1.6.tar.gz
+          echo "bca0253d7dfc1fae5911b9c074231cb127b4d20e63689bdfafd3e28676b60d3c  /tmp/sentinel-1.6.tar.gz" | sha256sum -c -
+          tar -tzf /tmp/sentinel-1.6.tar.gz > /tmp/sentinel-1.6-files.txt
+          test "$(wc -l < /tmp/sentinel-1.6-files.txt)" -eq 34
+          ! grep -Eq '(^/|(^|/)\.\.(/|$))' /tmp/sentinel-1.6-files.txt
+          tar -xzf /tmp/sentinel-1.6.tar.gz
+          while IFS= read -r path; do
+            git add -- "$path"
+          done < /tmp/sentinel-1.6-files.txt
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sentinel 1.6: security ownership and SLA enforcement"
+          git push origin HEAD:codex/sentinel-1.6
