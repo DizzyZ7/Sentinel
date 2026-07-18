@@ -14,6 +14,7 @@ from app.models.scan import Scan
 from app.schemas.comparison import RescanCreated, ScanComparison
 from app.services.comparison import build_scan_comparison
 from app.services.demo_reviewer import DemoReviewer
+from app.services.lineage import link_rescan
 from app.services.progress import add_scan_event
 from app.services.rescan import RescanError, prepare_rescan
 from app.services.scanner import process_scan
@@ -58,6 +59,8 @@ async def create_rescan(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
     db.add(scan)
+    await db.flush()
+    await link_rescan(db, baseline, scan)
     await add_scan_event(
         db,
         scan.id,

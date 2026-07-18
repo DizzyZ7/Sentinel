@@ -11,6 +11,7 @@ from app.models.scan import Scan
 from app.services.comparison import build_scan_comparison
 from app.services.demo_fixture import create_judge_demo_archive
 from app.services.demo_reviewer import DemoReviewer
+from app.services.lineage import build_lineage_response, ensure_root_lineage, link_rescan
 from app.services.rescan import prepare_rescan
 from app.services.scanner import process_scan
 
@@ -35,6 +36,8 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
     )
     async with factory() as session:
         session.add(baseline)
+        await session.flush()
+        await ensure_root_lineage(session, baseline)
         await session.commit()
 
     reviewer = DemoReviewer(settings)
@@ -42,6 +45,8 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
     current = prepare_rescan(baseline, "current", settings)
     async with factory() as session:
         session.add(current)
+        await session.flush()
+        await link_rescan(session, baseline, current)
         await session.commit()
     await process_scan("current", reviewer=reviewer, session_factory=factory, pipeline_settings=settings)
 
@@ -58,6 +63,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
             )
             scans[scan_id] = result.scalar_one()
         comparison = build_scan_comparison(scans["baseline"], scans["current"])
+        lineage = await build_lineage_response(session, scans["current"])
 
     assert scans["baseline"].status == "completed"
     assert scans["current"].status == "completed"
@@ -67,4 +73,7 @@ async def test_golden_rescan_uses_real_pipeline_and_produces_a_clean_delta(tmp_p
     assert comparison.summary.changed == 0
     assert comparison.delta_gate.passed is True
     assert comparison.current_gate.passed is False
+    assert lineage.root_scan_id == "baseline"
+    assert lineage.parent_scan_id == "baseline"
+    assert [(node.scan_id, node.generation) for node in lineage.nodes] == [("baseline", 0), ("current", 1)]
     await engine.dispose()

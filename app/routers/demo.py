@@ -10,6 +10,7 @@ from app.models.scan import Scan
 from app.schemas.scan import ScanCreated
 from app.services.demo_fixture import create_judge_demo_archive
 from app.services.demo_reviewer import DemoReviewer
+from app.services.lineage import ensure_root_lineage
 from app.services.progress import add_scan_event
 from app.services.scanner import process_scan
 
@@ -44,6 +45,8 @@ async def create_demo_scan(
         workspace_path=str(workspace),
     )
     db.add(scan)
+    await db.flush()
+    await ensure_root_lineage(db, scan)
     await add_scan_event(
         db,
         scan.id,

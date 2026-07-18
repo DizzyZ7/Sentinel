@@ -159,7 +159,7 @@ CI fails if any expected rule disappears or any unexpected finding is introduced
 
 ## Baselines and no-new-risk policy
 
-Sentinel 1.0 can rescan a preserved source and compare the new result with a completed baseline:
+Sentinel can rescan a preserved source and compare the new result with a completed baseline:
 
 ```bash
 curl -X POST http://localhost:8000/scan/<baseline_scan_id>/rescan
@@ -170,6 +170,14 @@ Findings are matched through a privacy-safe fingerprint rather than line number,
 
 The judge view includes **Start rescan** and automatically opens the delta report when the new scan completes. Full semantics and limitations are documented in [`docs/BASELINE_COMPARISON.md`](docs/BASELINE_COMPARISON.md).
 
+The judge and delta views also expose the persisted lineage and let a reviewer select any earlier completed scan in the same history. CI can evaluate the immediate parent automatically:
+
+```bash
+sentinel-check-delta --current-scan-id <current_scan_id>
+```
+
+The CLI exits `0` when the delta passes, `1` for a blocking security regression, and `2` for operational failure. Full lineage and CI semantics are documented in [`docs/LINEAGE_AND_CI.md`](docs/LINEAGE_AND_CI.md).
+
 ## API highlights
 
 ```text
@@ -178,6 +186,8 @@ POST /scan/demo?mode=replay
 POST /scan/demo?mode=live
 POST /scan/{baseline_scan_id}/rescan
 GET  /scan/{current_scan_id}/compare/{baseline_scan_id}
+GET  /scan/{scan_id}/lineage
+GET  /scan/{current_scan_id}/ci-gate
 GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
 GET  /scan/{scan_id}/report
@@ -190,7 +200,7 @@ POST /scan/{scan_id}/findings/{finding_id}/decision
 GET  /scan/{scan_id}/findings/{finding_id}/evidence-bundle
 ```
 
-OpenAPI is available at `http://localhost:8000/docs`.
+OpenAPI is available at `http://localhost:8000/docs .
 
 ## Safety controls
 

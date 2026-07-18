@@ -204,3 +204,10 @@ delta gate → did this change introduce or materially alter unresolved in-scope
 ```
 
 A rescan always creates a new isolated workspace and runs the ordinary ingestion-to-policy pipeline. Preserved ZIP input can only be copied from within the configured scan root.
+
+
+## Persistent scan lineage
+
+`ScanLineage` is a small persistence aggregate separate from `Scan`. It stores `scan_id`, `parent_scan_id`, `root_scan_id`, and `generation`, allowing branches and repeated rescans without modifying the original scan schema. New root scans are registered at creation; pre-1.1 scans are registered lazily when first used as a rescan baseline.
+
+The lineage read model exposes only scan metadata and eligibility, not source snippets. The CI gate resolves the immediate parent by default and rejects an explicit baseline outside the same earlier completed lineage. Security regression, operational error, and successful evaluation remain distinct states.

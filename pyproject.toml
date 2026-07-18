@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sentinel-agent"
-version = "1.0.0"
+version = "1.1.0"
 description = "Human-in-the-loop autonomous security review agent powered by GPT-5.6"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -21,6 +21,9 @@ dependencies = [
   "aiofiles>=24.1,<25",
   "httpx>=0.28,<1",
 ]
+
+[project.scripts]
+sentinel-check-delta = "app.services.ci_gate_client:cli"
 
 [project.optional-dependencies]
 dev = [

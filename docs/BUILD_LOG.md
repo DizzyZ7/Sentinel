@@ -65,6 +65,14 @@ Traditional SAST has deterministic evidence but often creates noise. Unconstrain
 - ZIP/Git rescan workflow through the unchanged security pipeline
 - responsive HTML delta report and judge-view rescan action
 
+### 1.1 — persistent lineage and CI regression contract
+
+- separate lineage table for root, parent, and generation without altering historical scan rows
+- baseline selectors in judge and delta views
+- same-lineage CI endpoint with HTTP and header exit signals
+- packaged CLI with stable exit codes 0, 1, and 2
+- fail-closed parent-baseline resolution and regression tests
+
 ## Key engineering decisions made with Codex
 
 1. Keep a modular monolith instead of adding premature microservices.

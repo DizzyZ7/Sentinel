@@ -39,6 +39,7 @@ from app.schemas.verification import (
 )
 from app.services.attack_paths import build_attack_path_response, to_mermaid
 from app.services.ingestion import IngestionError, save_upload, validate_git_url
+from app.services.lineage import ensure_root_lineage
 from app.services.policy import evaluate_gate
 from app.services.regression import RegressionResult, verify_patch_regression
 from app.services.reporting import severity_summary
@@ -80,6 +81,8 @@ async def _load_completed_scan(scan_id: str, db: AsyncSession) -> Scan:
     return scan
 
 
+
+
 def _apply_verification_result(
     finding: Finding,
     proof: RegressionResult,
@@ -101,7 +104,6 @@ def _apply_verification_result(
     verification.artifact_path = str(proof.artifact_path) if proof.artifact_path else None
     verification.error = proof.error
     return verification
-
 
 def _ordered_findings(scan: Scan) -> list[Finding]:
     return sorted(
@@ -156,6 +158,8 @@ async def create_scan(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     db.add(scan)
+    await db.flush()
+    await ensure_root_lineage(db, scan)
     await db.commit()
     background_tasks.add_task(process_scan, scan.id)
     return _scan_created(scan)
@@ -224,7 +228,7 @@ async def get_attack_paths(
         return PlainTextResponse(
             to_mermaid(payload),
             media_type="text/plain",
-            headers={"Content-Disposition": f'attachment; filename="sentinel-{scan.id}.mmd"'},
+            headers={"Content-Disposition": f'attachment; filename="sentinel-{scan.id}-attack-paths.mmd"'},
         )
     return payload
 
