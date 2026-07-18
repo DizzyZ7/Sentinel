@@ -40,3 +40,8 @@ The response is downloadable JSON and includes the canonical payload digest in t
 
 
 Project-context provenance is included inside the risk-intelligence section: assigned profile version, context SHA-256, profile source, resolution source, project name, and matched asset ID. The full mutable profile catalog is not duplicated; its canonical hash provides the audit link to the immutable profile record.
+
+
+## Risk-exception governance
+
+Sentinel 1.5 adds the exception-engine version and exception-aware governance result to the bundle. Applied exception IDs, scopes, expiry timestamps, and non-waivable reasons are covered by the section and canonical payload SHA-256 values. The raw policy-compliance and release-gate sections remain present and unchanged.

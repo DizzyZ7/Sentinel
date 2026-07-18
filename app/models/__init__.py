@@ -4,6 +4,7 @@ from app.models.finding import Finding
 from app.models.lineage import ScanLineage
 from app.models.llm_review import LLMReviewRun
 from app.models.project_context import ProjectContextProfile, ScanContextAssignment
+from app.models.risk_exception import RiskException, RiskExceptionEvent
 from app.models.risk_intelligence import RiskIntelligence
 from app.models.scan import Scan
 from app.models.scan_event import ScanEvent
@@ -17,6 +18,8 @@ __all__ = [
     "RegressionVerification",
     "ReviewDecision",
     "ProjectContextProfile",
+    "RiskException",
+    "RiskExceptionEvent",
     "RiskIntelligence",
     "ScanPolicyAssignment",
     "SecurityPolicyProfile",

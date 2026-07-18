@@ -226,6 +226,10 @@ POST /scan/{scan_id}/project-context/preview
 GET  /scan/{scan_id}/risk-intelligence
 GET  /scan/{scan_id}/executive-report
 GET  /scan/{scan_id}/findings/{finding_id}/risk-intelligence
+GET  /scan/{scan_id}/risk-exceptions
+POST /scan/{scan_id}/risk-exceptions
+GET  /scan/{scan_id}/exception-aware-compliance
+GET  /scan/{current_scan_id}/exception-debt/compare/{baseline_scan_id}
 GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
 GET  /scan/{scan_id}/report
@@ -351,3 +355,15 @@ curl 'http://localhost:8000/scan/<scan_id>/policy-compliance?format=html'
 ```
 
 Saving a policy creates an immutable version for the next rescan. The current scan retains its assigned policy hash, and compliance changes can be compared across lineage generations. See [`docs/SECURITY_POLICY.md`](docs/SECURITY_POLICY.md).
+
+
+## Security Exceptions and Risk Acceptance
+
+Sentinel 1.5 records temporary, scoped risk acceptance without deleting evidence or rewriting the raw release gate. Requests require a risk owner, justification, expiry, maximum severity, and independent approval. Critical and fail-closed unreviewed findings remain non-waivable.
+
+```bash
+curl 'http://localhost:8000/scan/<scan_id>/risk-exceptions?format=html'
+curl 'http://localhost:8000/scan/<scan_id>/exception-aware-compliance?format=html'
+```
+
+Approved exceptions produce a separate `accepted_risk` governance state, automatically stop applying at expiry or revocation, and are included in the Evidence Bundle integrity chain. See [`docs/SECURITY_EXCEPTIONS.md`](docs/SECURITY_EXCEPTIONS.md).

@@ -118,6 +118,7 @@ def test_evidence_bundle_is_secret_safe_and_self_verifying(tmp_path):
         "attack_path",
         "risk_intelligence",
         "security_policy_compliance",
+        "exception_governance",
     ]
     sections = {name: payload[name] for name in section_names}
     assert bundle.integrity.payload_sha256 == canonical_sha256(sections)

@@ -25,6 +25,7 @@ from app.schemas.evidence import (
     StaticEvidence,
 )
 from app.schemas.llm_audit import LLMReviewRunResponse
+from app.schemas.risk_exception import ExceptionAwareCompliance
 from app.schemas.risk_intelligence import RiskIntelligenceResponse
 from app.schemas.security_policy import SecurityPolicyCompliance
 from app.schemas.verification import RegressionVerificationResponse
@@ -32,6 +33,7 @@ from app.services.attack_paths import build_attack_path_response
 from app.services.context_sanitizer import sanitize_context
 from app.services.llm_review import PROMPT_VERSION, SCHEMA_VERSION
 from app.services.policy import evaluate_gate
+from app.services.risk_exception import EXCEPTION_ENGINE_VERSION
 from app.services.risk_intelligence import RISK_ENGINE_VERSION, build_risk_intelligence
 from app.services.security_policy import POLICY_ENGINE_VERSION
 
@@ -77,6 +79,7 @@ def build_finding_evidence_bundle(
     *,
     generated_at: datetime | None = None,
     security_policy_compliance: SecurityPolicyCompliance | None = None,
+    exception_governance: ExceptionAwareCompliance | None = None,
 ) -> FindingEvidenceBundle:
     generated_at = generated_at or datetime.now(UTC)
     sanitized_snippet = sanitize_context(finding.snippet)
@@ -103,6 +106,7 @@ def build_finding_evidence_bundle(
             policy=POLICY_VERSION,
             risk_engine=RISK_ENGINE_VERSION,
             security_policy_engine=POLICY_ENGINE_VERSION,
+            risk_exception_engine=EXCEPTION_ENGINE_VERSION,
         ).model_dump(mode="json"),
         "scan": EvidenceScan(
             id=scan.id,
@@ -175,6 +179,11 @@ def build_finding_evidence_bundle(
         "security_policy_compliance": (
             security_policy_compliance.model_dump(mode="json")
             if security_policy_compliance is not None
+            else None
+        ),
+        "exception_governance": (
+            exception_governance.model_dump(mode="json")
+            if exception_governance is not None
             else None
         ),
         "risk_intelligence": (

@@ -126,3 +126,13 @@ Before submitting, add the primary Codex `/feedback` Session ID to the Devpost f
 - Added deterministic override matching and persisted policy hashes.
 - Added policy preview, compliance HTML/JSON, and cross-generation compliance comparison.
 - Kept the ordinary release gate authoritative and unchanged.
+
+
+## Sentinel 1.5 — Security Exceptions and Risk Acceptance
+
+- Added lineage-scoped exception requests and append-only audit events.
+- Added independent approval, rejection, revocation, maximum 90-day duration, and deterministic expiry.
+- Added stable finding-fingerprint, rule, and asset scopes.
+- Added exception-aware governance with explicit `accepted_risk` state.
+- Kept critical and fail-closed unreviewed evidence non-waivable.
+- Added cross-generation exception-debt comparison and Evidence Bundle coverage.
