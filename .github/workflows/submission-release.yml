@@ -1,0 +1,316 @@
+name: submission-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: GitHub Release tag. Must match the application version.
+        required: true
+        default: v2.2.1
+      video_url:
+        description: Final public YouTube URL. Required for strict finalization.
+        required: false
+        default: ""
+      codex_session_id:
+        description: Primary /feedback Codex Session ID. Required for strict finalization.
+        required: false
+        default: ""
+      devpost_url:
+        description: Saved or submitted Devpost project URL when available.
+        required: false
+        default: ""
+      ghcr_public:
+        description: Confirm the sentinel GHCR package is public.
+        required: true
+        type: boolean
+        default: false
+      devpost_complete:
+        description: Confirm all Devpost fields have been reviewed and saved.
+        required: true
+        type: boolean
+        default: false
+      strict_finalize:
+        description: Fail unless all manual submission fields are complete.
+        required: true
+        type: boolean
+        default: false
+      publish_image:
+        description: Publish linux/amd64 and linux/arm64 images to GHCR.
+        required: true
+        type: boolean
+        default: true
+      publish_release:
+        description: Create or update the public GitHub Release. Requires strict finalization.
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: submission-release
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: ghcr.io/dizzyz7/sentinel
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project and release tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]' build
+
+      - name: Validate release inputs
+        id: version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          PUBLISH_RELEASE: ${{ inputs.publish_release }}
+          STRICT_FINALIZE: ${{ inputs.strict_finalize }}
+        run: |
+          set -euo pipefail
+          version="$(python -c 'from app.core.version import APP_VERSION; print(APP_VERSION)')"
+          expected_tag="v${version}"
+          if [[ "$RELEASE_TAG" != "$expected_tag" ]]; then
+            echo "release_tag must be $expected_tag, got $RELEASE_TAG" >&2
+            exit 1
+          fi
+          if [[ "$PUBLISH_RELEASE" == "true" && "$STRICT_FINALIZE" != "true" ]]; then
+            echo "publish_release requires strict_finalize=true" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "source_date_epoch=$(git show -s --format=%ct HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Run Ruff
+        run: ruff check app tests scripts
+
+      - name: Run validation pack
+        run: >-
+          python -m scripts.run_evals
+          --output /tmp/sentinel-validation-pack.json
+          --fail-on-regression
+
+      - name: Run local CLI evidence scan
+        run: >-
+          sentinel scan .
+          --fail-on never
+          --format json
+          --output /tmp/sentinel-local-scan.json
+          --sarif-output /tmp/sentinel-local-scan.sarif
+          --quiet
+
+      - name: Check automated release readiness
+        run: python -m scripts.check_release --output /tmp/sentinel-release-readiness.json
+
+      - name: Build wheel and source distribution
+        run: python -m build
+
+      - name: Build release verification image
+        run: docker build --tag sentinel:submission-release .
+
+      - name: Start clean judge stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create sentinel-submission-release
+          docker run -d --name sentinel-release-db --network sentinel-submission-release \
+            -e POSTGRES_DB=sentinel \
+            -e POSTGRES_USER=sentinel \
+            -e POSTGRES_PASSWORD=sentinel \
+            postgres:17-alpine
+          for attempt in $(seq 1 40); do
+            if docker exec sentinel-release-db pg_isready -U sentinel -d sentinel; then
+              break
+            fi
+            if [[ "$attempt" -eq 40 ]]; then
+              docker logs sentinel-release-db
+              exit 1
+            fi
+            sleep 1
+          done
+          mkdir -p "$RUNNER_TEMP/sentinel-release-data"
+          chmod 0777 "$RUNNER_TEMP/sentinel-release-data"
+          docker run -d --name sentinel-release-api --network sentinel-submission-release \
+            -p 127.0.0.1:8000:8000 \
+            -e DATABASE_URL=postgresql+asyncpg://sentinel:sentinel@sentinel-release-db:5432/sentinel \
+            -e DATA_DIR=/data \
+            -e OPENAI_API_KEY= \
+            -e LLM_ENABLED=true \
+            --read-only \
+            --tmpfs /tmp:size=64m,mode=1777 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            -v "$RUNNER_TEMP/sentinel-release-data:/data" \
+            sentinel:submission-release
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/health >/dev/null; then
+              break
+            fi
+            if [[ "$attempt" -eq 60 ]]; then
+              docker logs sentinel-release-api
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Verify complete judge path
+        run: >-
+          sentinel-verify-judge
+          --base-url http://127.0.0.1:8000
+          --timeout 120
+          --output /tmp/sentinel-judge-smoke.json
+
+      - name: Stop clean judge stack
+        if: always()
+        run: |
+          docker rm -f sentinel-release-api sentinel-release-db || true
+          docker network rm sentinel-submission-release || true
+
+      - name: Build submission pack
+        shell: bash
+        env:
+          VIDEO_URL: ${{ inputs.video_url }}
+          CODEX_SESSION_ID: ${{ inputs.codex_session_id }}
+          DEVPOST_URL: ${{ inputs.devpost_url }}
+          GHCR_PUBLIC: ${{ inputs.ghcr_public }}
+          DEVPOST_COMPLETE: ${{ inputs.devpost_complete }}
+          STRICT_FINALIZE: ${{ inputs.strict_finalize }}
+          SOURCE_DATE_EPOCH: ${{ steps.version.outputs.source_date_epoch }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          args=(
+            --output-dir build/submission-pack
+            --archive "build/sentinel-submission-pack-${VERSION}.zip"
+            --source-date-epoch "$SOURCE_DATE_EPOCH"
+            --video-url "$VIDEO_URL"
+            --codex-session-id "$CODEX_SESSION_ID"
+            --devpost-url "$DEVPOST_URL"
+            --evidence /tmp/sentinel-validation-pack.json
+            --evidence /tmp/sentinel-local-scan.json
+            --evidence /tmp/sentinel-local-scan.sarif
+            --evidence /tmp/sentinel-release-readiness.json
+            --evidence /tmp/sentinel-judge-smoke.json
+          )
+          if [[ "$GHCR_PUBLIC" == "true" ]]; then args+=(--ghcr-public); fi
+          if [[ "$DEVPOST_COMPLETE" == "true" ]]; then args+=(--devpost-complete); fi
+          if [[ "$STRICT_FINALIZE" == "true" ]]; then args+=(--strict); fi
+          python -m scripts.build_submission_pack "${args[@]}" | tee /tmp/submission-pack-build.json
+
+      - name: Assemble release assets and checksums
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/release-assets
+          cp dist/* build/release-assets/
+          cp "build/sentinel-submission-pack-${VERSION}.zip" build/release-assets/
+          cp /tmp/sentinel-validation-pack.json build/release-assets/
+          cp /tmp/sentinel-local-scan.json build/release-assets/
+          cp /tmp/sentinel-local-scan.sarif build/release-assets/
+          cp /tmp/sentinel-release-readiness.json build/release-assets/
+          cp /tmp/sentinel-judge-smoke.json build/release-assets/
+          cp build/submission-pack/metadata/SUBMISSION_MANIFEST.json build/release-assets/
+          (
+            cd build/release-assets
+            find . -maxdepth 1 -type f ! -name SHA256SUMS -printf '%f\0' \
+              | sort -z \
+              | xargs -0 sha256sum > SHA256SUMS
+            sha256sum --check SHA256SUMS
+          )
+
+      - name: Upload verified submission assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-submission-release-${{ steps.version.outputs.version }}
+          path: build/release-assets/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Set up QEMU
+        if: ${{ inputs.publish_image }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        if: ${{ inputs.publish_image }}
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: ${{ inputs.publish_image }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish multi-architecture image
+        if: ${{ inputs.publish_image }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+            ${{ env.IMAGE_NAME }}:${{ inputs.release_tag }}
+            ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.title=Sentinel
+            org.opencontainers.image.description=Evidence-to-patch security review agent powered by GPT-5.6
+            org.opencontainers.image.source=https://github.com/DizzyZ7/Sentinel
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify anonymous GHCR access
+        if: ${{ inputs.ghcr_public }}
+        run: |
+          docker logout ghcr.io || true
+          python -m scripts.check_public_image
+          docker pull "${IMAGE_NAME}:${{ steps.version.outputs.version }}"
+
+      - name: Create or update GitHub Release
+        if: ${{ inputs.publish_release }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" build/release-assets/* --clobber
+          else
+            gh release create "$RELEASE_TAG" build/release-assets/* \
+              --target "$GITHUB_SHA" \
+              --title "Sentinel ${VERSION}" \
+              --notes-file docs/RELEASE_NOTES_2.2.1.md
+          fi

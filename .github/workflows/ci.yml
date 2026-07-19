@@ -72,13 +72,13 @@ jobs:
           report = json.loads(Path("/tmp/sentinel-local-scan.json").read_text(encoding="utf-8"))
           sarif = json.loads(Path("/tmp/sentinel-local-scan.sarif").read_text(encoding="utf-8"))
           assert report["schema_version"] == "sentinel-local-scan-v1"
-          assert report["app_version"] == "2.2.0"
+          assert report["app_version"] == "2.2.1"
           assert report["safety"]["source_executed"] is False
           assert report["safety"]["dependencies_installed"] is False
           assert report["safety"]["patches_applied"] is False
           assert verify_report_sha256(report)
           assert sarif["version"] == "2.1.0"
-          assert sarif["runs"][0]["tool"]["driver"]["semanticVersion"] == "2.2.0"
+          assert sarif["runs"][0]["tool"]["driver"]["semanticVersion"] == "2.2.1"
           PY
 
       - name: Upload local CLI evidence
@@ -168,6 +168,32 @@ jobs:
         with:
           name: sentinel-judge-smoke
           path: /tmp/sentinel-judge-smoke.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Build draft submission pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(python -c 'from app.core.version import APP_VERSION; print(APP_VERSION)')"
+          python -m scripts.build_submission_pack \
+            --output-dir /tmp/sentinel-submission-pack \
+            --archive "/tmp/sentinel-submission-pack-${version}.zip" \
+            --source-date-epoch "$(git show -s --format=%ct HEAD)" \
+            --evidence /tmp/sentinel-validation-pack.json \
+            --evidence /tmp/sentinel-local-scan.json \
+            --evidence /tmp/sentinel-local-scan.sarif \
+            --evidence /tmp/sentinel-release-readiness.json \
+            --evidence /tmp/sentinel-judge-smoke.json
+
+      - name: Upload draft submission pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-submission-pack-draft
+          path: |
+            /tmp/sentinel-submission-pack-*.zip
+            /tmp/sentinel-submission-pack/metadata/SUBMISSION_MANIFEST.json
+            /tmp/sentinel-submission-pack/SHA256SUMS
           if-no-files-found: error
           retention-days: 14
 

@@ -224,3 +224,13 @@ The product scope was deliberately frozen after the continuous control plane. Th
 - Added SARIF `review` candidates that remain explicitly unconfirmed and contain no raw secret snippets.
 - Added a composite GitHub Action and complete pull-request workflow example.
 - Added CI self-scan artifacts and regression tests without weakening the existing server, validation-pack, Docker, or judge paths.
+
+## Sentinel 2.2.1 — Submission Release Pack
+
+- Froze product expansion before the OpenAI Build Week deadline.
+- Added a deterministic submission-pack builder with copy-ready Devpost fields, retained evidence, per-file SHA-256, a canonical manifest digest, and reproducible ZIP output.
+- Added strict finalization that fails while the public video, primary Codex Session ID, public GHCR confirmation, or Devpost completion is missing.
+- Added an exact Europe/Amsterdam handoff with publication locations, signed-out checks, and an internal safety deadline.
+- Added a manually controlled release workflow that runs tests, Ruff, validation, local self-scan, release readiness, package build, Docker judge replay, multi-architecture GHCR publication, anonymous image verification, and optional GitHub Release creation.
+- Added release assets for wheel, source distribution, validation, local CLI JSON/SARIF, readiness, judge smoke, manifest, and checksums.
+- Kept all existing non-execution, secret-safety, human approval, and fail-closed boundaries unchanged.

@@ -155,7 +155,7 @@ def test_local_sarif_marks_candidates_as_unconfirmed_and_never_leaks_secret(tmp_
     assert result["properties"]["confirmed"] is False
     assert result["properties"]["sourceExecuted"] is False
     assert result["partialFingerprints"]["sentinel/local/v1"]
-    assert sarif["runs"][0]["tool"]["driver"]["semanticVersion"] == "2.2.0"
+    assert sarif["runs"][0]["tool"]["driver"]["semanticVersion"] == "2.2.1"
 
 
 def test_cli_writes_json_and_sarif_and_uses_stable_policy_exit_code(tmp_path: Path) -> None:

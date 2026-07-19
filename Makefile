@@ -1,4 +1,4 @@
-.PHONY: up down logs test lint eval local-scan release-check public-image-check delta-check demo-archives
+.PHONY: up down logs test lint eval local-scan submission-pack release-check public-image-check delta-check demo-archives
 
 up:
 	docker compose up --build -d
@@ -20,6 +20,9 @@ eval:
 
 local-scan:
 	sentinel scan . --fail-on never
+
+submission-pack:
+	python -m scripts.build_submission_pack --output-dir build/submission-pack --archive build/sentinel-submission-pack-2.2.1.zip
 
 release-check:
 	python -m scripts.check_release
