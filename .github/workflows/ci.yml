@@ -70,3 +70,75 @@ jobs:
 
       - name: Verify judge fixture is packaged
         run: docker run --rm --entrypoint /bin/sh sentinel:ci -c 'test -f /app/demo/judge-demo/confirmed_sql.py'
+
+      - name: Start clean judge smoke stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create sentinel-ci
+          docker run -d --name sentinel-ci-db --network sentinel-ci \
+            -e POSTGRES_DB=sentinel \
+            -e POSTGRES_USER=sentinel \
+            -e POSTGRES_PASSWORD=sentinel \
+            postgres:17-alpine
+          for attempt in $(seq 1 40); do
+            if docker exec sentinel-ci-db pg_isready -U sentinel -d sentinel; then
+              break
+            fi
+            if [ "$attempt" -eq 40 ]; then
+              docker logs sentinel-ci-db
+              exit 1
+            fi
+            sleep 1
+          done
+          mkdir -p "$RUNNER_TEMP/sentinel-ci-data"
+          chmod 0777 "$RUNNER_TEMP/sentinel-ci-data"
+          docker run -d --name sentinel-ci-api --network sentinel-ci \
+            -p 127.0.0.1:8000:8000 \
+            -e DATABASE_URL=postgresql+asyncpg://sentinel:sentinel@sentinel-ci-db:5432/sentinel \
+            -e DATA_DIR=/data \
+            -e OPENAI_API_KEY= \
+            -e LLM_ENABLED=true \
+            --read-only \
+            --tmpfs /tmp:size=64m,mode=1777 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            -v "$RUNNER_TEMP/sentinel-ci-data:/data" \
+            sentinel:ci
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8000/health >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 60 ]; then
+              docker logs sentinel-ci-api
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Verify complete judge path
+        run: >-
+          sentinel-verify-judge
+          --base-url http://127.0.0.1:8000
+          --timeout 120
+          --output /tmp/sentinel-judge-smoke.json
+
+      - name: Upload judge smoke result
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-judge-smoke
+          path: /tmp/sentinel-judge-smoke.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Show judge smoke logs on failure
+        if: failure()
+        run: |
+          docker logs sentinel-ci-api || true
+          docker logs sentinel-ci-db || true
+
+      - name: Stop judge smoke stack
+        if: always()
+        run: |
+          docker rm -f sentinel-ci-api sentinel-ci-db || true
+          docker network rm sentinel-ci || true

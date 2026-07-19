@@ -12,6 +12,7 @@ WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY app ./app
 COPY demo ./demo
+COPY scripts ./scripts
 RUN pip install .
 
 RUN useradd --create-home --uid 10001 sentinel \

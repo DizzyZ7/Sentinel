@@ -185,3 +185,17 @@ Added immutable security SLA profiles, lineage-stable finding clocks, ownership 
 - Added semantic configuration-drift detection against the latest immutable snapshot.
 - Added responsive control-plane timeline UI and integrity-covered control-plane evidence export.
 - Added service, persistence, API, OpenAPI, idempotency, alert lifecycle, hash-chain, schedule, evidence, and regression tests.
+
+## Sentinel 2.0.1 — Competition Hardening
+
+The product scope was deliberately frozen after the continuous control plane. The next slice returned to the core competition promise instead of adding another enterprise subsystem.
+
+- added `sentinel-verify-judge`, an installed end-to-end verifier for a running Sentinel deployment;
+- verified the exact three-outcome deterministic replay contract;
+- verified the fail-closed release gate and deterministic LLM audit labels;
+- independently recalculated every Evidence Bundle section hash, canonical payload hash, and digest response header;
+- added concise machine-readable diagnostics and stable process exit codes;
+- packaged the verifier in the production image;
+- extended CI to start the newly built non-root image with a clean PostgreSQL container and run the complete judge path;
+- uploaded the smoke report as a GitHub Actions artifact;
+- kept all manual competition tasks explicit rather than pretending they were automated.

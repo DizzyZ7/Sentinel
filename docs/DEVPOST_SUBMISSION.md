@@ -53,6 +53,7 @@ The repository's `docs/BUILD_LOG.md` and merged pull requests show the implement
 - one-click replay and separate live GPT-5.6 judge mode
 - hardened non-root, read-only Docker delivery for amd64 and arm64
 - 20-case deterministic regression corpus enforced in CI
+- clean-container end-to-end judge replay and Evidence Bundle integrity verification in CI
 
 ## Evaluation disclosure
 

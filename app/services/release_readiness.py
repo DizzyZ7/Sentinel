@@ -68,6 +68,7 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
         "docs/SECURITY_OBJECTIVES.md",
         "docs/PORTFOLIO_GOVERNANCE.md",
         "docs/CONTROL_PLANE.md",
+        "scripts/verify_judge_demo.py",
         "evals/results/latest.json",
         ".github/workflows/ci.yml",
         ".github/workflows/publish-image.yml",
@@ -141,6 +142,33 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
             "judge_path",
             "Judge-oriented README",
             "README leads with the prebuilt 60-second product path.",
+        )
+    )
+
+    pyproject_text = (root / "pyproject.toml").read_text(encoding="utf-8")
+    dockerfile = (root / "Dockerfile").read_text(encoding="utf-8")
+    verifier = (root / "scripts/verify_judge_demo.py").read_text(encoding="utf-8")
+    checks.append(
+        _check(
+            "sentinel-verify-judge" in pyproject_text
+            and "COPY scripts ./scripts" in dockerfile
+            and "EXPECTED_OUTCOMES" in verifier
+            and "verify_evidence_bundle" in verifier,
+            "judge_smoke_verifier",
+            "Packaged judge smoke verifier",
+            "The installed verifier checks exact replay outcomes and Evidence Bundle integrity.",
+        )
+    )
+
+    ci = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    checks.append(
+        _check(
+            "Start clean judge smoke stack" in ci
+            and "sentinel-verify-judge" in ci
+            and "sentinel-judge-smoke" in ci,
+            "judge_smoke_ci",
+            "Clean-container judge smoke CI",
+            "CI starts the built image with PostgreSQL and verifies the complete replay path.",
         )
     )
 

@@ -33,6 +33,14 @@ Then select **Run live GPT-5.6 demo**. Replay and live model calls are explicitl
 
 Detailed testing instructions: [`docs/JUDGE_GUIDE.md`](docs/JUDGE_GUIDE.md).
 
+Verify the complete running judge path with one command:
+
+```bash
+sentinel-verify-judge --base-url http://localhost:8000 --output sentinel-judge-smoke.json
+```
+
+The verifier creates a fresh deterministic replay, waits for completion, confirms all three promised outcomes, checks the fail-closed release gate, validates deterministic review audit records, downloads every Evidence Bundle, and independently recalculates its section and canonical SHA-256 hashes.
+
 ## Why this is different
 
 Traditional SAST has deterministic evidence but often produces noise. Unconstrained AI review has context but can hallucinate vulnerabilities or unsafe fixes. Sentinel gives each layer one limited responsibility:
