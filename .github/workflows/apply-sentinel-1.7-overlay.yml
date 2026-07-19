@@ -1,8 +1,9 @@
 name: apply-sentinel-1.7-overlay
 
 on:
-  push:
-    branches: [codex/sentinel-1.7-posture-trends]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
