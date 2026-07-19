@@ -16,6 +16,7 @@ from app.services.security_policy import (
     evaluate_security_policy,
     load_policy_snapshot,
 )
+from app.services.security_posture import build_security_posture_trend
 from app.services.security_sla import build_security_debt_dashboard
 
 router = APIRouter(prefix="/scan", tags=["evidence"])
@@ -68,6 +69,7 @@ async def get_finding_evidence_bundle(
     sla_dashboard = await build_security_debt_dashboard(
         db, scan, governance=governance
     )
+    posture = await build_security_posture_trend(db, scan)
     await db.commit()
     bundle = build_finding_evidence_bundle(
         scan,
@@ -76,6 +78,7 @@ async def get_finding_evidence_bundle(
         security_policy_compliance=compliance,
         exception_governance=governance,
         security_sla=sla_dashboard,
+        security_posture=posture,
     )
     return JSONResponse(
         bundle.model_dump(mode="json"),
