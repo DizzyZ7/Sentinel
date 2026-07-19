@@ -37,17 +37,17 @@ jobs:
       - name: Run Ruff
         run: ruff check app tests scripts
 
-      - name: Run deterministic evaluation
+      - name: Run validation pack
         run: >-
           python -m scripts.run_evals
-          --output /tmp/sentinel-eval-results.json
+          --output /tmp/sentinel-validation-pack.json
           --fail-on-regression
 
-      - name: Upload evaluation result
+      - name: Upload validation pack
         uses: actions/upload-artifact@v4
         with:
-          name: sentinel-static-eval
-          path: /tmp/sentinel-eval-results.json
+          name: sentinel-validation-pack
+          path: /tmp/sentinel-validation-pack.json
           if-no-files-found: error
           retention-days: 14
 
