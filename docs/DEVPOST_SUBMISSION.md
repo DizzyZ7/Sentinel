@@ -52,12 +52,12 @@ The repository's `docs/BUILD_LOG.md` and merged pull requests show the implement
 - SARIF, Mermaid, JSON, HTML, and Evidence Bundle exports
 - one-click replay and separate live GPT-5.6 judge mode
 - hardened non-root, read-only Docker delivery for amd64 and arm64
-- 20-case deterministic regression corpus enforced in CI
+- 60-case static validation corpus plus 17 remediation cases enforced in CI
 - clean-container end-to-end judge replay and Evidence Bundle integrity verification in CI
 
 ## Evaluation disclosure
 
-The committed deterministic corpus currently passes 20/20 exact cases with 15 true positives, zero false positives, and zero false negatives. These are transparent regression-fixture results, not a claim of general-world security accuracy. Full case-level results are committed in `evals/results/latest.json` and reproduced by CI.
+The committed validation pack currently passes 60/60 static candidate cases and 17/17 patch/regression-proof cases. The static corpus covers all 19 built-in rule IDs with positive, negative, and edge support, recording 39 true positives, 23 targeted true negatives, zero false positives, and zero false negatives. The remediation corpus verifies 7 expected patch acceptances, 10 expected rejections, all three proof states, and zero source-executed cases. These are transparent fixture results, not a claim of general-world security accuracy. Full case-level results, coverage gaps, limitations, and corpus hashes are committed in `evals/results/latest.json` and reproduced by CI.
 
 ## How to test
 

@@ -1,347 +1,2584 @@
 {
-  "cases": [
+  "app_version": "2.1.0",
+  "limitations": [
     {
-      "expected_rules": [
-        "PY_SQL_INTERPOLATION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_sql_interpolation.py",
-      "id": "py-sql-interpolation",
-      "language": "python",
-      "observed_rules": [
-        "PY_SQL_INTERPOLATION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_SQL_INTERPOLATION"
-      ]
+      "area": "static_analysis",
+      "detail": "Python taint tracking is intentionally local to simple assignments and does not claim interprocedural data-flow coverage.",
+      "id": "intra_procedural_taint_only",
+      "status": "known_limit"
     },
     {
-      "expected_rules": [
-        "JS_SQL_INTERPOLATION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "js_sql_interpolation.js",
-      "id": "js-sql-interpolation",
-      "language": "javascript",
-      "observed_rules": [
-        "JS_SQL_INTERPOLATION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "JS_SQL_INTERPOLATION"
-      ]
+      "area": "static_analysis",
+      "detail": "JavaScript and TypeScript triage uses bounded regular-expression candidates rather than a full semantic parser.",
+      "id": "javascript_regex_prefilter",
+      "status": "known_limit"
     },
     {
-      "expected_rules": [
-        "PY_DYNAMIC_EXECUTION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_dynamic_execution.py",
-      "id": "py-dynamic-execution",
-      "language": "python",
-      "observed_rules": [
-        "PY_DYNAMIC_EXECUTION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_DYNAMIC_EXECUTION"
-      ]
+      "area": "static_analysis",
+      "detail": "Allowlist and sanitizer effectiveness is a contextual GPT review responsibility; the deterministic layer favors recall.",
+      "id": "sanitizer_semantics",
+      "status": "review_required"
     },
     {
-      "expected_rules": [
-        "JS_DYNAMIC_EXECUTION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "js_dynamic_execution.js",
-      "id": "js-dynamic-execution",
-      "language": "javascript",
-      "observed_rules": [
-        "JS_DYNAMIC_EXECUTION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "JS_DYNAMIC_EXECUTION"
-      ]
+      "area": "patch_validation",
+      "detail": "Patch escrow validates diff shape and git applicability for JavaScript but does not execute project tooling or claim full JavaScript syntax validation.",
+      "id": "javascript_patch_syntax",
+      "status": "known_limit"
     },
     {
-      "expected_rules": [
-        "PY_COMMAND_INJECTION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_command_injection.py",
-      "id": "py-command-injection",
-      "language": "python",
-      "observed_rules": [
-        "PY_COMMAND_INJECTION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_COMMAND_INJECTION"
-      ]
-    },
-    {
-      "expected_rules": [
-        "JS_COMMAND_INJECTION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "js_command_injection.js",
-      "id": "js-command-injection",
-      "language": "javascript",
-      "observed_rules": [
-        "JS_COMMAND_INJECTION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "JS_COMMAND_INJECTION"
-      ]
-    },
-    {
-      "expected_rules": [
-        "PY_PATH_TRAVERSAL"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_path_traversal.py",
-      "id": "py-path-traversal",
-      "language": "python",
-      "observed_rules": [
-        "PY_PATH_TRAVERSAL"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_PATH_TRAVERSAL"
-      ]
-    },
-    {
-      "expected_rules": [
-        "JS_PATH_TRAVERSAL"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "js_path_traversal.js",
-      "id": "js-path-traversal",
-      "language": "javascript",
-      "observed_rules": [
-        "JS_PATH_TRAVERSAL"
-      ],
-      "passed": true,
-      "true_positives": [
-        "JS_PATH_TRAVERSAL"
-      ]
-    },
-    {
-      "expected_rules": [
-        "PY_SSRF"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_ssrf.py",
-      "id": "py-ssrf",
-      "language": "python",
-      "observed_rules": [
-        "PY_SSRF"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_SSRF"
-      ]
-    },
-    {
-      "expected_rules": [
-        "JS_SSRF"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "js_ssrf.js",
-      "id": "js-ssrf",
-      "language": "javascript",
-      "observed_rules": [
-        "JS_SSRF"
-      ],
-      "passed": true,
-      "true_positives": [
-        "JS_SSRF"
-      ]
-    },
-    {
-      "expected_rules": [
-        "PY_UNSAFE_DESERIALIZATION"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_unsafe_deserialization.py",
-      "id": "py-unsafe-deserialization",
-      "language": "python",
-      "observed_rules": [
-        "PY_UNSAFE_DESERIALIZATION"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_UNSAFE_DESERIALIZATION"
-      ]
-    },
-    {
-      "expected_rules": [
-        "PY_YAML_UNSAFE_LOAD"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_unsafe_yaml.py",
-      "id": "py-unsafe-yaml",
-      "language": "python",
-      "observed_rules": [
-        "PY_YAML_UNSAFE_LOAD"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_YAML_UNSAFE_LOAD"
-      ]
-    },
-    {
-      "expected_rules": [
-        "PY_SENSITIVE_ROUTE_NO_AUTH"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "py_sensitive_route_no_auth.py",
-      "id": "py-sensitive-route-no-auth",
-      "language": "python",
-      "observed_rules": [
-        "PY_SENSITIVE_ROUTE_NO_AUTH"
-      ],
-      "passed": true,
-      "true_positives": [
-        "PY_SENSITIVE_ROUTE_NO_AUTH"
-      ]
-    },
-    {
-      "expected_rules": [
-        "JS_SENSITIVE_ROUTE_NO_AUTH"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "js_sensitive_route_no_auth.js",
-      "id": "js-sensitive-route-no-auth",
-      "language": "javascript",
-      "observed_rules": [
-        "JS_SENSITIVE_ROUTE_NO_AUTH"
-      ],
-      "passed": true,
-      "true_positives": [
-        "JS_SENSITIVE_ROUTE_NO_AUTH"
-      ]
-    },
-    {
-      "expected_rules": [
-        "SECRET_GENERIC"
-      ],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "generic_hardcoded_secret.py",
-      "id": "generic-hardcoded-secret",
-      "language": "python",
-      "observed_rules": [
-        "SECRET_GENERIC"
-      ],
-      "passed": true,
-      "true_positives": [
-        "SECRET_GENERIC"
-      ]
-    },
-    {
-      "expected_rules": [],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "safe_parameterized_sql.py",
-      "id": "safe-parameterized-sql",
-      "language": "python",
-      "observed_rules": [],
-      "passed": true,
-      "true_positives": []
-    },
-    {
-      "expected_rules": [],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "safe_subprocess_argv.py",
-      "id": "safe-subprocess-argv",
-      "language": "python",
-      "observed_rules": [],
-      "passed": true,
-      "true_positives": []
-    },
-    {
-      "expected_rules": [],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "safe_constant_fetch.js",
-      "id": "safe-constant-fetch",
-      "language": "javascript",
-      "observed_rules": [],
-      "passed": true,
-      "true_positives": []
-    },
-    {
-      "expected_rules": [],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "safe_python_authorized_route.py",
-      "id": "safe-python-authorized-route",
-      "language": "python",
-      "observed_rules": [],
-      "passed": true,
-      "true_positives": []
-    },
-    {
-      "expected_rules": [],
-      "false_negatives": [],
-      "false_positives": [],
-      "filename": "safe_javascript_authorized_route.js",
-      "id": "safe-javascript-authorized-route",
-      "language": "javascript",
-      "observed_rules": [],
-      "passed": true,
-      "true_positives": []
+      "area": "evaluation",
+      "detail": "Exact corpus results measure only these committed fixtures and are not a production precision or recall estimate.",
+      "id": "fixture_not_world_accuracy",
+      "status": "disclosure"
     }
   ],
   "metrics": {
-    "case_count": 20,
+    "case_count": 60,
     "case_pass_rate": 1.0,
+    "edge_case_count": 33,
     "failed_cases": 0,
     "false_negatives": 0,
     "false_positives": 0,
-    "negative_case_count": 5,
-    "passed_cases": 20,
-    "positive_case_count": 15,
+    "multi_signal_case_count": 2,
+    "negative_case_count": 23,
+    "passed_cases": 60,
+    "positive_case_count": 37,
     "precision": 1.0,
     "recall": 1.0,
-    "true_positives": 15
+    "specificity": 1.0,
+    "targeted_true_negatives": 23,
+    "true_positives": 39
   },
-  "per_rule": {
-    "JS_COMMAND_INJECTION": {"fn": 0, "fp": 0, "tp": 1},
-    "JS_DYNAMIC_EXECUTION": {"fn": 0, "fp": 0, "tp": 1},
-    "JS_PATH_TRAVERSAL": {"fn": 0, "fp": 0, "tp": 1},
-    "JS_SENSITIVE_ROUTE_NO_AUTH": {"fn": 0, "fp": 0, "tp": 1},
-    "JS_SQL_INTERPOLATION": {"fn": 0, "fp": 0, "tp": 1},
-    "JS_SSRF": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_COMMAND_INJECTION": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_DYNAMIC_EXECUTION": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_PATH_TRAVERSAL": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_SENSITIVE_ROUTE_NO_AUTH": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_SQL_INTERPOLATION": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_SSRF": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_UNSAFE_DESERIALIZATION": {"fn": 0, "fp": 0, "tp": 1},
-    "PY_YAML_UNSAFE_LOAD": {"fn": 0, "fp": 0, "tp": 1},
-    "SECRET_GENERIC": {"fn": 0, "fp": 0, "tp": 1}
+  "remediation": {
+    "cases": [
+      {
+        "difficulty": "basic",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "passed",
+        "id": "py-sql-effective",
+        "language": "python",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "passed",
+        "passed": true,
+        "patch_sha256": "130f6473843446020ea64324ba1a0e63ecf24f5a61ded0ec61b77d881beb3b88",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "d7f82b826b973c5a2200786517559fc436ab3c899c2f3c31c82a8f532e5aaef0"
+      },
+      {
+        "difficulty": "edge",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "failed",
+        "id": "py-sql-cosmetic",
+        "language": "python",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "failed",
+        "passed": true,
+        "patch_sha256": "6e4b5233578291cd7f4e57197dc1cfa8cf1834bafa93cc09ec66d6e914c4b3e6",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "d7f82b826b973c5a2200786517559fc436ab3c899c2f3c31c82a8f532e5aaef0"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "inconclusive",
+        "id": "py-sql-unrelated-hunk",
+        "language": "python",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "inconclusive",
+        "passed": true,
+        "patch_sha256": "387aaf4b85076b494c419f4811bdfc29f5b8d3f30f2cfe4a700bb31f1412c5f5",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "ced908d09db4a0c8cc859d8f0ed6a2d2c1bfdbb9f6c77b98c16b5e85bca88a0c"
+      },
+      {
+        "difficulty": "basic",
+        "expected_error_contains": "reviewed file",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "wrong-reviewed-path",
+        "language": "python",
+        "observed_error": "Diff must modify exactly the reviewed file with canonical a/ and b/ headers",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "e1bd3136b3a8a013616eab55dd1b7090317c2584578cf3faf59369a2cb1fd082",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": "unsafe path",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "unsafe-parent-path",
+        "language": "python",
+        "observed_error": "Diff contains an unsafe path or null byte",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "417b92620ef17a18eb8fb906ed985461f8dae23fa755ba6cdd9c3f89d920dc4f",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": "binary",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "binary-marker",
+        "language": "python",
+        "observed_error": "Diff contains a binary, file lifecycle, rename, copy, or mode change",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "21fb80440ba6ca5986b6ef3f7e8dab414946993aaa897ad8cb6c82c069b02364",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": "rename",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "rename-marker",
+        "language": "python",
+        "observed_error": "Diff contains a binary, file lifecycle, rename, copy, or mode change",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "0a9da76aaca3a56f5cfd64100152f50183892694aa7a24b919c4b6252b85afba",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "basic",
+        "expected_error_contains": "empty diff",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "empty-diff",
+        "language": "python",
+        "observed_error": "Model returned an empty diff",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "edge",
+        "expected_error_contains": "does not change",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "context-only-diff",
+        "language": "python",
+        "observed_error": "Diff does not change any source lines",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "a322c756985ac3768d9c726167d6711550c04d4c50535124b45606d3ce33a115",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "basic",
+        "expected_error_contains": "syntactically valid",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "invalid-python",
+        "language": "python",
+        "observed_error": "Patched Python file is not syntactically valid: '(' was never closed (<unknown>, line 1)",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "1eb39abfae84bab33850fb79b0a9e4dc2c63c5936b612576c29086a2f24ecf64",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "edge",
+        "expected_error_contains": "patch failed",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "apply-context-mismatch",
+        "language": "python",
+        "observed_error": "error: patch failed: app.py:1\nerror: app.py: patch does not apply\n",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "37553f6d7b9357841b0007bab4cc20899e29f391560630cc0fcfdb72fd477a9b",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": "limit is 2",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "changed-line-limit",
+        "language": "python",
+        "observed_error": "Diff changes 4 lines; limit is 2",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "e4b58d56dbea5beacdb47579f15a0eb213b36c654ec9728315d27eea40766f91",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "fe9c2dadb34bee2ae03fc8fe25e26c64ce2f572a53a127db5d6e73899b64fc11"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": "byte safety limit",
+        "expected_patch_valid": false,
+        "expected_verification": null,
+        "id": "byte-limit",
+        "language": "python",
+        "observed_error": "Diff exceeds the 80-byte safety limit",
+        "observed_patch_valid": false,
+        "observed_verification": null,
+        "passed": true,
+        "patch_sha256": "c26596297bf0f8ecb3a96cfa6526ddb73b7eaddc100317536bbefb446228135a",
+        "rule_id": "PY_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "585c93666fcb046b7b264d3fa73202aa2a38254ae82a4b3ba19e873c2d5a9886"
+      },
+      {
+        "difficulty": "edge",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "passed",
+        "id": "py-command-effective",
+        "language": "python",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "passed",
+        "passed": true,
+        "patch_sha256": "ae41cd8fe1e11ddc4ba71187b45b675ca73ba0ab6909281a52b0eb3dd9cc64d0",
+        "rule_id": "PY_COMMAND_INJECTION",
+        "source_executed": false,
+        "source_sha256": "d7984fe05b4b340865e5f1b042fdcf1b131e929b0139fe60f34ba7163e8c44e0"
+      },
+      {
+        "difficulty": "edge",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "passed",
+        "id": "py-ssrf-effective",
+        "language": "python",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "passed",
+        "passed": true,
+        "patch_sha256": "911cffc405ec4d2387dd1b01d6935a47ee707cfd243cc2246919663aaf370fd7",
+        "rule_id": "PY_SSRF",
+        "source_executed": false,
+        "source_sha256": "2c45f3b16786c4a7fed0d2c896835cf553967b8a736bdc3049327b4dc0345a64"
+      },
+      {
+        "difficulty": "edge",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "passed",
+        "id": "js-sql-effective",
+        "language": "javascript",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "passed",
+        "passed": true,
+        "patch_sha256": "848eaf2fbb1acd7237b437b5d83a07488485b7f38f569b4bd73df023baad8dd5",
+        "rule_id": "JS_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "5242d3d49a93d2e1fde64b0ddb1fe571ce5d26696ccf546e3203aaa8308124ad"
+      },
+      {
+        "difficulty": "adversarial",
+        "expected_error_contains": null,
+        "expected_patch_valid": true,
+        "expected_verification": "failed",
+        "id": "js-sql-cosmetic",
+        "language": "javascript",
+        "observed_error": null,
+        "observed_patch_valid": true,
+        "observed_verification": "failed",
+        "passed": true,
+        "patch_sha256": "dc3bea2277b53a0f7202af7a39aa69462d8e344162ec4ca6ede6eedab14b71eb",
+        "rule_id": "JS_SQL_INTERPOLATION",
+        "source_executed": false,
+        "source_sha256": "5242d3d49a93d2e1fde64b0ddb1fe571ce5d26696ccf546e3203aaa8308124ad"
+      }
+    ],
+    "corpus_sha256": "90820357c44b2b69e2af316db2cffb0e26fb94c561a60fb49cdb1be6be9eb22d",
+    "corpus_version": "sentinel-remediation-validation-2026.07",
+    "expected_proof_outcomes": {
+      "failed": 2,
+      "inconclusive": 1,
+      "passed": 4
+    },
+    "metrics": {
+      "case_count": 17,
+      "case_pass_rate": 1.0,
+      "expected_patch_acceptances": 7,
+      "expected_patch_rejections": 10,
+      "failed_cases": 0,
+      "observed_patch_acceptances": 7,
+      "observed_patch_rejections": 10,
+      "passed_cases": 17,
+      "source_executed_cases": 0
+    },
+    "observed_proof_outcomes": {
+      "failed": 2,
+      "inconclusive": 1,
+      "passed": 4
+    },
+    "per_difficulty": {
+      "adversarial": {
+        "cases": 7,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "passed": 7
+      },
+      "basic": {
+        "cases": 4,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "passed": 4
+      },
+      "edge": {
+        "cases": 6,
+        "failed": 0,
+        "pass_rate": 1.0,
+        "passed": 6
+      }
+    },
+    "schema_version": "sentinel-remediation-eval-v1",
+    "scope": "Patch escrow and non-executing deterministic regression proof fixtures. No repository source is executed."
   },
   "ruleset_version": "sentinel-rules-2026.07",
-  "schema_version": "sentinel-static-eval-v1",
-  "scope": "Curated deterministic rule-regression corpus. These metrics validate the included fixtures and must not be interpreted as general-world vulnerability detection accuracy."
+  "schema_version": "sentinel-validation-pack-v1",
+  "scope": "Deterministic fixture validation for candidate rules, patch escrow, and non-executing regression proof. The results are reproducible corpus checks, not production security accuracy estimates.",
+  "static": {
+    "cases": [
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_sql_interpolation.py",
+        "id": "py-sql-interpolation",
+        "language": "python",
+        "observed_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "passed": true,
+        "pattern": "assigned_f_string",
+        "source_sha256": "908946e1a55989e03a85e2e4cd46c53b2345af65456796a71e703a41e3bf7012",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SQL_INTERPOLATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_sql_interpolation.js",
+        "id": "js-sql-interpolation",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "passed": true,
+        "pattern": "template_literal",
+        "source_sha256": "7998e85921df18883009ba9f92891ee7b26b2d9f278ecd0a90306073078eb7f3",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SQL_INTERPOLATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_dynamic_execution.py",
+        "id": "py-dynamic-execution",
+        "language": "python",
+        "observed_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "passed": true,
+        "pattern": "tainted_eval",
+        "source_sha256": "5f567387b0950969e40ea67f2a7627c91adf76696f00eb10dba2c3dd00921cb8",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_DYNAMIC_EXECUTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_dynamic_execution.js",
+        "id": "js-dynamic-execution",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "passed": true,
+        "pattern": "tainted_eval",
+        "source_sha256": "f9073c7d9f49c41d6cc3bcaf791d45cdfa89fe2d2ef61d0a4ac0394b95a39d2e",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_DYNAMIC_EXECUTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_command_injection.py",
+        "id": "py-command-injection",
+        "language": "python",
+        "observed_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "passed": true,
+        "pattern": "os_system",
+        "source_sha256": "d7984fe05b4b340865e5f1b042fdcf1b131e929b0139fe60f34ba7163e8c44e0",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_COMMAND_INJECTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_command_injection.js",
+        "id": "js-command-injection",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "passed": true,
+        "pattern": "child_process_exec",
+        "source_sha256": "aad1853997e808e75b3faad0d5a153c2862452bd75ab1f9aaf6fec7c25a69cff",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_COMMAND_INJECTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_path_traversal.py",
+        "id": "py-path-traversal",
+        "language": "python",
+        "observed_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "passed": true,
+        "pattern": "open_tainted_path",
+        "source_sha256": "6e69e9d6dcb56a5b41b0cd29caa967e9e13e85c0e6f810d11a9815fdf5f1e4bc",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_PATH_TRAVERSAL"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_path_traversal.js",
+        "id": "js-path-traversal",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "passed": true,
+        "pattern": "read_file_tainted_path",
+        "source_sha256": "b7d3153297a316df2b593ad637d043a9e95a16444bf70279a0b811952ff2036d",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_PATH_TRAVERSAL"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_SSRF"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_ssrf.py",
+        "id": "py-ssrf",
+        "language": "python",
+        "observed_rules": [
+          "PY_SSRF"
+        ],
+        "passed": true,
+        "pattern": "requests_get",
+        "source_sha256": "2c45f3b16786c4a7fed0d2c896835cf553967b8a736bdc3049327b4dc0345a64",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SSRF"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SSRF"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_SSRF"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_ssrf.js",
+        "id": "js-ssrf",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SSRF"
+        ],
+        "passed": true,
+        "pattern": "fetch_tainted_url",
+        "source_sha256": "dcc0fc81f7a5e5011f9111b465b979d458a013520ae8a74318f38042b837a5df",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_SSRF"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SSRF"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_unsafe_deserialization.py",
+        "id": "py-unsafe-deserialization",
+        "language": "python",
+        "observed_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "passed": true,
+        "pattern": "pickle_loads",
+        "source_sha256": "8dbdd9f463b8b976355ea2afc612be2645b41f8e625d2c296a05307159f5b478",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_unsafe_yaml.py",
+        "id": "py-unsafe-yaml",
+        "language": "python",
+        "observed_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "passed": true,
+        "pattern": "yaml_load_without_loader",
+        "source_sha256": "21ad3dbc30128d8024ac007a6cfcf9c97c905a6beaf0773c643d5ec653619229",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_YAML_UNSAFE_LOAD"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_sensitive_route_no_auth.py",
+        "id": "py-sensitive-route-no-auth",
+        "language": "python",
+        "observed_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "passed": true,
+        "pattern": "fastapi_sensitive_route",
+        "source_sha256": "101bd6fd1236507ebce6bcd00dac6a4976dfb8370cbd832ffee08f6453fd3b01",
+        "tags": [
+          "basic",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_sensitive_route_no_auth.js",
+        "id": "js-sensitive-route-no-auth",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "passed": true,
+        "pattern": "express_sensitive_route",
+        "source_sha256": "4fa06e81568c2ad7bb8589f2b1e48110050b7c85f4618fb4027ca3fd883d8e7a",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "SECRET_GENERIC"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "generic_hardcoded_secret.py",
+        "id": "generic-hardcoded-secret",
+        "language": "python",
+        "observed_rules": [
+          "SECRET_GENERIC"
+        ],
+        "passed": true,
+        "pattern": "token_assignment",
+        "source_sha256": "4845fa9e831e2cf82eb7edaabd9cb0579f0626cea2f1af0d2e1046f4e9106e59",
+        "tags": [
+          "basic",
+          "positive",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_GENERIC"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "SECRET_GENERIC"
+        ]
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_parameterized_sql.py",
+        "id": "safe-parameterized-sql",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "parameterized_query",
+        "source_sha256": "4b02a374fd8a20a083e29c3ca7afe991588c9347068f06d0d0ed25a15f205f5c",
+        "tags": [
+          "basic",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_subprocess_argv.py",
+        "id": "safe-subprocess-argv",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "argv_shell_false",
+        "source_sha256": "a1b1fd26d17c9ef638b32e4d447a7b9b6d43864d1ddb4c9df03912e4dc6e3ae9",
+        "tags": [
+          "basic",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_constant_fetch.js",
+        "id": "safe-constant-fetch",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "constant_url",
+        "source_sha256": "f9a3021cf236c4109315e5338d4652aa49fd03372b5d87a05331e875c1a52ce8",
+        "tags": [
+          "basic",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_SSRF"
+        ],
+        "targeted_true_negatives": [
+          "JS_SSRF"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_authorized_route.py",
+        "id": "safe-python-authorized-route",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "dependency_authorization",
+        "source_sha256": "469899a101aa3f4d6e3be531766595f6db6602ed3bf7c5053193cf8d8493d1aa",
+        "tags": [
+          "basic",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_authorized_route.js",
+        "id": "safe-javascript-authorized-route",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "auth_middleware",
+        "source_sha256": "73cbcad25ad86b9ec4532c80756fb553828d85fbe16ffc5fc891efb7102a99d4",
+        "tags": [
+          "basic",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_sql_percent_format.py",
+        "id": "py-sql-percent-format",
+        "language": "python",
+        "observed_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "passed": true,
+        "pattern": "percent_format",
+        "source_sha256": "02c4e6e0fe3eadaa07fd0b6e79e5b24abf60f5b3230b115f44ad73149de3c6fd",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SQL_INTERPOLATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_sql_concatenation.py",
+        "id": "py-sql-concatenation",
+        "language": "python",
+        "observed_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "passed": true,
+        "pattern": "string_concatenation",
+        "source_sha256": "d96b86f19ff96db82e32fbf0f83ec0c2dd21f3e97a79e70dea134a10d5dace6a",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SQL_INTERPOLATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_sql_concatenation.js",
+        "id": "js-sql-concatenation",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "passed": true,
+        "pattern": "string_concatenation",
+        "source_sha256": "20e2b915b3ac9cb83292f07bef4dd2a04304287a7da13ec7f14e542d85a51da3",
+        "tags": [
+          "edge",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SQL_INTERPOLATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_exec_request_body.py",
+        "id": "py-exec-request-body",
+        "language": "python",
+        "observed_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "passed": true,
+        "pattern": "tainted_exec",
+        "source_sha256": "32e5a9475e0a04a85533b616991650635a653b18ee706928a3cb438e610e3cf4",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_DYNAMIC_EXECUTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_function_constructor.js",
+        "id": "js-function-constructor",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "passed": true,
+        "pattern": "function_constructor",
+        "source_sha256": "4f5d8a31c4e839b57a0311e92b64332d6daaaddd578c0d56d50ab3aea857d81e",
+        "tags": [
+          "edge",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_DYNAMIC_EXECUTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_subprocess_shell_true.py",
+        "id": "py-subprocess-shell-true",
+        "language": "python",
+        "observed_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "passed": true,
+        "pattern": "subprocess_shell_true",
+        "source_sha256": "c18f7cbf57353525a7bfff2074321425a35d9bebb5a9c7f3c1b31dfefd1a1ec0",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_COMMAND_INJECTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_exec_sync.js",
+        "id": "js-exec-sync",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "passed": true,
+        "pattern": "exec_sync",
+        "source_sha256": "3f8686b4a1f7ffe083f103f2629d2dd4e4fbbd17e30474e79035f0428f178adc",
+        "tags": [
+          "edge",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_COMMAND_INJECTION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_send_file.py",
+        "id": "py-send-file",
+        "language": "python",
+        "observed_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "passed": true,
+        "pattern": "send_file_tainted_path",
+        "source_sha256": "ce88110e09d24f0a98c770a045fbc43a67e0f64aa3118fa9b7040d6cb53221e5",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_PATH_TRAVERSAL"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_create_read_stream.js",
+        "id": "js-create-read-stream",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "passed": true,
+        "pattern": "create_read_stream",
+        "source_sha256": "1b6bcfe00f79f69adacc0fbb65be3c7659a816d1b6f4bd1cd3a52d63d6e61582",
+        "tags": [
+          "edge",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_PATH_TRAVERSAL"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_SSRF"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_httpx_ssrf.py",
+        "id": "py-httpx-ssrf",
+        "language": "python",
+        "observed_rules": [
+          "PY_SSRF"
+        ],
+        "passed": true,
+        "pattern": "httpx_get",
+        "source_sha256": "5bc4d65a7da205dfde935ad1b8eb2a4e075e3be6beee12ccf75e514a33a304a2",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SSRF"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SSRF"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "JS_SSRF"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_axios_ssrf.js",
+        "id": "js-axios-ssrf",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SSRF"
+        ],
+        "passed": true,
+        "pattern": "axios_get",
+        "source_sha256": "26ae58013debb5212ec4c79ba761a53da5406f028238817cf3b4c515c989b6bf",
+        "tags": [
+          "edge",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_SSRF"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SSRF"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_pickle_load.py",
+        "id": "py-pickle-load",
+        "language": "python",
+        "observed_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "passed": true,
+        "pattern": "pickle_load_file",
+        "source_sha256": "b7e6b87f809a4fb7980abd3b45f87a3c25ac05fca02cbe3464aa7766accd08fb",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_yaml_full_loader.py",
+        "id": "py-yaml-full-loader",
+        "language": "python",
+        "observed_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "passed": true,
+        "pattern": "yaml_full_loader",
+        "source_sha256": "44151ea564c06be313c46a72ac0f0672d7526a59474aac0de515109ee0f70a40",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_YAML_UNSAFE_LOAD"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "JS_YAML_UNSAFE_LOAD"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_yaml_load.js",
+        "id": "js-yaml-load",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_YAML_UNSAFE_LOAD"
+        ],
+        "passed": true,
+        "pattern": "jsyaml_load",
+        "source_sha256": "f8f740ad1342b4b883adb7febf446701af9bbed8a781ba2d50ad811ae9db59bf",
+        "tags": [
+          "basic",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_YAML_UNSAFE_LOAD"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_YAML_UNSAFE_LOAD"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_sensitive_billing_route.py",
+        "id": "py-sensitive-billing-route",
+        "language": "python",
+        "observed_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "passed": true,
+        "pattern": "billing_route",
+        "source_sha256": "d810bdbc7737479be3f39bcdc1b8331bc4f938ba9bd429195a1055f909b493f7",
+        "tags": [
+          "edge",
+          "positive",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_sensitive_token_route.js",
+        "id": "js-sensitive-token-route",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "passed": true,
+        "pattern": "token_route",
+        "source_sha256": "f765a88504f9d582748e677c0ec3ffee6cbc951139f13044c2c57299ca13958a",
+        "tags": [
+          "edge",
+          "js",
+          "positive"
+        ],
+        "target_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "SECRET_OPENAI"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "secret_openai.py",
+        "id": "secret-openai",
+        "language": "python",
+        "observed_rules": [
+          "SECRET_OPENAI"
+        ],
+        "passed": true,
+        "pattern": "openai_token_shape",
+        "source_sha256": "fdea5e90bdf0e676e9e6c68e9828744485105085ce692fa73c56f23d62734ed3",
+        "tags": [
+          "basic",
+          "positive",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_OPENAI"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "SECRET_OPENAI"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "SECRET_GITHUB"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "secret_github.js",
+        "id": "secret-github",
+        "language": "javascript",
+        "observed_rules": [
+          "SECRET_GITHUB"
+        ],
+        "passed": true,
+        "pattern": "github_token_shape",
+        "source_sha256": "7ad4f397533ff2b0c3da90062d7fbe029c0a31b487bcda290758d44251d10e75",
+        "tags": [
+          "basic",
+          "positive",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_GITHUB"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "SECRET_GITHUB"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "basic",
+        "expected_rules": [
+          "SECRET_AWS"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "secret_aws.py",
+        "id": "secret-aws",
+        "language": "python",
+        "observed_rules": [
+          "SECRET_AWS"
+        ],
+        "passed": true,
+        "pattern": "aws_access_key_shape",
+        "source_sha256": "358ea624370f5d5a0065b6b5dcd61b02f6ab4e5cba78659b0ab32dc0be54c116",
+        "tags": [
+          "basic",
+          "positive",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_AWS"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "SECRET_AWS"
+        ]
+      },
+      {
+        "classification": "positive",
+        "difficulty": "edge",
+        "expected_rules": [
+          "SECRET_GENERIC"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "secret_generic_password.js",
+        "id": "secret-generic-password",
+        "language": "javascript",
+        "observed_rules": [
+          "SECRET_GENERIC"
+        ],
+        "passed": true,
+        "pattern": "password_assignment",
+        "source_sha256": "9b2e89424f83aff71686935488eac8a8ef398338bfc23169aa63558f8e23d111",
+        "tags": [
+          "edge",
+          "positive",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_GENERIC"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "SECRET_GENERIC"
+        ]
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_literal_eval.py",
+        "id": "safe-python-literal-eval",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "ast_literal_eval",
+        "source_sha256": "6e308aae79c979716ec6351b7180fe17e9a921b5d2e0571860d748d1f3107840",
+        "tags": [
+          "edge",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "targeted_true_negatives": [
+          "PY_DYNAMIC_EXECUTION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_json_parse.js",
+        "id": "safe-javascript-json-parse",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "json_parse",
+        "source_sha256": "cf1700119dbe2437d65c4cb600b3864aff406bf27027f599e2150fd7541d6bcd",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "targeted_true_negatives": [
+          "JS_DYNAMIC_EXECUTION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_spawn_argv.js",
+        "id": "safe-javascript-spawn-argv",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "spawn_argv",
+        "source_sha256": "817d8b7e44b1bcb72cd69ea43a11d4a22fa1635071b5419bad9a8654825515b7",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_constant_path.py",
+        "id": "safe-python-constant-path",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "constant_path",
+        "source_sha256": "98240dce67bc724704fb47362f003ee5a00673ea2d7d90a633f0901cb0856532",
+        "tags": [
+          "edge",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "targeted_true_negatives": [
+          "PY_PATH_TRAVERSAL"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_constant_path.js",
+        "id": "safe-javascript-constant-path",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "constant_path",
+        "source_sha256": "5d587e96d23c9c329df297882df8717d65b4562b2abf59e99980a0601c795a3f",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "targeted_true_negatives": [
+          "JS_PATH_TRAVERSAL"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_constant_request.py",
+        "id": "safe-python-constant-request",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "constant_url",
+        "source_sha256": "36b5709f91d0d7926428fd40b7ee35e496bd8e2d1581f1bc52b87f23fc3b0627",
+        "tags": [
+          "edge",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SSRF"
+        ],
+        "targeted_true_negatives": [
+          "PY_SSRF"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_yaml_safe_load.py",
+        "id": "safe-python-yaml-safe-load",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "yaml_safe_load",
+        "source_sha256": "ace07c6d0b5468ca373f16696ce47b4935482f79cd86158b54c124728cadaf6f",
+        "tags": [
+          "basic",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "targeted_true_negatives": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_yaml_safe_load.js",
+        "id": "safe-javascript-yaml-safe-load",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "safe_load_api",
+        "source_sha256": "f4279c1e90872bcbf07906b7fad816f864252bb3ccb30d639ed784bec44ffe77",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_YAML_UNSAFE_LOAD"
+        ],
+        "targeted_true_negatives": [
+          "JS_YAML_UNSAFE_LOAD"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_json_deserialization.py",
+        "id": "safe-python-json-deserialization",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "json_loads",
+        "source_sha256": "1b39aadb199412b2fe953fbd0be06f6667c1bd8f419938cdc8d8fa5704f0d089",
+        "tags": [
+          "basic",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "targeted_true_negatives": [
+          "PY_UNSAFE_DESERIALIZATION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_permission_route.py",
+        "id": "safe-python-permission-route",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "permission_marker",
+        "source_sha256": "f720d30d8e55a13eafde4961d32ad87557b2f0c5655ac14ddf67386413257eba",
+        "tags": [
+          "edge",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [
+          "PY_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_permission_route.js",
+        "id": "safe-javascript-permission-route",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "permission_middleware",
+        "source_sha256": "12864c8cfb6b851498acb5b38c3c0e13100f86e999b5bcdc187d139b0043b02a",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "targeted_true_negatives": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "basic",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_generic_secret_env.py",
+        "id": "safe-generic-secret-env",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "environment_lookup",
+        "source_sha256": "b0d82d8248359ca3d1bf2c246dfd6a34b2c22071861f982957be8c6cd78743b7",
+        "tags": [
+          "basic",
+          "negative",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_GENERIC"
+        ],
+        "targeted_true_negatives": [
+          "SECRET_GENERIC"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_openai_placeholder.py",
+        "id": "safe-openai-placeholder",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "redacted_placeholder",
+        "source_sha256": "90a082b3081d6121135b815ebb2a2c1c84ad40e062dc2a50b9ff1c2df37d89fc",
+        "tags": [
+          "edge",
+          "negative",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_OPENAI"
+        ],
+        "targeted_true_negatives": [
+          "SECRET_OPENAI"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_github_placeholder.js",
+        "id": "safe-github-placeholder",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "redacted_placeholder",
+        "source_sha256": "b89b0d83bceaf07b4d617333d0a093c6ba106401f9bb50e864a7f6d50251d5db",
+        "tags": [
+          "edge",
+          "negative",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_GITHUB"
+        ],
+        "targeted_true_negatives": [
+          "SECRET_GITHUB"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_aws_placeholder.py",
+        "id": "safe-aws-placeholder",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "environment_lookup",
+        "source_sha256": "81e3df241c3078608c649a7ba5886c494482de4348c0eae8180346a21e78f872",
+        "tags": [
+          "edge",
+          "negative",
+          "secret"
+        ],
+        "target_rules": [
+          "SECRET_AWS"
+        ],
+        "targeted_true_negatives": [
+          "SECRET_AWS"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_parameterized_sql.js",
+        "id": "safe-javascript-parameterized-sql",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "parameterized_query",
+        "source_sha256": "11422f4876cb8ac944770779fff4c7622e22d031705e920bcc0fc13556c6d08f",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "targeted_true_negatives": [
+          "JS_SQL_INTERPOLATION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_javascript_constant_command.js",
+        "id": "safe-javascript-constant-command",
+        "language": "javascript",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "constant_command",
+        "source_sha256": "1c4329b33b3bf59fc8fe61219267012372ec5961b30b06cc4f44efdae298c1d3",
+        "tags": [
+          "edge",
+          "js",
+          "negative"
+        ],
+        "target_rules": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "targeted_true_negatives": [
+          "JS_COMMAND_INJECTION"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "negative",
+        "difficulty": "edge",
+        "expected_rules": [],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "safe_python_yaml_safe_loader.py",
+        "id": "safe-python-yaml-safe-loader",
+        "language": "python",
+        "observed_rules": [],
+        "passed": true,
+        "pattern": "explicit_safe_loader",
+        "source_sha256": "cd238aa5fd6472d989d976e7b7e4782a1c4bda8534bf7ba2d66860d09af25eb5",
+        "tags": [
+          "edge",
+          "negative",
+          "py"
+        ],
+        "target_rules": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "targeted_true_negatives": [
+          "PY_YAML_UNSAFE_LOAD"
+        ],
+        "true_positives": []
+      },
+      {
+        "classification": "multi_signal",
+        "difficulty": "adversarial",
+        "expected_rules": [
+          "PY_SQL_INTERPOLATION",
+          "SECRET_GENERIC"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "py_multi_sql_secret.py",
+        "id": "py-multi-sql-secret",
+        "language": "python",
+        "observed_rules": [
+          "PY_SQL_INTERPOLATION",
+          "SECRET_GENERIC"
+        ],
+        "passed": true,
+        "pattern": "multi_signal_sql_secret",
+        "source_sha256": "86005dedc648709f53cfffb9b279621997d64e3819bd3451cf2c7de54d6cb06c",
+        "tags": [
+          "adversarial",
+          "multi_signal",
+          "py",
+          "secret"
+        ],
+        "target_rules": [
+          "PY_SQL_INTERPOLATION",
+          "SECRET_GENERIC"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "PY_SQL_INTERPOLATION",
+          "SECRET_GENERIC"
+        ]
+      },
+      {
+        "classification": "multi_signal",
+        "difficulty": "adversarial",
+        "expected_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH",
+          "JS_SSRF"
+        ],
+        "false_negatives": [],
+        "false_positives": [],
+        "filename": "js_multi_ssrf_sensitive_route.js",
+        "id": "js-multi-ssrf-sensitive-route",
+        "language": "javascript",
+        "observed_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH",
+          "JS_SSRF"
+        ],
+        "passed": true,
+        "pattern": "multi_signal_route_ssrf",
+        "source_sha256": "1ec73ae65ce6e3aac4c5c87cc5ace455c2bff172d9177613c4a6c5c031ab2bd8",
+        "tags": [
+          "adversarial",
+          "js",
+          "multi_signal"
+        ],
+        "target_rules": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH",
+          "JS_SSRF"
+        ],
+        "targeted_true_negatives": [],
+        "true_positives": [
+          "JS_SENSITIVE_ROUTE_NO_AUTH",
+          "JS_SSRF"
+        ]
+      }
+    ],
+    "corpus_sha256": "fdc24b574e3b67d7afda729d3e0dfcaeab61eb05af1fa6c92d2c458f404a42d1",
+    "corpus_version": "sentinel-static-validation-2026.07",
+    "coverage": {
+      "edge_complete": true,
+      "known_rule_count": 19,
+      "missing_edge_support": [],
+      "missing_negative_support": [],
+      "missing_positive_support": [],
+      "positive_and_negative_complete": true,
+      "rules_with_edge_support": 19,
+      "rules_with_negative_support": 19,
+      "rules_with_positive_support": 19
+    },
+    "limitations": [
+      {
+        "area": "static_analysis",
+        "detail": "Python taint tracking is intentionally local to simple assignments and does not claim interprocedural data-flow coverage.",
+        "id": "intra_procedural_taint_only",
+        "status": "known_limit"
+      },
+      {
+        "area": "static_analysis",
+        "detail": "JavaScript and TypeScript triage uses bounded regular-expression candidates rather than a full semantic parser.",
+        "id": "javascript_regex_prefilter",
+        "status": "known_limit"
+      },
+      {
+        "area": "static_analysis",
+        "detail": "Allowlist and sanitizer effectiveness is a contextual GPT review responsibility; the deterministic layer favors recall.",
+        "id": "sanitizer_semantics",
+        "status": "review_required"
+      },
+      {
+        "area": "patch_validation",
+        "detail": "Patch escrow validates diff shape and git applicability for JavaScript but does not execute project tooling or claim full JavaScript syntax validation.",
+        "id": "javascript_patch_syntax",
+        "status": "known_limit"
+      },
+      {
+        "area": "evaluation",
+        "detail": "Exact corpus results measure only these committed fixtures and are not a production precision or recall estimate.",
+        "id": "fixture_not_world_accuracy",
+        "status": "disclosure"
+      }
+    ],
+    "metrics": {
+      "case_count": 60,
+      "case_pass_rate": 1.0,
+      "edge_case_count": 33,
+      "failed_cases": 0,
+      "false_negatives": 0,
+      "false_positives": 0,
+      "multi_signal_case_count": 2,
+      "negative_case_count": 23,
+      "passed_cases": 60,
+      "positive_case_count": 37,
+      "precision": 1.0,
+      "recall": 1.0,
+      "specificity": 1.0,
+      "targeted_true_negatives": 23,
+      "true_positives": 39
+    },
+    "per_classification": {
+      "multi_signal": {
+        "case_pass_rate": 1.0,
+        "cases": 2,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 2,
+        "negative_cases": 0,
+        "passed_cases": 2,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 0,
+        "tp": 4
+      },
+      "negative": {
+        "case_pass_rate": 1.0,
+        "cases": 23,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 0,
+        "negative_cases": 23,
+        "passed_cases": 23,
+        "positive_cases": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 23,
+        "tp": 0
+      },
+      "positive": {
+        "case_pass_rate": 1.0,
+        "cases": 35,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 0,
+        "negative_cases": 0,
+        "passed_cases": 35,
+        "positive_cases": 35,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 0,
+        "tp": 35
+      }
+    },
+    "per_difficulty": {
+      "adversarial": {
+        "case_pass_rate": 1.0,
+        "cases": 2,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 2,
+        "negative_cases": 0,
+        "passed_cases": 2,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 0,
+        "tp": 4
+      },
+      "basic": {
+        "case_pass_rate": 1.0,
+        "cases": 27,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 0,
+        "negative_cases": 8,
+        "passed_cases": 27,
+        "positive_cases": 19,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 8,
+        "tp": 19
+      },
+      "edge": {
+        "case_pass_rate": 1.0,
+        "cases": 31,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 0,
+        "negative_cases": 15,
+        "passed_cases": 31,
+        "positive_cases": 16,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 15,
+        "tp": 16
+      }
+    },
+    "per_language": {
+      "javascript": {
+        "case_pass_rate": 1.0,
+        "cases": 26,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 1,
+        "negative_cases": 10,
+        "passed_cases": 26,
+        "positive_cases": 16,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 10,
+        "tp": 17
+      },
+      "python": {
+        "case_pass_rate": 1.0,
+        "cases": 34,
+        "failed_cases": 0,
+        "fn": 0,
+        "fp": 0,
+        "multi_signal_cases": 1,
+        "negative_cases": 13,
+        "passed_cases": 34,
+        "positive_cases": 21,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 13,
+        "tp": 22
+      }
+    },
+    "per_rule": {
+      "JS_COMMAND_INJECTION": {
+        "edge_cases": 3,
+        "family": "command_injection",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 0,
+        "negative_cases": 2,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 2,
+        "tp": 2
+      },
+      "JS_DYNAMIC_EXECUTION": {
+        "edge_cases": 2,
+        "family": "dynamic_execution",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "JS_PATH_TRAVERSAL": {
+        "edge_cases": 2,
+        "family": "path_traversal",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "JS_SENSITIVE_ROUTE_NO_AUTH": {
+        "edge_cases": 3,
+        "family": "missing_authorization",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 1,
+        "negative_cases": 2,
+        "positive_cases": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 2,
+        "tp": 3
+      },
+      "JS_SQL_INTERPOLATION": {
+        "edge_cases": 2,
+        "family": "sql_injection",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "JS_SSRF": {
+        "edge_cases": 2,
+        "family": "ssrf",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 1,
+        "negative_cases": 1,
+        "positive_cases": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 3
+      },
+      "JS_YAML_UNSAFE_LOAD": {
+        "edge_cases": 1,
+        "family": "unsafe_yaml",
+        "fn": 0,
+        "fp": 0,
+        "language": "javascript",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 1
+      },
+      "PY_COMMAND_INJECTION": {
+        "edge_cases": 1,
+        "family": "command_injection",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "PY_DYNAMIC_EXECUTION": {
+        "edge_cases": 2,
+        "family": "dynamic_execution",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "PY_PATH_TRAVERSAL": {
+        "edge_cases": 2,
+        "family": "path_traversal",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "PY_SENSITIVE_ROUTE_NO_AUTH": {
+        "edge_cases": 2,
+        "family": "missing_authorization",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 2,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 2,
+        "tp": 2
+      },
+      "PY_SQL_INTERPOLATION": {
+        "edge_cases": 3,
+        "family": "sql_injection",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 1,
+        "negative_cases": 1,
+        "positive_cases": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 4
+      },
+      "PY_SSRF": {
+        "edge_cases": 2,
+        "family": "ssrf",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "PY_UNSAFE_DESERIALIZATION": {
+        "edge_cases": 1,
+        "family": "unsafe_deserialization",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 2
+      },
+      "PY_YAML_UNSAFE_LOAD": {
+        "edge_cases": 2,
+        "family": "unsafe_yaml",
+        "fn": 0,
+        "fp": 0,
+        "language": "python",
+        "multi_signal_cases": 0,
+        "negative_cases": 2,
+        "positive_cases": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 2,
+        "tp": 2
+      },
+      "SECRET_AWS": {
+        "edge_cases": 1,
+        "family": "hardcoded_secret",
+        "fn": 0,
+        "fp": 0,
+        "language": "generic",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 1
+      },
+      "SECRET_GENERIC": {
+        "edge_cases": 2,
+        "family": "hardcoded_secret",
+        "fn": 0,
+        "fp": 0,
+        "language": "generic",
+        "multi_signal_cases": 1,
+        "negative_cases": 1,
+        "positive_cases": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 3
+      },
+      "SECRET_GITHUB": {
+        "edge_cases": 1,
+        "family": "hardcoded_secret",
+        "fn": 0,
+        "fp": 0,
+        "language": "generic",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 1
+      },
+      "SECRET_OPENAI": {
+        "edge_cases": 1,
+        "family": "hardcoded_secret",
+        "fn": 0,
+        "fp": 0,
+        "language": "generic",
+        "multi_signal_cases": 0,
+        "negative_cases": 1,
+        "positive_cases": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "specificity": 1.0,
+        "tn": 1,
+        "tp": 1
+      }
+    },
+    "ruleset_version": "sentinel-rules-2026.07",
+    "schema_version": "sentinel-static-eval-v2",
+    "scope": "Committed deterministic candidate-regression corpus with targeted positive, negative, edge, and multi-signal fixtures. Exact results validate only this corpus and are not a general-world accuracy claim."
+  },
+  "validation_pack_sha256": "dca96a1de0c87a571cff8bd393bdd12762a561b64fd9e5a81f2c594bbbf67bce"
 }

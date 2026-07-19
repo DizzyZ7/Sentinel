@@ -1,0 +1,8 @@
+--- a/app.py
++++ b/app.py
+@@ -1,4 +1,4 @@
+-VERSION = "1"
++VERSION = "2"
+ 
+ 
+ def run(db, user):

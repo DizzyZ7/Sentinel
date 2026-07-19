@@ -1,0 +1,11 @@
+--- a/app.py
++++ b/app.py
+@@ -1,6 +1,6 @@
+-import os
++import subprocess
+ 
+ 
+ def run(request):
+     command = request.query_params["command"]
+-    return os.system(command)
++    return subprocess.run(["echo", command], shell=False, check=False)
