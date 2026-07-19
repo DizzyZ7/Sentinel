@@ -1,0 +1,37 @@
+name: bootstrap-sentinel-1.9
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Build source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=zip --prefix=Sentinel-1.8/ --output=sentinel-main.zip main
+          sha256sum sentinel-main.zip | tee sentinel-main.sha256
+          unzip -t sentinel-main.zip
+
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-main-bootstrap
+          path: |
+            sentinel-main.zip
+            sentinel-main.sha256
+          if-no-files-found: error
+          retention-days: 1
