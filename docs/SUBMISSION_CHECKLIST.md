@@ -1,5 +1,9 @@
 # Sentinel final submission checklist
 
+Official deadline: **July 21, 2026 at 5:00 PM PDT**, equal to **July 22 at 02:00 CEST in Europe/Amsterdam**. Use July 20 at 22:00 CEST as the internal completion target.
+
+Exact publication locations and copy-ready values are in [`SUBMISSION_HANDOFF.md`](SUBMISSION_HANDOFF.md).
+
 Run the automated preflight first:
 
 ```bash
@@ -71,3 +75,13 @@ Exit code `0` means the repository-side checklist is complete.
 - [ ] Run `sentinel scan . --json-output sentinel-local-scan.json --sarif-output sentinel-local-scan.sarif`.
 - [ ] Confirm `source_executed`, `dependencies_installed`, and `patches_applied` are all `false`.
 - [ ] Confirm the local report SHA-256 verifies before retaining the files as submission evidence.
+
+
+## Submission release artifact
+
+- [ ] Run the **submission-release** workflow once in draft mode to publish/refresh the image and produce retained assets.
+- [ ] Make the GHCR package public and verify an anonymous pull.
+- [ ] Run **submission-release** again with `strict_finalize=true` and all final external values.
+- [ ] Set `publish_release=true` only for the strict final run.
+- [ ] Download the workflow artifact and verify `SHA256SUMS`.
+- [ ] Confirm the GitHub Release assets are accessible while signed out.

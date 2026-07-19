@@ -66,6 +66,18 @@ sentinel scan . --changed-only --base-ref origin/main --fail-on new
 
 The local CLI respects Git ignore rules, skips symlinks/binary/oversized files, sanitizes secret-bearing snippets, emits stable fingerprints and report SHA-256, and never labels a deterministic candidate as a confirmed vulnerability. Full semantics and exit codes are documented in [`docs/LOCAL_CLI.md`](docs/LOCAL_CLI.md). A ready composite action is committed in [`action.yml`](action.yml).
 
+## Submission release path
+
+Sentinel 2.2.1 includes a manual GitHub Actions workflow that verifies the full project, publishes the multi-architecture GHCR image, and assembles a hash-covered competition handoff:
+
+```bash
+python -m scripts.build_submission_pack \
+  --output-dir build/submission-pack \
+  --archive build/sentinel-submission-pack-2.2.1.zip
+```
+
+The draft pack records every missing external field instead of pretending the submission is complete. Strict finalization fails closed until the public YouTube URL, primary Codex Session ID, public GHCR confirmation, and Devpost completion are supplied. See [`docs/SUBMISSION_HANDOFF.md`](docs/SUBMISSION_HANDOFF.md).
+
 ## Why this is different
 
 Traditional SAST has deterministic evidence but often produces noise. Unconstrained AI review has context but can hallucinate vulnerabilities or unsafe fixes. Sentinel gives each layer one limited responsibility:
@@ -84,7 +96,8 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 12. **Continuous Security Control Plane** stores immutable snapshots, state transitions, local alerts, and hash-chained audit events.
 13. **Real-World Validation Pack** measures all built-in rules, safe neighboring patterns, patch escrow, and regression-proof outcomes through hash-covered fixtures.
 14. **Local CLI and Changed-Files Gate** bring deterministic, secret-safe candidate evidence into developer worktrees and pull requests.
-15. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+15. **Submission Release Pack** produces a reproducible, SHA-256-covered judge handoff and publication workflow.
+16. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 

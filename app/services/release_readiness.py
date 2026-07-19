@@ -57,6 +57,8 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
         "docs/BUILD_LOG.md",
         "docs/EVALUATION.md",
         "docs/SUBMISSION_CHECKLIST.md",
+        "docs/SUBMISSION_HANDOFF.md",
+        "docs/RELEASE_NOTES_2.2.1.md",
         "docs/BASELINE_COMPARISON.md",
         "docs/LINEAGE_AND_CI.md",
         "docs/RISK_INTELLIGENCE.md",
@@ -70,6 +72,8 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
         "docs/CONTROL_PLANE.md",
         "docs/LOCAL_CLI.md",
         "scripts/verify_judge_demo.py",
+        "scripts/build_submission_pack.py",
+        "app/services/submission_pack.py",
         "app/cli.py",
         "app/services/local_scan.py",
         "app/services/local_sarif.py",
@@ -82,6 +86,7 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
         ".github/workflows/ci.yml",
         ".github/workflows/publish-image.yml",
         ".github/workflows/verify-public-image.yml",
+        ".github/workflows/submission-release.yml",
     ]
     missing = [path for path in required if not (root / path).is_file()]
     checks.append(
@@ -213,6 +218,29 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
             "local_cli",
             "Local CLI and changed-files gate",
             "The installed CLI, composite action, documentation, and CI self-scan are present.",
+        )
+    )
+
+    submission_service = (root / "app/services/submission_pack.py").read_text(encoding="utf-8")
+    submission_workflow = (root / ".github/workflows/submission-release.yml").read_text(encoding="utf-8")
+    submission_handoff = (root / "docs/SUBMISSION_HANDOFF.md").read_text(encoding="utf-8")
+    checks.append(
+        _check(
+            "SUBMISSION_PACK_SCHEMA_VERSION" in submission_service
+            and "manifest_sha256" in submission_service
+            and "strict_finalize" in submission_workflow
+            and "Publish multi-architecture image" in submission_workflow
+            and "Create or update GitHub Release" in submission_workflow
+            and "Europe/Amsterdam" in submission_handoff
+            and "sentinel-build-submission" in pyproject_text
+            and "Build draft submission pack" in ci
+            and "sentinel-submission-pack-draft" in ci,
+            "submission_release_pack",
+            "Submission release pack",
+            (
+                "The reproducible pack builder, strict publication workflow, release assets, "
+                "and exact handoff are present."
+            ),
         )
     )
 

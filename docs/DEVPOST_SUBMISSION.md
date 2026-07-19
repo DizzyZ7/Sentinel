@@ -93,4 +93,4 @@ The prebuilt container targets linux/amd64 and linux/arm64 and runs through Dock
 
 ## Final repository preflight
 
-Use [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) and [`RECORDING_GUIDE.md`](RECORDING_GUIDE.md) and require `python -m scripts.check_release --strict` to exit with code 0 before submission.
+Use [`SUBMISSION_HANDOFF.md`](SUBMISSION_HANDOFF.md), [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md), and [`RECORDING_GUIDE.md`](RECORDING_GUIDE.md) and require `python -m scripts.check_release --strict` to exit with code 0 before submission.
