@@ -16,6 +16,7 @@ from app.routers.health import router as health_router
 from app.routers.judge import router as judge_router
 from app.routers.lineage import router as lineage_router
 from app.routers.llm_audit import router as llm_audit_router
+from app.routers.portfolio import router as portfolio_router
 from app.routers.progress import router as progress_router
 from app.routers.project_context import router as project_context_router
 from app.routers.risk_exception import router as risk_exception_router
@@ -53,6 +54,7 @@ app.include_router(evidence_router)
 app.include_router(judge_router)
 app.include_router(lineage_router)
 app.include_router(llm_audit_router)
+app.include_router(portfolio_router)
 app.include_router(progress_router)
 app.include_router(project_context_router)
 app.include_router(risk_exception_router)

@@ -162,3 +162,13 @@ Added immutable security SLA profiles, lineage-stable finding clocks, ownership 
 - Added JSON/HTML objective editing, preview, and reporting surfaces.
 - Added initial-ingestion declarations, latest-version rescan inheritance, built-in demo objectives, and Evidence Bundle integrity coverage.
 - Added service, persistence, API, OpenAPI, forecast, confidence, immutable-version, and regression tests.
+
+## Sentinel 1.9 — Portfolio Security Governance
+
+- Added explicit portfolios spanning independent root lineages.
+- Added criticality-weighted membership and optional pinned lineage heads.
+- Added fail-closed detection of missing, stale, failed, in-progress, and ambiguous evidence.
+- Added immutable portfolio governance profiles with canonical SHA-256.
+- Added deterministic roll-up of posture, release policy, exception governance, SLA debt, objectives, and remediation forecasts.
+- Added weighted residual-risk concentration instead of hiding concentrated exposure behind an average.
+- Added responsive executive portfolio UI and integrity-covered portfolio evidence export.

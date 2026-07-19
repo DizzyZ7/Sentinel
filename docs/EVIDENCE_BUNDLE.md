@@ -60,3 +60,15 @@ Sentinel 1.7 adds the posture-engine version and the selected scan's direct-ance
 ## Security objective and forecast section
 
 Sentinel 1.8 adds the assigned objective profile ID, version, canonical SHA-256, explicit target checks, deadline state, remediation forecast, interval samples, confidence reasons, assumptions, and both objective/forecast engine versions. Missing history remains visible as `not_measurable` or `insufficient_history`; it is never replaced with a fabricated metric. The complete objective report receives a section SHA-256 and participates in the canonical payload digest.
+
+## Portfolio evidence bundle
+
+Sentinel 1.9 adds a separate `sentinel-portfolio-evidence-v1` export at:
+
+```http
+GET /portfolios/{portfolio_id}/evidence
+```
+
+It contains application and portfolio-engine versions, explicit lineage membership, pinned-head choices, the exact immutable governance profile, portfolio checks, executive summary, member posture/objective/forecast snapshots, and criticality-weighted risk concentration. Missing, stale, failed, in-progress, and ambiguous evidence remain visible rather than being omitted from the roll-up.
+
+Each top-level portfolio section receives SHA-256 over canonical sorted-key UTF-8 JSON, followed by a canonical payload SHA-256. This is a query-time evidence snapshot: `generated_at`, selected heads, evidence freshness, profile version, and integrity hashes define its reproducibility boundary.
