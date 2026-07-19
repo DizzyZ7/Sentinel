@@ -1,0 +1,40 @@
+name: package-sentinel-1.6
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out merged main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Build deterministic source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive \
+            --format=zip \
+            --prefix=Sentinel-1.6/ \
+            --output=sentinel-mvp-1.6.zip \
+            main
+          sha256sum sentinel-mvp-1.6.zip | tee sentinel-mvp-1.6.sha256
+          unzip -t sentinel-mvp-1.6.zip
+
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-mvp-1.6
+          path: |
+            sentinel-mvp-1.6.zip
+            sentinel-mvp-1.6.sha256
+          if-no-files-found: error
+          retention-days: 1
