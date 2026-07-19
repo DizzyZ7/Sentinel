@@ -1,4 +1,10 @@
 from app.models.base import Base
+from app.models.control_plane import (
+    PortfolioAlert,
+    PortfolioAuditEvent,
+    PortfolioControlProfile,
+    PortfolioSnapshot,
+)
 from app.models.decision import ReviewDecision
 from app.models.finding import Finding
 from app.models.lineage import ScanLineage
@@ -17,6 +23,10 @@ from app.models.verification import RegressionVerification
 __all__ = [
     "Base",
     "Finding",
+    "PortfolioControlProfile",
+    "PortfolioSnapshot",
+    "PortfolioAlert",
+    "PortfolioAuditEvent",
     "LLMReviewRun",
     "RegressionVerification",
     "ReviewDecision",

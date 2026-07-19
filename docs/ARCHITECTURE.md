@@ -263,3 +263,14 @@ Portfolio head selection is fail closed. A lineage with one leaf can be selected
 `PortfolioGovernanceProfile` stores immutable, canonical-hashed governance documents. The portfolio dashboard is a deterministic query-time read model over selected scans, posture, objective evaluation, remediation forecasts, policy, exception governance, and SLA debt. It exposes stale, missing, failed, in-progress, and ambiguous evidence separately from security failure. Weighted posture and residual-risk concentration supplement the underlying decisions but never replace them.
 
 The portfolio evidence bundle is separate from the finding evidence bundle. It integrity-covers portfolio metadata, explicit membership, the exact governance profile, executive checks, selected member snapshots, and risk concentration with per-section and canonical SHA-256 values. No repository code is executed and no additional model call is introduced.
+
+
+## Sentinel 2.0 control-plane boundary
+
+`PortfolioControlProfile` versions caller-driven cadence and local alert-routing policy. `PortfolioSnapshot` is an immutable point-in-time copy of the portfolio dashboard with exact governance/control hashes, a previous-snapshot hash, and deterministic transition data. The API exposes capture but no snapshot update/delete operation.
+
+`PortfolioAlert` is a mutable local queue projection with stable persistent-condition keys, occurrence counts, acknowledgement, resolution, and recurrence reopening. Every lifecycle mutation is preserved separately in append-only `PortfolioAuditEvent` rows. Audit events form a per-portfolio SHA-256 chain through `previous_event_sha256`; snapshot evidence forms an independent chain through `previous_snapshot_sha256`.
+
+Cadence is policy, not a hidden worker. CI, cron, or an operator invokes snapshot capture explicitly. Schedule status reports due/overdue state and semantic configuration drift by comparing current portfolio membership/metadata and exact governance/control hashes against the latest immutable snapshot.
+
+The control-plane evidence export is separate from finding and query-time portfolio bundles. It integrity-covers profile history, schedule status, all snapshots, alert lifecycle state, the ascending audit chain, per-section hashes, and a canonical payload hash. No model call, repository execution, external alert send, or automatic patch application is introduced.
