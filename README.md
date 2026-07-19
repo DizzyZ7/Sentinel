@@ -229,6 +229,7 @@ GET  /scan/{scan_id}/findings/{finding_id}/risk-intelligence
 GET  /scan/{scan_id}/risk-exceptions
 POST /scan/{scan_id}/risk-exceptions
 GET  /scan/{scan_id}/exception-aware-compliance
+GET  /scan/{scan_id}/security-posture
 GET  /scan/{current_scan_id}/exception-debt/compare/{baseline_scan_id}
 GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
@@ -379,3 +380,15 @@ curl 'http://localhost:8000/scan/<scan_id>/security-debt?format=html'
 ```
 
 Persistent findings keep their original owner and deadline across rescans. Exceptions do not pause the clock, and renewal cannot exceed the remediation deadline. See [`docs/SECURITY_SLA.md`](docs/SECURITY_SLA.md).
+
+
+## Security Posture Trends and Remediation Effectiveness
+
+Sentinel 1.7 turns immutable lineage evidence into an ancestor-chain security trend. It reports posture risk, release and governance state, policy blockers, accepted risk, SLA debt, introduced/resolved/changed evidence, verified remediation speed, SLA attainment, and exact fingerprint recurrence.
+
+```bash
+curl http://localhost:8000/scan/<scan_id>/security-posture
+curl 'http://localhost:8000/scan/<scan_id>/security-posture?format=html'
+```
+
+Historical points are evaluated at their own completion time, sibling branches are excluded, changed evidence remains one continuous remediation episode, and the complete trend is integrity-covered inside the Evidence Bundle. See [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md).

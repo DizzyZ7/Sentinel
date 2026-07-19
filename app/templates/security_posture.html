@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sentinel security posture</title>
+  <style>
+    :root{color-scheme:dark;--bg:#071019;--panel:#0d1925;--line:#26384a;--text:#eef6ff;--muted:#91a5b8;--accent:#7dd3fc;--good:#64d9a0;--warn:#f8d477;--bad:#ff8f8f}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#123c55 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,sans-serif}
+    main{max-width:1240px;margin:auto;padding:38px 24px 70px}a{color:var(--accent)}h1,h2,h3,p{margin-top:0}.muted{color:var(--muted)}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+    .actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.button{border:1px solid var(--line);background:#17213a;color:var(--text);padding:9px 12px;border-radius:10px;text-decoration:none}
+    .panel{background:rgba(13,25,37,.96);border:1px solid var(--line);border-radius:18px;padding:20px;margin:16px 0}.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.metric{padding:14px;border:1px solid var(--line);border-radius:12px}.metric strong{display:block;font-size:25px}
+    .timeline{display:grid;gap:12px}.point{display:grid;grid-template-columns:.45fr 1.1fr repeat(5,.65fr);gap:12px;align-items:center;border-top:1px solid var(--line);padding:16px 0}.point:first-child{border-top:0}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:12px}.bar{height:10px;border-radius:999px;background:#142231;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;background:var(--accent)}
+    .episode{display:grid;grid-template-columns:1.6fr .8fr .8fr .8fr;gap:14px;border-top:1px solid var(--line);padding:14px 0}.episode:first-of-type{border-top:0}
+    @media(max-width:980px){.metrics{grid-template-columns:repeat(2,1fr)}.point,.episode{grid-template-columns:1fr}.point{padding:18px 0}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="actions">
+    <a class="button" href="/scan/{{ scan.id }}/judge">Judge view</a>
+    <a class="button" href="/scan/{{ scan.id }}/security-debt?format=html">Security debt</a>
+    <a class="button" href="/scan/{{ scan.id }}/executive-report?format=html">Executive report</a>
+  </div>
+  <p class="muted">SENTINEL SECURITY POSTURE · {{ trend.engine_version }}</p>
+  <h1>{{ trend.summary.trend_direction|upper }} · lineage posture and remediation effectiveness</h1>
+  <p class="muted">Root {{ trend.root_scan_id }} · {{ trend.summary.generations }} recorded generations · current scan {{ trend.current_scan_id }}</p>
+
+  <section class="panel">
+    <div class="metrics">
+      <div class="metric"><span class="muted">Posture risk</span><strong>{{ trend.summary.current_posture_score }}</strong><small class="muted">{{ trend.summary.current_posture_state }}</small></div>
+      <div class="metric"><span class="muted">Confirmed delta</span><strong>{{ trend.summary.confirmed_delta }}</strong></div>
+      <div class="metric"><span class="muted">Resolved</span><strong class="good">{{ trend.summary.total_resolved }}</strong></div>
+      <div class="metric"><span class="muted">Reopened</span><strong class="bad">{{ trend.summary.total_reopened }}</strong></div>
+      <div class="metric"><span class="muted">Policy blocker delta</span><strong>{{ trend.summary.policy_blocker_delta }}</strong></div>
+      <div class="metric"><span class="muted">Overdue delta</span><strong>{{ trend.summary.overdue_delta }}</strong></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Remediation effectiveness</h2>
+    <div class="metrics">
+      <div class="metric"><span class="muted">Resolution events</span><strong>{{ trend.remediation.resolution_events }}</strong></div>
+      <div class="metric"><span class="muted">Mean resolution</span><strong>{{ trend.remediation.mean_resolution_hours if trend.remediation.mean_resolution_hours is not none else '—' }}</strong><small class="muted">hours</small></div>
+      <div class="metric"><span class="muted">Median resolution</span><strong>{{ trend.remediation.median_resolution_hours if trend.remediation.median_resolution_hours is not none else '—' }}</strong><small class="muted">hours</small></div>
+      <div class="metric"><span class="muted">SLA attainment</span><strong>{{ trend.remediation.sla_attainment_rate if trend.remediation.sla_attainment_rate is not none else '—' }}</strong><small class="muted">percent</small></div>
+      <div class="metric"><span class="muted">Recurrence rate</span><strong>{{ trend.remediation.recurrence_rate }}</strong><small class="muted">percent</small></div>
+      <div class="metric"><span class="muted">Active fingerprints</span><strong>{{ trend.remediation.currently_active_fingerprints }}</strong></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Ancestor-chain timeline</h2>
+    <div class="timeline">
+      {% for point in trend.points %}
+      <div class="point">
+        <div><b>G{{ point.generation }}</b><br><span class="pill {{ 'good' if point.direction=='improving' else ('bad' if point.direction=='worsening' else '') }}">{{ point.direction }}</span></div>
+        <div><b>{{ point.scan_id }}</b><br><span class="muted">{{ point.completed_at or point.created_at }}</span><div class="bar"><span style="width:{{ [point.posture_score,100]|min }}%"></span></div></div>
+        <div><span class="muted">Confirmed</span><br><b>{{ point.confirmed_findings }}</b></div>
+        <div><span class="muted">Risk</span><br><b>{{ point.posture_score }}</b></div>
+        <div><span class="muted">Policy blockers</span><br><b>{{ point.policy_blockers }}</b></div>
+        <div><span class="muted">Overdue</span><br><b>{{ point.sla_overdue }}</b></div>
+        <div><span class="muted">Δ I/R/C/P</span><br><b>{{ point.delta.introduced }}/{{ point.delta.resolved }}/{{ point.delta.changed }}/{{ point.delta.persistent }}</b>{% if point.delta.reopened %}<br><span class="bad">{{ point.delta.reopened }} reopened</span>{% endif %}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Resolution evidence</h2>
+    {% if not trend.remediation.episodes %}<p class="muted">No tracked finding has disappeared from a later ancestor scan yet.</p>{% endif %}
+    {% for item in trend.remediation.episodes %}
+    <div class="episode">
+      <div><b>{{ item.title }}</b><br><span class="muted">{{ item.rule_id }} · {{ item.file_path }}</span></div>
+      <div><span class="muted">Resolved in</span><br><b>{{ item.resolution_hours }}h</b></div>
+      <div><span class="muted">Resolution scan</span><br><b>{{ item.resolved_scan_id }}</b></div>
+      <div><span class="pill {{ 'good' if item.resolved_within_sla else ('bad' if item.resolved_within_sla is not none else '') }}">{{ 'within SLA' if item.resolved_within_sla else ('after SLA' if item.resolved_within_sla is not none else 'no SLA clock') }}</span></div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="panel">
+    <h2>Recurrence evidence</h2>
+    {% if not trend.remediation.recurrences %}<p class="muted">No exact privacy-safe fingerprint has reappeared after resolution.</p>{% endif %}
+    {% for item in trend.remediation.recurrences %}
+    <div class="episode">
+      <div><b>{{ item.title }}</b><br><span class="muted">{{ item.rule_id }} · {{ item.file_path }}</span></div>
+      <div><span class="muted">Recurrences</span><br><b class="bad">{{ item.recurrence_count }}</b></div>
+      <div><span class="muted">Last reopened</span><br><b>{{ item.last_reopened_scan_id }}</b></div>
+      <div><span class="pill {{ 'bad' if item.current_active else 'good' }}">{{ 'active again' if item.current_active else 'resolved again' }}</span></div>
+    </div>
+    {% endfor %}
+  </section>
+</main>
+</body>
+</html>

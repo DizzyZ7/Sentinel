@@ -50,3 +50,8 @@ Sentinel 1.5 adds the exception-engine version and exception-aware governance re
 ## Security SLA section
 
 The bundle records the SLA engine version and complete security-debt dashboard, including immutable due dates, ownership, accepted-risk overlays, exception/SLA conflicts, and overdue blockers. The section is independently hashed and included in the canonical payload SHA-256.
+
+
+## Security posture section
+
+Sentinel 1.7 adds the posture-engine version and the selected scan's direct-ancestor posture trend. The bundle covers historical gate, policy, exception, SLA, risk, resolution-time, SLA-attainment, and exact-recurrence metrics. Sibling branches are excluded, and the complete posture section participates in both section-level and canonical payload SHA-256 verification.

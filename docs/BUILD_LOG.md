@@ -141,3 +141,13 @@ Before submitting, add the primary Codex `/feedback` Session ID to the Devpost f
 ## Sentinel 1.6
 
 Added immutable security SLA profiles, lineage-stable finding clocks, ownership routing, overdue enforcement, debt comparison, Evidence Bundle coverage, SLA-bound exception expiry, and independently approved renewal requests.
+
+
+## Sentinel 1.7 — Security Posture Trends
+
+- Added a direct-ancestor posture timeline without mixing sibling scan branches.
+- Added historical release, policy, exception, SLA, and residual-risk metrics evaluated at scan completion time.
+- Added resolution episodes, mean/median remediation time, SLA attainment, and exact fingerprint recurrence.
+- Preserved changed evidence as one continuous remediation episode.
+- Added JSON/HTML posture reporting and Evidence Bundle integrity coverage.
+- Added service, API, OpenAPI, recurrence, SLA, and regression tests.

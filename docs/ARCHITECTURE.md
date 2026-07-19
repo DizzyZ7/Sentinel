@@ -239,3 +239,10 @@ The risk-exception module is an additive governance boundary above raw security-
 ## Security SLA Engine
 
 An additive profile/assignment model versions remediation rules per lineage. Finding SLA rows preserve the first-seen fingerprint, immutable due date, accountable team, risk owner, escalation contact, and originating profile. Dashboards derive current on-track, at-risk, overdue, and accepted-risk states without mutating evidence.
+
+
+## Security posture trend boundary
+
+The security-posture module is a derived ancestor-chain read model. It consumes completed scans, deterministic comparison, assigned context and policy profiles, exception history, risk intelligence, and immutable SLA clocks. It does not execute repository source, invoke GPT-5.6, mutate findings, or merge sibling branches into the selected scan's history. Historical governance and SLA state are evaluated at each scan's completion time.
+
+Remediation episodes use confirmed findings and fail-closed high-confidence evidence. Exact recurrence requires the same privacy-safe fingerprint after at least one resolved generation. Comparison-paired changed evidence transfers the existing episode instead of creating a false resolution.
