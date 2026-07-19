@@ -94,3 +94,29 @@ Open **Risk exceptions** from the judge view. Create a finding-, rule-, or asset
 ## Security debt
 
 Open **SLA profile** to show immutable ownership rules, then **Security debt** to demonstrate inherited deadlines, team routing, accepted-risk visibility, and overdue enforcement.
+
+## Automated end-to-end verification
+
+After the API is healthy, run the installed verifier:
+
+```bash
+sentinel-verify-judge \
+  --base-url http://localhost:8000 \
+  --timeout 120 \
+  --output sentinel-judge-smoke.json
+```
+
+The command exits with code `0` only when the running product satisfies the complete deterministic judge contract:
+
+- health reports the Sentinel service;
+- the replay completes successfully;
+- exactly three candidates appear and exactly two are confirmed;
+- `confirmed_sql.py` has a valid patch and `passed` non-executing proof;
+- `safe_constant.py` is rejected as a false positive;
+- `weak_patch.py` has a valid but ineffective patch and a `failed` proof;
+- both confirmed unapproved findings keep the release gate blocked;
+- all three reviews are explicitly labelled `sentinel-deterministic-demo-replay`;
+- every Evidence Bundle matches its finding and scan;
+- every section SHA-256, canonical payload SHA-256, and response digest header is independently recalculated.
+
+The JSON output is suitable for CI artifacts and clean-machine preflight evidence. A failed check includes the endpoint or invariant that broke instead of returning only a generic smoke-test failure.

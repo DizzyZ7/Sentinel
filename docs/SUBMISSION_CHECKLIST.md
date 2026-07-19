@@ -58,3 +58,8 @@ python -m scripts.check_release --strict
 ```
 
 Exit code `0` means the repository-side checklist is complete.
+
+## Automated judge verification
+
+- [ ] Run `sentinel-verify-judge --base-url http://localhost:8000 --output sentinel-judge-smoke.json`.
+- [ ] Confirm the report status is `passed` and retain it with the submission artifacts.
