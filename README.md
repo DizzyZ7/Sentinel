@@ -45,7 +45,9 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 6. **Fail-closed release policy** blocks unresolved high/critical exposure.
 7. **Project Context Profiles** version real assets, production exposure, and data sensitivity without rewriting history.
 8. **Risk Intelligence** maps confirmed evidence to an affected asset, business impact, residual score, and remediation plan.
-9. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+9. **Security Posture Trends** measure lineage risk, remediation speed, SLA attainment, and exact recurrence.
+10. **Security Objectives and Forecasting** version target states and project whether observed remediation capacity can reach them.
+11. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 
@@ -117,7 +119,7 @@ The bundle includes:
 - regression proof and before/after hashes;
 - human decision, release gate, and Attack Graph v2;
 - deterministic risk intelligence and scoring factors;
-- prompt, schema, ruleset, validator, verifier, risk engine, policy, and app versions;
+- prompt, schema, ruleset, validator, verifier, risk, policy, posture, objective, forecast, and app versions;
 - SHA-256 for every top-level section and the canonical payload.
 
 See [`docs/EVIDENCE_BUNDLE.md`](docs/EVIDENCE_BUNDLE.md).
@@ -230,6 +232,10 @@ GET  /scan/{scan_id}/risk-exceptions
 POST /scan/{scan_id}/risk-exceptions
 GET  /scan/{scan_id}/exception-aware-compliance
 GET  /scan/{scan_id}/security-posture
+GET  /scan/{scan_id}/security-objectives
+PUT  /scan/{scan_id}/security-objectives
+POST /scan/{scan_id}/security-objectives/preview
+GET  /scan/{scan_id}/objective-report
 GET  /scan/{current_scan_id}/exception-debt/compare/{baseline_scan_id}
 GET  /scan/{scan_id}/progress
 GET  /scan/{scan_id}/events
@@ -392,3 +398,17 @@ curl 'http://localhost:8000/scan/<scan_id>/security-posture?format=html'
 ```
 
 Historical points are evaluated at their own completion time, sibling branches are excluded, changed evidence remains one continuous remediation episode, and the complete trend is integrity-covered inside the Evidence Bundle. See [`docs/SECURITY_POSTURE.md`](docs/SECURITY_POSTURE.md).
+
+
+## Security Objectives and Remediation Forecasting
+
+Sentinel 1.8 versions the measurable security state a lineage is expected to reach. Objectives can constrain posture score, confirmed exposure, policy blockers, overdue SLA debt, accepted risk, remediation time, SLA attainment, recurrence, and required governance states.
+
+```bash
+curl 'http://localhost:8000/scan/<scan_id>/security-objectives?format=html'
+curl 'http://localhost:8000/scan/<scan_id>/objective-report?format=html'
+```
+
+The forecast uses only positive-duration intervals in the selected scan's direct ancestor chain. It exposes observed inflow and resolution capacity, required resolution rate, projected active backlog, explicit confidence, and `insufficient_history` instead of fabricating certainty. Historical reports are evaluated at scan completion time so they remain reproducible.
+
+Initial ingestion accepts an optional multipart `security_objectives` JSON document. Saving a new version affects only the next rescan; the current scan retains its exact assigned objective SHA-256. The objective report and both engine versions are integrity-covered inside the Evidence Bundle. See [`docs/SECURITY_OBJECTIVES.md`](docs/SECURITY_OBJECTIVES.md).

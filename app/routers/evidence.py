@@ -11,6 +11,7 @@ from app.models.scan import Scan
 from app.services.evidence import build_finding_evidence_bundle
 from app.services.project_context import load_context_snapshot
 from app.services.risk_exception import evaluate_exception_aware_compliance, list_root_exceptions
+from app.services.security_objective import build_security_objective_report
 from app.services.security_policy import (
     ensure_security_policy,
     evaluate_security_policy,
@@ -70,6 +71,7 @@ async def get_finding_evidence_bundle(
         db, scan, governance=governance
     )
     posture = await build_security_posture_trend(db, scan)
+    objective_report = await build_security_objective_report(db, scan, posture=posture)
     await db.commit()
     bundle = build_finding_evidence_bundle(
         scan,
@@ -79,6 +81,7 @@ async def get_finding_evidence_bundle(
         exception_governance=governance,
         security_sla=sla_dashboard,
         security_posture=posture,
+        security_objective=objective_report,
     )
     return JSONResponse(
         bundle.model_dump(mode="json"),

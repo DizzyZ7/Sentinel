@@ -21,6 +21,7 @@ from app.routers.project_context import router as project_context_router
 from app.routers.risk_exception import router as risk_exception_router
 from app.routers.risk_intelligence import router as risk_intelligence_router
 from app.routers.scans import router as scans_router
+from app.routers.security_objective import router as security_objective_router
 from app.routers.security_policy import router as security_policy_router
 from app.routers.security_posture import router as security_posture_router
 from app.routers.security_sla import router as security_sla_router
@@ -56,6 +57,7 @@ app.include_router(progress_router)
 app.include_router(project_context_router)
 app.include_router(risk_exception_router)
 app.include_router(risk_intelligence_router)
+app.include_router(security_objective_router)
 app.include_router(security_policy_router)
 app.include_router(security_posture_router)
 app.include_router(security_sla_router)

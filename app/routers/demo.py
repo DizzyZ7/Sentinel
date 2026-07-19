@@ -14,6 +14,7 @@ from app.services.lineage import ensure_root_lineage
 from app.services.progress import add_scan_event
 from app.services.project_context import demo_project_context, ensure_project_context
 from app.services.scanner import process_scan
+from app.services.security_objective import demo_security_objective, ensure_security_objective
 from app.services.security_policy import demo_security_policy, ensure_security_policy
 from app.services.security_sla import demo_security_sla, ensure_security_sla
 
@@ -53,6 +54,7 @@ async def create_demo_scan(
     await ensure_project_context(db, scan, demo_project_context(), source="built_in")
     await ensure_security_policy(db, scan, demo_security_policy(), source="built_in")
     await ensure_security_sla(db, scan, demo_security_sla(), source="built_in")
+    await ensure_security_objective(db, scan, demo_security_objective(scan), source="built_in")
     await add_scan_event(
         db,
         scan.id,

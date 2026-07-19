@@ -151,3 +151,14 @@ Added immutable security SLA profiles, lineage-stable finding clocks, ownership 
 - Preserved changed evidence as one continuous remediation episode.
 - Added JSON/HTML posture reporting and Evidence Bundle integrity coverage.
 - Added service, API, OpenAPI, recurrence, SLA, and regression tests.
+
+
+## Sentinel 1.8 — Security Objectives and Remediation Forecasting
+
+- Added immutable security-objective profiles and exact per-scan assignments.
+- Added measurable target checks across posture, findings, policy, governance, SLA debt, remediation speed, SLA attainment, and recurrence.
+- Added deterministic direct-ancestor remediation forecasting with explicit inflow, resolution capacity, required rate, projected backlog, and projected clear date.
+- Added fail-closed `insufficient_history`, minimum-confidence enforcement, and reproducible scan-completion-time evaluation.
+- Added JSON/HTML objective editing, preview, and reporting surfaces.
+- Added initial-ingestion declarations, latest-version rescan inheritance, built-in demo objectives, and Evidence Bundle integrity coverage.
+- Added service, persistence, API, OpenAPI, forecast, confidence, immutable-version, and regression tests.
