@@ -51,6 +51,46 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Run local CLI self-scan
+        run: >-
+          sentinel scan .
+          --fail-on never
+          --format json
+          --output /tmp/sentinel-local-scan.json
+          --sarif-output /tmp/sentinel-local-scan.sarif
+          --quiet
+
+      - name: Verify local CLI evidence
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          from app.services.local_scan import verify_report_sha256
+
+          report = json.loads(Path("/tmp/sentinel-local-scan.json").read_text(encoding="utf-8"))
+          sarif = json.loads(Path("/tmp/sentinel-local-scan.sarif").read_text(encoding="utf-8"))
+          assert report["schema_version"] == "sentinel-local-scan-v1"
+          assert report["app_version"] == "2.2.0"
+          assert report["safety"]["source_executed"] is False
+          assert report["safety"]["dependencies_installed"] is False
+          assert report["safety"]["patches_applied"] is False
+          assert verify_report_sha256(report)
+          assert sarif["version"] == "2.1.0"
+          assert sarif["runs"][0]["tool"]["driver"]["semanticVersion"] == "2.2.0"
+          PY
+
+      - name: Upload local CLI evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-local-cli
+          path: |
+            /tmp/sentinel-local-scan.json
+            /tmp/sentinel-local-scan.sarif
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Check release readiness
         run: python -m scripts.check_release --output /tmp/sentinel-release-readiness.json
 
