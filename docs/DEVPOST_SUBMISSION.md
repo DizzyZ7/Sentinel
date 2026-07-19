@@ -54,6 +54,7 @@ The repository's `docs/BUILD_LOG.md` and merged pull requests show the implement
 - hardened non-root, read-only Docker delivery for amd64 and arm64
 - 60-case static validation corpus plus 17 remediation cases enforced in CI
 - clean-container end-to-end judge replay and Evidence Bundle integrity verification in CI
+- local `sentinel scan` workflow with changed-files mode, baseline fingerprints, secret-safe JSON, and SARIF
 
 ## Evaluation disclosure
 

@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from typing import Any
 
+from app.core.version import APP_VERSION
 from app.models.finding import Finding
 
 SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
@@ -63,7 +64,7 @@ def build_sarif(findings: Iterable[Finding]) -> dict[str, Any]:
                     "driver": {
                         "name": "Sentinel",
                         "informationUri": "https://github.com/DizzyZ7/Sentinel",
-                        "semanticVersion": "0.5.0",
+                        "semanticVersion": APP_VERSION,
                         "rules": list(rules.values()),
                     }
                 },

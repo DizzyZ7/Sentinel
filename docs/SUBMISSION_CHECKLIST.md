@@ -64,3 +64,10 @@ Exit code `0` means the repository-side checklist is complete.
 
 - [ ] Run `sentinel-verify-judge --base-url http://localhost:8000 --output sentinel-judge-smoke.json`.
 - [ ] Confirm the report status is `passed` and retain it with the submission artifacts.
+
+
+## Local CLI evidence
+
+- [ ] Run `sentinel scan . --json-output sentinel-local-scan.json --sarif-output sentinel-local-scan.sarif`.
+- [ ] Confirm `source_executed`, `dependencies_installed`, and `patches_applied` are all `false`.
+- [ ] Confirm the local report SHA-256 verifies before retaining the files as submission evidence.

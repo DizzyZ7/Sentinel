@@ -68,7 +68,14 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
         "docs/SECURITY_OBJECTIVES.md",
         "docs/PORTFOLIO_GOVERNANCE.md",
         "docs/CONTROL_PLANE.md",
+        "docs/LOCAL_CLI.md",
         "scripts/verify_judge_demo.py",
+        "app/cli.py",
+        "app/services/local_scan.py",
+        "app/services/local_sarif.py",
+        "app/services/source_types.py",
+        "action.yml",
+        "examples/sentinel-local-scan.yml",
         "evals/manifest.json",
         "evals/results/latest.json",
         "evals/remediation/manifest.json",
@@ -187,6 +194,25 @@ def evaluate_release_readiness(root: Path, env: dict[str, str] | None = None) ->
             "judge_smoke_ci",
             "Clean-container judge smoke CI",
             "CI starts the built image with PostgreSQL and verifies the complete replay path.",
+        )
+    )
+
+    action = (root / "action.yml").read_text(encoding="utf-8")
+    local_cli = (root / "app/services/local_scan.py").read_text(encoding="utf-8")
+    local_docs = (root / "docs/LOCAL_CLI.md").read_text(encoding="utf-8")
+    checks.append(
+        _check(
+            'sentinel = "app.cli:cli"' in pyproject_text
+            and "Run Sentinel local scan" in action
+            and 'sentinel "${args[@]}"' in action
+            and "--no-deps" in action
+            and "--changed-only" in local_docs
+            and "LOCAL_SCAN_SCHEMA_VERSION" in local_cli
+            and "Run local CLI self-scan" in ci
+            and "sentinel-local-cli" in ci,
+            "local_cli",
+            "Local CLI and changed-files gate",
+            "The installed CLI, composite action, documentation, and CI self-scan are present.",
         )
     )
 

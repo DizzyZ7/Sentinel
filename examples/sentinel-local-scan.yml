@@ -1,0 +1,43 @@
+name: Sentinel local security scan
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Scan changed source files
+        id: sentinel
+        uses: DizzyZ7/Sentinel@main
+        with:
+          changed-only: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          fail-on: new
+          fail-confidence: "0.80"
+
+      - name: Upload Sentinel SARIF
+        if: always() && hashFiles('sentinel-local-scan.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ steps.sentinel.outputs.sarif-path }}
+
+      - name: Retain Sentinel evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-local-scan
+          path: |
+            ${{ steps.sentinel.outputs.report-path }}
+            ${{ steps.sentinel.outputs.sarif-path }}
+          if-no-files-found: error
+          retention-days: 14
