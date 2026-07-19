@@ -41,6 +41,12 @@ jobs:
           echo "e41f213f261febcec386bd2009e60d5eb89519264ecb18c166057f9178e75ff6  /tmp/overlay.tar.gz" | sha256sum --check --strict
           tar -xzf /tmp/overlay.tar.gz
           cp /tmp/original-ci.yml .github/workflows/ci.yml
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("docs/BUILD_LOG.md")
+          path.write_text(path.read_text(encoding="utf-8").rstrip() + "\n", encoding="utf-8")
+          PY
           rm -rf .bootstrap
           git diff --check
 
