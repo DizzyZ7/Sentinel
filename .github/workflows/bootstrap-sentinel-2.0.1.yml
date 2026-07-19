@@ -22,10 +22,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp .github/workflows/ci.yml /tmp/original-ci.yml
           cat .bootstrap/part-* > /tmp/overlay.b64
           base64 --decode /tmp/overlay.b64 > /tmp/overlay.tar.gz
           echo "5d62b4179bec41e9f8e9c03dc8bb1683f13bc8b26b9c0742f8c0cb8a4defdb9a  /tmp/overlay.tar.gz" | sha256sum --check --strict
           tar -xzf /tmp/overlay.tar.gz
+          cp /tmp/original-ci.yml .github/workflows/ci.yml
           rm -rf .bootstrap
           git diff --check
 
