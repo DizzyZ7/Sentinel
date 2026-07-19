@@ -41,6 +41,31 @@ sentinel-verify-judge --base-url http://localhost:8000 --output sentinel-judge-s
 
 The verifier creates a fresh deterministic replay, waits for completion, confirms all three promised outcomes, checks the fail-closed release gate, validates deterministic review audit records, downloads every Evidence Bundle, and independently recalculates its section and canonical SHA-256 hashes.
 
+## Local developer path
+
+Install Sentinel and scan the current repository without starting the server:
+
+```bash
+python -m pip install .
+sentinel scan .
+```
+
+Generate JSON evidence and SARIF in the same non-executing pass:
+
+```bash
+sentinel scan . \
+  --json-output sentinel-local-scan.json \
+  --sarif-output sentinel-local-scan.sarif
+```
+
+For a pull request or local change set:
+
+```bash
+sentinel scan . --changed-only --base-ref origin/main --fail-on new
+```
+
+The local CLI respects Git ignore rules, skips symlinks/binary/oversized files, sanitizes secret-bearing snippets, emits stable fingerprints and report SHA-256, and never labels a deterministic candidate as a confirmed vulnerability. Full semantics and exit codes are documented in [`docs/LOCAL_CLI.md`](docs/LOCAL_CLI.md). A ready composite action is committed in [`action.yml`](action.yml).
+
 ## Why this is different
 
 Traditional SAST has deterministic evidence but often produces noise. Unconstrained AI review has context but can hallucinate vulnerabilities or unsafe fixes. Sentinel gives each layer one limited responsibility:
@@ -58,12 +83,15 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 11. **Portfolio Security Governance** rolls independent lineages into a fail-closed executive scope.
 12. **Continuous Security Control Plane** stores immutable snapshots, state transitions, local alerts, and hash-chained audit events.
 13. **Real-World Validation Pack** measures all built-in rules, safe neighboring patterns, patch escrow, and regression-proof outcomes through hash-covered fixtures.
-14. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+14. **Local CLI and Changed-Files Gate** bring deterministic, secret-safe candidate evidence into developer worktrees and pull requests.
+15. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 
 ```text
-Git URL / ZIP
+Git URL / ZIP                     Local directory / Git diff
+      │                                      │ ignore, size, binary, symlink controls
+      │                                      └── deterministic candidates → JSON / SARIF / exit code
       │
       ▼
 Isolated workspace

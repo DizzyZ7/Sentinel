@@ -274,3 +274,10 @@ The portfolio evidence bundle is separate from the finding evidence bundle. It i
 Cadence is policy, not a hidden worker. CI, cron, or an operator invokes snapshot capture explicitly. Schedule status reports due/overdue state and semantic configuration drift by comparing current portfolio membership/metadata and exact governance/control hashes against the latest immutable snapshot.
 
 The control-plane evidence export is separate from finding and query-time portfolio bundles. It integrity-covers profile history, schedule status, all snapshots, alert lifecycle state, the ascending audit chain, per-section hashes, and a canonical payload hash. No model call, repository execution, external alert send, or automatic patch application is introduced.
+
+
+## Local CLI boundary (2.2)
+
+`app.cli` and `app.services.local_scan` provide a database-free adapter around the existing deterministic analyzer. The adapter owns file discovery, Git change selection, ignore behavior, source hashing, secret-safe candidate serialization, baseline fingerprints, local fail policy, and process exit codes. It does not call the LLM reviewer, construct `Finding` ORM rows, run patch validation, or perform regression proof.
+
+`app.services.local_sarif` emits unconfirmed `review` results from the local report. The server SARIF path remains reserved for persisted confirmed findings. This separation prevents local deterministic confidence from being misrepresented as contextual severity.

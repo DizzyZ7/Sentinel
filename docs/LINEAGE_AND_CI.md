@@ -89,3 +89,20 @@ The command prints the full machine-readable gate response before exiting. Persi
 - the CI endpoint derives its result only from already persisted comparison evidence;
 - exit code `1` is reserved for a real policy block, while operational uncertainty fails separately with code `2`;
 - rescan continues to create a new isolated workspace and uses the ordinary ingestion, review, patch, proof, and human-decision pipeline.
+
+## Local changed-files gate
+
+Sentinel 2.2 adds a second, deliberately narrower CI path:
+
+```bash
+sentinel scan . \
+  --changed-only \
+  --base-ref origin/main \
+  --fail-on new \
+  --json-output sentinel-local-scan.json \
+  --sarif-output sentinel-local-scan.sarif
+```
+
+The local gate needs no running Sentinel server and evaluates deterministic candidate fingerprints only. It is useful before ingestion or when a team wants immediate pull-request feedback. It must not be confused with `sentinel-check-delta`, which consumes completed server-side scan lineage and can incorporate contextual review, remediation proof, human decision, policy, and accepted-risk governance.
+
+Both clients reserve exit code `1` for a policy block. Local configuration failures return `2`, while an unexpected local scan/output failure returns `3`. See [`LOCAL_CLI.md`](LOCAL_CLI.md).

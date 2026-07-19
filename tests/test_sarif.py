@@ -27,6 +27,7 @@ def test_sarif_contains_only_confirmed_findings() -> None:
     sarif = build_sarif([confirmed, rejected])
     run = sarif["runs"][0]
     assert sarif["version"] == "2.1.0"
+    assert run["tool"]["driver"]["semanticVersion"] == "2.2.0"
     assert len(run["results"]) == 1
     assert run["results"][0]["ruleId"] == "PY_SQL_INTERPOLATION"
     assert run["results"][0]["properties"]["humanDecision"] == "approved"

@@ -1,4 +1,4 @@
-.PHONY: up down logs test lint eval release-check public-image-check delta-check demo-archives
+.PHONY: up down logs test lint eval local-scan release-check public-image-check delta-check demo-archives
 
 up:
 	docker compose up --build -d
@@ -17,6 +17,9 @@ lint:
 
 eval:
 	python -m scripts.run_evals --fail-on-regression
+
+local-scan:
+	sentinel scan . --fail-on never
 
 release-check:
 	python -m scripts.check_release

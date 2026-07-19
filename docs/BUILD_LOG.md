@@ -211,3 +211,16 @@ The product scope was deliberately frozen after the continuous control plane. Th
 - Added SHA-256 coverage for every source fixture, every patch fixture, both corpora, and the canonical combined validation report.
 - Made CI and release readiness fail on FP/FN, incomplete rule coverage, remediation regressions, or source execution.
 - Kept static-rule and patch-validator behavior unchanged; the release improves evidence quality rather than inflating product scope.
+
+## Sentinel 2.2 — Local CLI and Changed-Files Gate
+
+- Added installed `sentinel scan` for database-free deterministic repository triage.
+- Added Git-aware full and changed-only discovery with nested ignore support through Git plumbing.
+- Added safe non-Git fallback using root `.gitignore` Git-wildmatch semantics.
+- Added file-count/size limits, binary and non-UTF-8 avoidance, ignored generated/vendor directories, and no-follow symlink behavior.
+- Added secret-sanitized JSON evidence with source SHA-256, stable line-independent fingerprints, canonical report SHA-256, and explicit non-execution claims.
+- Added baseline comparison with honest partial-scope handling for changed-only scans.
+- Added local fail policies and stable `0/1/2/3` process exit codes.
+- Added SARIF `review` candidates that remain explicitly unconfirmed and contain no raw secret snippets.
+- Added a composite GitHub Action and complete pull-request workflow example.
+- Added CI self-scan artifacts and regression tests without weakening the existing server, validation-pack, Docker, or judge paths.
