@@ -247,6 +247,16 @@ GET  /scan/{scan_id}/llm-reviews
 GET  /scan/{scan_id}/findings/{finding_id}/patch
 POST /scan/{scan_id}/findings/{finding_id}/decision
 GET  /scan/{scan_id}/findings/{finding_id}/evidence-bundle
+GET  /portfolios
+POST /portfolios
+GET  /portfolios/{portfolio_id}
+PUT  /portfolios/{portfolio_id}
+POST /portfolios/{portfolio_id}/members
+DELETE /portfolios/{portfolio_id}/members/{root_scan_id}
+GET  /portfolios/{portfolio_id}/governance
+PUT  /portfolios/{portfolio_id}/governance
+GET  /portfolios/{portfolio_id}/dashboard
+GET  /portfolios/{portfolio_id}/evidence
 ```
 
 OpenAPI is available at `http://localhost:8000/docs`.
@@ -412,3 +422,15 @@ curl 'http://localhost:8000/scan/<scan_id>/objective-report?format=html'
 The forecast uses only positive-duration intervals in the selected scan's direct ancestor chain. It exposes observed inflow and resolution capacity, required resolution rate, projected active backlog, explicit confidence, and `insufficient_history` instead of fabricating certainty. Historical reports are evaluated at scan completion time so they remain reproducible.
 
 Initial ingestion accepts an optional multipart `security_objectives` JSON document. Saving a new version affects only the next rescan; the current scan retains its exact assigned objective SHA-256. The objective report and both engine versions are integrity-covered inside the Evidence Bundle. See [`docs/SECURITY_OBJECTIVES.md`](docs/SECURITY_OBJECTIVES.md).
+
+## Portfolio Security Governance
+
+Sentinel 1.9 governs multiple independent root lineages without merging their histories. Portfolios explicitly select lineage roots, business criticality, and optional pinned heads. Ambiguous sibling heads, missing evidence, stale scans, failed runs, and in-progress scans remain visible and fail closed.
+
+```bash
+curl http://localhost:8000/portfolios
+curl 'http://localhost:8000/portfolios/<portfolio_id>/dashboard?format=html'
+curl http://localhost:8000/portfolios/<portfolio_id>/evidence
+```
+
+The dashboard rolls up posture, policy, exception-aware governance, SLA debt, objectives, forecasts, and criticality-weighted residual-risk concentration. Governance profiles are immutable and versioned by canonical SHA-256. The portfolio evidence export receives per-section and canonical payload integrity hashes. See [`docs/PORTFOLIO_GOVERNANCE.md`](docs/PORTFOLIO_GOVERNANCE.md).

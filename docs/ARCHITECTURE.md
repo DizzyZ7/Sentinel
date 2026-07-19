@@ -253,3 +253,13 @@ Remediation episodes use confirmed findings and fail-closed high-confidence evid
 `SecurityObjectiveProfile` stores immutable target documents per lineage root, while `ScanObjectiveAssignment` binds each scan to one exact version. The objective engine reads the selected scan's posture report and emits explicit `met`, `missed`, or `not_measurable` checks without modifying any source evidence, release gate, policy result, exception, SLA clock, or posture point.
 
 The remediation forecast is a deterministic ancestor-chain read model. It measures introduced, reopened, and resolved evidence across positive-duration parent intervals, derives transparent inflow and resolution rates, and projects active backlog to the assigned target date. Sibling branches are excluded, changed evidence remains one continuous episode, missing history returns `insufficient_history`, and confidence thresholds are part of the immutable objective profile. Historical reports use scan completion time as `as_of`; a new rescan is required for a new forecast. No model call or repository-source execution is introduced.
+
+## Portfolio security-governance boundary
+
+`SecurityPortfolio` and `PortfolioMember` form an explicit organizational scope above independent lineage roots. Membership never merges repository history, findings, or policy state. Each member retains its own direct-ancestor posture and objective report. Criticality affects only portfolio weighting and cannot weaken a member's release gate or governance decision.
+
+Portfolio head selection is fail closed. A lineage with one leaf can be selected automatically. Multiple unpinned leaves produce `ambiguous_head`; Sentinel does not silently choose a sibling branch. A pinned scan is accepted only after its root-lineage relationship is verified.
+
+`PortfolioGovernanceProfile` stores immutable, canonical-hashed governance documents. The portfolio dashboard is a deterministic query-time read model over selected scans, posture, objective evaluation, remediation forecasts, policy, exception governance, and SLA debt. It exposes stale, missing, failed, in-progress, and ambiguous evidence separately from security failure. Weighted posture and residual-risk concentration supplement the underlying decisions but never replace them.
+
+The portfolio evidence bundle is separate from the finding evidence bundle. It integrity-covers portfolio metadata, explicit membership, the exact governance profile, executive checks, selected member snapshots, and risk concentration with per-section and canonical SHA-256 values. No repository code is executed and no additional model call is introduced.
