@@ -44,6 +44,7 @@ python -m scripts.check_public_image
 - Description matches `docs/DEVPOST_SUBMISSION.md`.
 - Video is public and playable while signed out.
 - No unsupported benchmark claim: eval figures remain scoped to the committed curated corpus.
+- Retain the passing `sentinel-validation-pack` CI artifact and keep its limitations visible.
 
 ## Strict final preflight
 

@@ -199,3 +199,15 @@ The product scope was deliberately frozen after the continuous control plane. Th
 - extended CI to start the newly built non-root image with a clean PostgreSQL container and run the complete judge path;
 - uploaded the smoke report as a GitHub Actions artifact;
 - kept all manual competition tasks explicit rather than pretending they were automated.
+
+## Sentinel 2.1 — Real-World Validation Pack
+
+- Expanded deterministic candidate evaluation from 20 to 60 committed fixtures.
+- Added an explicit 19-rule inventory and positive, negative, edge/adversarial, and multi-signal taxonomy.
+- Added targeted true negatives, per-rule/per-language precision, recall, specificity, and coverage-gap reporting.
+- Added five explicit limitations so fixture success cannot be misrepresented as general-world accuracy.
+- Added a 17-case remediation corpus spanning valid fixes, ineffective fixes, unrelated hunks, unsafe paths, binary/rename markers, empty/context-only diffs, syntax failure, apply mismatch, and configured size limits.
+- Verified passed, failed, and inconclusive non-executing regression-proof outcomes with `source_executed=false`.
+- Added SHA-256 coverage for every source fixture, every patch fixture, both corpora, and the canonical combined validation report.
+- Made CI and release readiness fail on FP/FN, incomplete rule coverage, remediation regressions, or source execution.
+- Kept static-rule and patch-validator behavior unchanged; the release improves evidence quality rather than inflating product scope.

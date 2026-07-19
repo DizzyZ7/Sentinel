@@ -57,7 +57,8 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 10. **Security Objectives and Forecasting** version target states and project whether observed remediation capacity can reach them.
 11. **Portfolio Security Governance** rolls independent lineages into a fail-closed executive scope.
 12. **Continuous Security Control Plane** stores immutable snapshots, state transitions, local alerts, and hash-chained audit events.
-13. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+13. **Real-World Validation Pack** measures all built-in rules, safe neighboring patterns, patch escrow, and regression-proof outcomes through hash-covered fixtures.
+14. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 
@@ -150,20 +151,25 @@ Python and JavaScript/TypeScript candidate rules cover:
 
 The pre-filter intentionally favors recall. GPT-5.6 is responsible for contextual exploitability review.
 
-## Transparent evaluation
+## Transparent validation pack
 
-The deterministic ruleset is checked against a committed 20-case corpus:
+Sentinel 2.1 evaluates both candidate detection and remediation safety through committed, hash-covered fixtures:
 
-| Metric | Current result |
+| Layer | Current result |
 | --- | ---: |
-| Exact cases | 20/20 |
-| Expected detections | 15 |
-| False positives | 0 |
-| False negatives | 0 |
-| Micro precision | 100% |
-| Micro recall | 100% |
+| Static candidate cases | 60/60 |
+| Finding-bearing / negative cases | 37 / 23 |
+| Multi-signal subset | 2 |
+| Rule IDs with positive, negative, and edge support | 19/19 |
+| Static TP / targeted TN | 39 / 23 |
+| Static FP / FN | 0 / 0 |
+| Patch and regression-proof cases | 17/17 |
+| Expected patch acceptances / rejections | 7 / 10 |
+| Source-executed remediation cases | 0 |
 
-These are **curated regression-fixture results**, not a claim of general-world vulnerability detection accuracy. Full case-level data is committed in [`evals/results/latest.json`](evals/results/latest.json), with methodology in [`docs/EVALUATION.md`](docs/EVALUATION.md).
+The report includes per-rule and per-language precision, recall, targeted specificity, coverage gaps, fixture SHA-256 values, and explicit known limitations. These are **committed corpus results**, not a claim of general-world vulnerability detection accuracy or production false-positive rates.
+
+Full machine-readable data is committed in [`evals/results/latest.json`](evals/results/latest.json), with methodology and every case in [`docs/EVALUATION.md`](docs/EVALUATION.md).
 
 Reproduce it:
 
@@ -174,7 +180,7 @@ python -m scripts.run_evals \
   --fail-on-regression
 ```
 
-CI fails if any expected rule disappears or any unexpected finding is introduced.
+CI fails on any static FP/FN, missing positive/negative rule coverage, failed remediation expectation, or evidence that scanned source was executed.
 
 ## Baselines and no-new-risk policy
 

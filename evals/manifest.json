@@ -1,155 +1,1234 @@
 {
-  "schema_version": 1,
   "cases": [
     {
-      "id": "py-sql-interpolation",
-      "filename": "py_sql_interpolation.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_SQL_INTERPOLATION"
+      ],
+      "filename": "py_sql_interpolation.py",
+      "id": "py-sql-interpolation",
+      "language": "python",
+      "pattern": "assigned_f_string",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_SQL_INTERPOLATION"
       ]
     },
     {
-      "id": "js-sql-interpolation",
-      "filename": "js_sql_interpolation.js",
-      "language": "javascript",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "JS_SQL_INTERPOLATION"
+      ],
+      "filename": "js_sql_interpolation.js",
+      "id": "js-sql-interpolation",
+      "language": "javascript",
+      "pattern": "template_literal",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
         "JS_SQL_INTERPOLATION"
       ]
     },
     {
-      "id": "py-dynamic-execution",
-      "filename": "py_dynamic_execution.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ],
+      "filename": "py_dynamic_execution.py",
+      "id": "py-dynamic-execution",
+      "language": "python",
+      "pattern": "tainted_eval",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_DYNAMIC_EXECUTION"
       ]
     },
     {
-      "id": "js-dynamic-execution",
-      "filename": "js_dynamic_execution.js",
-      "language": "javascript",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ],
+      "filename": "js_dynamic_execution.js",
+      "id": "js-dynamic-execution",
+      "language": "javascript",
+      "pattern": "tainted_eval",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
         "JS_DYNAMIC_EXECUTION"
       ]
     },
     {
-      "id": "py-command-injection",
-      "filename": "py_command_injection.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_COMMAND_INJECTION"
+      ],
+      "filename": "py_command_injection.py",
+      "id": "py-command-injection",
+      "language": "python",
+      "pattern": "os_system",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_COMMAND_INJECTION"
       ]
     },
     {
-      "id": "js-command-injection",
-      "filename": "js_command_injection.js",
-      "language": "javascript",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "JS_COMMAND_INJECTION"
+      ],
+      "filename": "js_command_injection.js",
+      "id": "js-command-injection",
+      "language": "javascript",
+      "pattern": "child_process_exec",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
         "JS_COMMAND_INJECTION"
       ]
     },
     {
-      "id": "py-path-traversal",
-      "filename": "py_path_traversal.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_PATH_TRAVERSAL"
+      ],
+      "filename": "py_path_traversal.py",
+      "id": "py-path-traversal",
+      "language": "python",
+      "pattern": "open_tainted_path",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_PATH_TRAVERSAL"
       ]
     },
     {
-      "id": "js-path-traversal",
-      "filename": "js_path_traversal.js",
-      "language": "javascript",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "JS_PATH_TRAVERSAL"
+      ],
+      "filename": "js_path_traversal.js",
+      "id": "js-path-traversal",
+      "language": "javascript",
+      "pattern": "read_file_tainted_path",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
         "JS_PATH_TRAVERSAL"
       ]
     },
     {
-      "id": "py-ssrf",
-      "filename": "py_ssrf.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_SSRF"
+      ],
+      "filename": "py_ssrf.py",
+      "id": "py-ssrf",
+      "language": "python",
+      "pattern": "requests_get",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_SSRF"
       ]
     },
     {
-      "id": "js-ssrf",
-      "filename": "js_ssrf.js",
-      "language": "javascript",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "JS_SSRF"
+      ],
+      "filename": "js_ssrf.js",
+      "id": "js-ssrf",
+      "language": "javascript",
+      "pattern": "fetch_tainted_url",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
         "JS_SSRF"
       ]
     },
     {
-      "id": "py-unsafe-deserialization",
-      "filename": "py_unsafe_deserialization.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ],
+      "filename": "py_unsafe_deserialization.py",
+      "id": "py-unsafe-deserialization",
+      "language": "python",
+      "pattern": "pickle_loads",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_UNSAFE_DESERIALIZATION"
       ]
     },
     {
-      "id": "py-unsafe-yaml",
-      "filename": "py_unsafe_yaml.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ],
+      "filename": "py_unsafe_yaml.py",
+      "id": "py-unsafe-yaml",
+      "language": "python",
+      "pattern": "yaml_load_without_loader",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_YAML_UNSAFE_LOAD"
       ]
     },
     {
-      "id": "py-sensitive-route-no-auth",
-      "filename": "py_sensitive_route_no_auth.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "filename": "py_sensitive_route_no_auth.py",
+      "id": "py-sensitive-route-no-auth",
+      "language": "python",
+      "pattern": "fastapi_sensitive_route",
+      "tags": [
+        "basic",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
         "PY_SENSITIVE_ROUTE_NO_AUTH"
       ]
     },
     {
-      "id": "js-sensitive-route-no-auth",
-      "filename": "js_sensitive_route_no_auth.js",
-      "language": "javascript",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "filename": "js_sensitive_route_no_auth.js",
+      "id": "js-sensitive-route-no-auth",
+      "language": "javascript",
+      "pattern": "express_sensitive_route",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
         "JS_SENSITIVE_ROUTE_NO_AUTH"
       ]
     },
     {
-      "id": "generic-hardcoded-secret",
-      "filename": "generic_hardcoded_secret.py",
-      "language": "python",
+      "classification": "positive",
+      "difficulty": "basic",
       "expected_rules": [
+        "SECRET_GENERIC"
+      ],
+      "filename": "generic_hardcoded_secret.py",
+      "id": "generic-hardcoded-secret",
+      "language": "python",
+      "pattern": "token_assignment",
+      "tags": [
+        "basic",
+        "positive",
+        "secret"
+      ],
+      "target_rules": [
         "SECRET_GENERIC"
       ]
     },
     {
-      "id": "safe-parameterized-sql",
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
       "filename": "safe_parameterized_sql.py",
+      "id": "safe-parameterized-sql",
       "language": "python",
-      "expected_rules": []
+      "pattern": "parameterized_query",
+      "tags": [
+        "basic",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SQL_INTERPOLATION"
+      ]
     },
     {
-      "id": "safe-subprocess-argv",
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
       "filename": "safe_subprocess_argv.py",
+      "id": "safe-subprocess-argv",
       "language": "python",
-      "expected_rules": []
+      "pattern": "argv_shell_false",
+      "tags": [
+        "basic",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_COMMAND_INJECTION"
+      ]
     },
     {
-      "id": "safe-constant-fetch",
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
       "filename": "safe_constant_fetch.js",
+      "id": "safe-constant-fetch",
       "language": "javascript",
-      "expected_rules": []
+      "pattern": "constant_url",
+      "tags": [
+        "basic",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_SSRF"
+      ]
     },
     {
-      "id": "safe-python-authorized-route",
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
       "filename": "safe_python_authorized_route.py",
+      "id": "safe-python-authorized-route",
       "language": "python",
-      "expected_rules": []
+      "pattern": "dependency_authorization",
+      "tags": [
+        "basic",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ]
     },
     {
-      "id": "safe-javascript-authorized-route",
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
       "filename": "safe_javascript_authorized_route.js",
+      "id": "safe-javascript-authorized-route",
       "language": "javascript",
-      "expected_rules": []
+      "pattern": "auth_middleware",
+      "tags": [
+        "basic",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_SQL_INTERPOLATION"
+      ],
+      "filename": "py_sql_percent_format.py",
+      "id": "py-sql-percent-format",
+      "language": "python",
+      "pattern": "percent_format",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_SQL_INTERPOLATION"
+      ],
+      "filename": "py_sql_concatenation.py",
+      "id": "py-sql-concatenation",
+      "language": "python",
+      "pattern": "string_concatenation",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "JS_SQL_INTERPOLATION"
+      ],
+      "filename": "js_sql_concatenation.js",
+      "id": "js-sql-concatenation",
+      "language": "javascript",
+      "pattern": "string_concatenation",
+      "tags": [
+        "edge",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ],
+      "filename": "py_exec_request_body.py",
+      "id": "py-exec-request-body",
+      "language": "python",
+      "pattern": "tainted_exec",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ],
+      "filename": "js_function_constructor.js",
+      "id": "js-function-constructor",
+      "language": "javascript",
+      "pattern": "function_constructor",
+      "tags": [
+        "edge",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_COMMAND_INJECTION"
+      ],
+      "filename": "py_subprocess_shell_true.py",
+      "id": "py-subprocess-shell-true",
+      "language": "python",
+      "pattern": "subprocess_shell_true",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "JS_COMMAND_INJECTION"
+      ],
+      "filename": "js_exec_sync.js",
+      "id": "js-exec-sync",
+      "language": "javascript",
+      "pattern": "exec_sync",
+      "tags": [
+        "edge",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_PATH_TRAVERSAL"
+      ],
+      "filename": "py_send_file.py",
+      "id": "py-send-file",
+      "language": "python",
+      "pattern": "send_file_tainted_path",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "JS_PATH_TRAVERSAL"
+      ],
+      "filename": "js_create_read_stream.js",
+      "id": "js-create-read-stream",
+      "language": "javascript",
+      "pattern": "create_read_stream",
+      "tags": [
+        "edge",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_SSRF"
+      ],
+      "filename": "py_httpx_ssrf.py",
+      "id": "py-httpx-ssrf",
+      "language": "python",
+      "pattern": "httpx_get",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SSRF"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "JS_SSRF"
+      ],
+      "filename": "js_axios_ssrf.js",
+      "id": "js-axios-ssrf",
+      "language": "javascript",
+      "pattern": "axios_get",
+      "tags": [
+        "edge",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_SSRF"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ],
+      "filename": "py_pickle_load.py",
+      "id": "py-pickle-load",
+      "language": "python",
+      "pattern": "pickle_load_file",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ],
+      "filename": "py_yaml_full_loader.py",
+      "id": "py-yaml-full-loader",
+      "language": "python",
+      "pattern": "yaml_full_loader",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "basic",
+      "expected_rules": [
+        "JS_YAML_UNSAFE_LOAD"
+      ],
+      "filename": "js_yaml_load.js",
+      "id": "js-yaml-load",
+      "language": "javascript",
+      "pattern": "jsyaml_load",
+      "tags": [
+        "basic",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "filename": "py_sensitive_billing_route.py",
+      "id": "py-sensitive-billing-route",
+      "language": "python",
+      "pattern": "billing_route",
+      "tags": [
+        "edge",
+        "positive",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "filename": "js_sensitive_token_route.js",
+      "id": "js-sensitive-token-route",
+      "language": "javascript",
+      "pattern": "token_route",
+      "tags": [
+        "edge",
+        "js",
+        "positive"
+      ],
+      "target_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "basic",
+      "expected_rules": [
+        "SECRET_OPENAI"
+      ],
+      "filename": "secret_openai.py",
+      "id": "secret-openai",
+      "language": "python",
+      "pattern": "openai_token_shape",
+      "tags": [
+        "basic",
+        "positive",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_OPENAI"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "basic",
+      "expected_rules": [
+        "SECRET_GITHUB"
+      ],
+      "filename": "secret_github.js",
+      "id": "secret-github",
+      "language": "javascript",
+      "pattern": "github_token_shape",
+      "tags": [
+        "basic",
+        "positive",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_GITHUB"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "basic",
+      "expected_rules": [
+        "SECRET_AWS"
+      ],
+      "filename": "secret_aws.py",
+      "id": "secret-aws",
+      "language": "python",
+      "pattern": "aws_access_key_shape",
+      "tags": [
+        "basic",
+        "positive",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_AWS"
+      ]
+    },
+    {
+      "classification": "positive",
+      "difficulty": "edge",
+      "expected_rules": [
+        "SECRET_GENERIC"
+      ],
+      "filename": "secret_generic_password.js",
+      "id": "secret-generic-password",
+      "language": "javascript",
+      "pattern": "password_assignment",
+      "tags": [
+        "edge",
+        "positive",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_GENERIC"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_python_literal_eval.py",
+      "id": "safe-python-literal-eval",
+      "language": "python",
+      "pattern": "ast_literal_eval",
+      "tags": [
+        "edge",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_json_parse.js",
+      "id": "safe-javascript-json-parse",
+      "language": "javascript",
+      "pattern": "json_parse",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_DYNAMIC_EXECUTION"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_spawn_argv.js",
+      "id": "safe-javascript-spawn-argv",
+      "language": "javascript",
+      "pattern": "spawn_argv",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_python_constant_path.py",
+      "id": "safe-python-constant-path",
+      "language": "python",
+      "pattern": "constant_path",
+      "tags": [
+        "edge",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_constant_path.js",
+      "id": "safe-javascript-constant-path",
+      "language": "javascript",
+      "pattern": "constant_path",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_PATH_TRAVERSAL"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_python_constant_request.py",
+      "id": "safe-python-constant-request",
+      "language": "python",
+      "pattern": "constant_url",
+      "tags": [
+        "edge",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SSRF"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
+      "filename": "safe_python_yaml_safe_load.py",
+      "id": "safe-python-yaml-safe-load",
+      "language": "python",
+      "pattern": "yaml_safe_load",
+      "tags": [
+        "basic",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_yaml_safe_load.js",
+      "id": "safe-javascript-yaml-safe-load",
+      "language": "javascript",
+      "pattern": "safe_load_api",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
+      "filename": "safe_python_json_deserialization.py",
+      "id": "safe-python-json-deserialization",
+      "language": "python",
+      "pattern": "json_loads",
+      "tags": [
+        "basic",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_UNSAFE_DESERIALIZATION"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_python_permission_route.py",
+      "id": "safe-python-permission-route",
+      "language": "python",
+      "pattern": "permission_marker",
+      "tags": [
+        "edge",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_permission_route.js",
+      "id": "safe-javascript-permission-route",
+      "language": "javascript",
+      "pattern": "permission_middleware",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "basic",
+      "expected_rules": [],
+      "filename": "safe_generic_secret_env.py",
+      "id": "safe-generic-secret-env",
+      "language": "python",
+      "pattern": "environment_lookup",
+      "tags": [
+        "basic",
+        "negative",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_GENERIC"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_openai_placeholder.py",
+      "id": "safe-openai-placeholder",
+      "language": "python",
+      "pattern": "redacted_placeholder",
+      "tags": [
+        "edge",
+        "negative",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_OPENAI"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_github_placeholder.js",
+      "id": "safe-github-placeholder",
+      "language": "javascript",
+      "pattern": "redacted_placeholder",
+      "tags": [
+        "edge",
+        "negative",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_GITHUB"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_aws_placeholder.py",
+      "id": "safe-aws-placeholder",
+      "language": "python",
+      "pattern": "environment_lookup",
+      "tags": [
+        "edge",
+        "negative",
+        "secret"
+      ],
+      "target_rules": [
+        "SECRET_AWS"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_parameterized_sql.js",
+      "id": "safe-javascript-parameterized-sql",
+      "language": "javascript",
+      "pattern": "parameterized_query",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_SQL_INTERPOLATION"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_javascript_constant_command.js",
+      "id": "safe-javascript-constant-command",
+      "language": "javascript",
+      "pattern": "constant_command",
+      "tags": [
+        "edge",
+        "js",
+        "negative"
+      ],
+      "target_rules": [
+        "JS_COMMAND_INJECTION"
+      ]
+    },
+    {
+      "classification": "negative",
+      "difficulty": "edge",
+      "expected_rules": [],
+      "filename": "safe_python_yaml_safe_loader.py",
+      "id": "safe-python-yaml-safe-loader",
+      "language": "python",
+      "pattern": "explicit_safe_loader",
+      "tags": [
+        "edge",
+        "negative",
+        "py"
+      ],
+      "target_rules": [
+        "PY_YAML_UNSAFE_LOAD"
+      ]
+    },
+    {
+      "classification": "multi_signal",
+      "difficulty": "adversarial",
+      "expected_rules": [
+        "PY_SQL_INTERPOLATION",
+        "SECRET_GENERIC"
+      ],
+      "filename": "py_multi_sql_secret.py",
+      "id": "py-multi-sql-secret",
+      "language": "python",
+      "pattern": "multi_signal_sql_secret",
+      "tags": [
+        "adversarial",
+        "multi_signal",
+        "py",
+        "secret"
+      ],
+      "target_rules": [
+        "PY_SQL_INTERPOLATION",
+        "SECRET_GENERIC"
+      ]
+    },
+    {
+      "classification": "multi_signal",
+      "difficulty": "adversarial",
+      "expected_rules": [
+        "JS_SSRF",
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ],
+      "filename": "js_multi_ssrf_sensitive_route.js",
+      "id": "js-multi-ssrf-sensitive-route",
+      "language": "javascript",
+      "pattern": "multi_signal_route_ssrf",
+      "tags": [
+        "adversarial",
+        "js",
+        "multi_signal"
+      ],
+      "target_rules": [
+        "JS_SSRF",
+        "JS_SENSITIVE_ROUTE_NO_AUTH"
+      ]
     }
-  ]
+  ],
+  "corpus_version": "sentinel-static-validation-2026.07",
+  "limitations": [
+    {
+      "area": "static_analysis",
+      "detail": "Python taint tracking is intentionally local to simple assignments and does not claim interprocedural data-flow coverage.",
+      "id": "intra_procedural_taint_only",
+      "status": "known_limit"
+    },
+    {
+      "area": "static_analysis",
+      "detail": "JavaScript and TypeScript triage uses bounded regular-expression candidates rather than a full semantic parser.",
+      "id": "javascript_regex_prefilter",
+      "status": "known_limit"
+    },
+    {
+      "area": "static_analysis",
+      "detail": "Allowlist and sanitizer effectiveness is a contextual GPT review responsibility; the deterministic layer favors recall.",
+      "id": "sanitizer_semantics",
+      "status": "review_required"
+    },
+    {
+      "area": "patch_validation",
+      "detail": "Patch escrow validates diff shape and git applicability for JavaScript but does not execute project tooling or claim full JavaScript syntax validation.",
+      "id": "javascript_patch_syntax",
+      "status": "known_limit"
+    },
+    {
+      "area": "evaluation",
+      "detail": "Exact corpus results measure only these committed fixtures and are not a production precision or recall estimate.",
+      "id": "fixture_not_world_accuracy",
+      "status": "disclosure"
+    }
+  ],
+  "rules": [
+    {
+      "family": "sql_injection",
+      "id": "PY_SQL_INTERPOLATION",
+      "language": "python"
+    },
+    {
+      "family": "sql_injection",
+      "id": "JS_SQL_INTERPOLATION",
+      "language": "javascript"
+    },
+    {
+      "family": "dynamic_execution",
+      "id": "PY_DYNAMIC_EXECUTION",
+      "language": "python"
+    },
+    {
+      "family": "dynamic_execution",
+      "id": "JS_DYNAMIC_EXECUTION",
+      "language": "javascript"
+    },
+    {
+      "family": "command_injection",
+      "id": "PY_COMMAND_INJECTION",
+      "language": "python"
+    },
+    {
+      "family": "command_injection",
+      "id": "JS_COMMAND_INJECTION",
+      "language": "javascript"
+    },
+    {
+      "family": "path_traversal",
+      "id": "PY_PATH_TRAVERSAL",
+      "language": "python"
+    },
+    {
+      "family": "path_traversal",
+      "id": "JS_PATH_TRAVERSAL",
+      "language": "javascript"
+    },
+    {
+      "family": "ssrf",
+      "id": "PY_SSRF",
+      "language": "python"
+    },
+    {
+      "family": "ssrf",
+      "id": "JS_SSRF",
+      "language": "javascript"
+    },
+    {
+      "family": "unsafe_deserialization",
+      "id": "PY_UNSAFE_DESERIALIZATION",
+      "language": "python"
+    },
+    {
+      "family": "unsafe_yaml",
+      "id": "PY_YAML_UNSAFE_LOAD",
+      "language": "python"
+    },
+    {
+      "family": "unsafe_yaml",
+      "id": "JS_YAML_UNSAFE_LOAD",
+      "language": "javascript"
+    },
+    {
+      "family": "missing_authorization",
+      "id": "PY_SENSITIVE_ROUTE_NO_AUTH",
+      "language": "python"
+    },
+    {
+      "family": "missing_authorization",
+      "id": "JS_SENSITIVE_ROUTE_NO_AUTH",
+      "language": "javascript"
+    },
+    {
+      "family": "hardcoded_secret",
+      "id": "SECRET_GENERIC",
+      "language": "generic"
+    },
+    {
+      "family": "hardcoded_secret",
+      "id": "SECRET_OPENAI",
+      "language": "generic"
+    },
+    {
+      "family": "hardcoded_secret",
+      "id": "SECRET_GITHUB",
+      "language": "generic"
+    },
+    {
+      "family": "hardcoded_secret",
+      "id": "SECRET_AWS",
+      "language": "generic"
+    }
+  ],
+  "schema_version": 2
 }
