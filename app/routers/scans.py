@@ -46,6 +46,7 @@ from app.services.regression import RegressionResult, verify_patch_regression
 from app.services.reporting import severity_summary
 from app.services.sarif import build_sarif
 from app.services.scanner import process_scan
+from app.services.security_objective import ensure_security_objective, parse_security_objective
 from app.services.security_policy import ensure_security_policy, parse_security_policy
 from app.services.security_sla import ensure_security_sla, parse_security_sla
 
@@ -127,6 +128,7 @@ async def create_scan(
     project_context: Annotated[str | None, Form()] = None,
     security_policy: Annotated[str | None, Form()] = None,
     security_sla: Annotated[str | None, Form()] = None,
+    security_objectives: Annotated[str | None, Form()] = None,
     db: AsyncSession = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> ScanCreated:
@@ -137,6 +139,7 @@ async def create_scan(
         context_document = parse_project_context(project_context)
         policy_document = parse_security_policy(security_policy)
         sla_document = parse_security_sla(security_sla)
+        objective_document = parse_security_objective(security_objectives)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -181,6 +184,9 @@ async def create_scan(
     )
     await ensure_security_sla(
         db, scan, sla_document, source="declared" if sla_document is not None else "inferred"
+    )
+    await ensure_security_objective(
+        db, scan, objective_document, source="declared" if objective_document is not None else "inferred"
     )
     await db.commit()
     background_tasks.add_task(process_scan, scan.id)

@@ -55,3 +55,8 @@ The bundle records the SLA engine version and complete security-debt dashboard, 
 ## Security posture section
 
 Sentinel 1.7 adds the posture-engine version and the selected scan's direct-ancestor posture trend. The bundle covers historical gate, policy, exception, SLA, risk, resolution-time, SLA-attainment, and exact-recurrence metrics. Sibling branches are excluded, and the complete posture section participates in both section-level and canonical payload SHA-256 verification.
+
+
+## Security objective and forecast section
+
+Sentinel 1.8 adds the assigned objective profile ID, version, canonical SHA-256, explicit target checks, deadline state, remediation forecast, interval samples, confidence reasons, assumptions, and both objective/forecast engine versions. Missing history remains visible as `not_measurable` or `insufficient_history`; it is never replaced with a fabricated metric. The complete objective report receives a section SHA-256 and participates in the canonical payload digest.

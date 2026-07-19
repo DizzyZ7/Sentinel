@@ -35,6 +35,7 @@ from app.services.llm_review import PROMPT_VERSION, SCHEMA_VERSION
 from app.services.policy import evaluate_gate
 from app.services.risk_exception import EXCEPTION_ENGINE_VERSION
 from app.services.risk_intelligence import RISK_ENGINE_VERSION, build_risk_intelligence
+from app.services.security_objective import FORECAST_ENGINE_VERSION, OBJECTIVE_ENGINE_VERSION
 from app.services.security_policy import POLICY_ENGINE_VERSION
 from app.services.security_posture import POSTURE_ENGINE_VERSION
 from app.services.security_sla import SLA_ENGINE_VERSION
@@ -84,6 +85,7 @@ def build_finding_evidence_bundle(
     exception_governance: ExceptionAwareCompliance | None = None,
     security_sla=None,
     security_posture=None,
+    security_objective=None,
 ) -> FindingEvidenceBundle:
     generated_at = generated_at or datetime.now(UTC)
     sanitized_snippet = sanitize_context(finding.snippet)
@@ -113,6 +115,8 @@ def build_finding_evidence_bundle(
             risk_exception_engine=EXCEPTION_ENGINE_VERSION,
             security_sla_engine=SLA_ENGINE_VERSION,
             security_posture_engine=POSTURE_ENGINE_VERSION,
+            security_objective_engine=OBJECTIVE_ENGINE_VERSION,
+            remediation_forecast_engine=FORECAST_ENGINE_VERSION,
         ).model_dump(mode="json"),
         "scan": EvidenceScan(
             id=scan.id,
@@ -195,6 +199,9 @@ def build_finding_evidence_bundle(
         "security_sla": (security_sla.model_dump(mode="json") if security_sla is not None else None),
         "security_posture": (
             security_posture.model_dump(mode="json") if security_posture is not None else None
+        ),
+        "security_objective": (
+            security_objective.model_dump(mode="json") if security_objective is not None else None
         ),
         "risk_intelligence": (
             RiskIntelligenceResponse.model_validate(

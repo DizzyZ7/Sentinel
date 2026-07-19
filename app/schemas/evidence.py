@@ -8,6 +8,7 @@ from app.schemas.llm_audit import LLMReviewRunResponse
 from app.schemas.policy import GateResponse
 from app.schemas.risk_exception import ExceptionAwareCompliance
 from app.schemas.risk_intelligence import RiskIntelligenceResponse
+from app.schemas.security_objective import SecurityObjectiveReport
 from app.schemas.security_policy import SecurityPolicyCompliance
 from app.schemas.security_posture import SecurityPostureTrend
 from app.schemas.security_sla import SecurityDebtDashboard
@@ -28,6 +29,8 @@ class EvidenceVersions(BaseModel):
     risk_exception_engine: str
     security_sla_engine: str
     security_posture_engine: str
+    security_objective_engine: str
+    remediation_forecast_engine: str
 
 
 class EvidenceScan(BaseModel):
@@ -116,4 +119,5 @@ class FindingEvidenceBundle(BaseModel):
     exception_governance: ExceptionAwareCompliance | None
     security_sla: SecurityDebtDashboard | None
     security_posture: SecurityPostureTrend | None
+    security_objective: SecurityObjectiveReport | None
     integrity: EvidenceIntegrity

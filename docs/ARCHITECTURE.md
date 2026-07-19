@@ -246,3 +246,10 @@ An additive profile/assignment model versions remediation rules per lineage. Fin
 The security-posture module is a derived ancestor-chain read model. It consumes completed scans, deterministic comparison, assigned context and policy profiles, exception history, risk intelligence, and immutable SLA clocks. It does not execute repository source, invoke GPT-5.6, mutate findings, or merge sibling branches into the selected scan's history. Historical governance and SLA state are evaluated at each scan's completion time.
 
 Remediation episodes use confirmed findings and fail-closed high-confidence evidence. Exact recurrence requires the same privacy-safe fingerprint after at least one resolved generation. Comparison-paired changed evidence transfers the existing episode instead of creating a false resolution.
+
+
+## Security objectives and forecasting boundary
+
+`SecurityObjectiveProfile` stores immutable target documents per lineage root, while `ScanObjectiveAssignment` binds each scan to one exact version. The objective engine reads the selected scan's posture report and emits explicit `met`, `missed`, or `not_measurable` checks without modifying any source evidence, release gate, policy result, exception, SLA clock, or posture point.
+
+The remediation forecast is a deterministic ancestor-chain read model. It measures introduced, reopened, and resolved evidence across positive-duration parent intervals, derives transparent inflow and resolution rates, and projects active backlog to the assigned target date. Sibling branches are excluded, changed evidence remains one continuous episode, missing history returns `insufficient_history`, and confidence thresholds are part of the immutable objective profile. Historical reports use scan completion time as `as_of`; a new rescan is required for a new forecast. No model call or repository-source execution is introduced.
