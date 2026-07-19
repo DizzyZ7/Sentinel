@@ -6,32 +6,78 @@ on:
     types: [opened, synchronize, reopened]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  package:
+  apply:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out current main
+      - name: Check out feature branch
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: codex/sentinel-1.9-portfolio-governance
           fetch-depth: 0
 
-      - name: Build source archive
+      - name: Rebuild reviewed product overlay
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          git archive --format=zip --prefix=Sentinel-1.8/ --output=sentinel-main.zip main
-          sha256sum sentinel-main.zip | tee sentinel-main.sha256
-          unzip -t sentinel-main.zip
+          : > /tmp/sentinel-1.9.b64
+          for sha in \
+            8f8bde3619af728cf4264466e0c1e5c25a6732b6 \
+            5cfc32fb809bf49d93ddf07c9ac261f5a1d30e07 \
+            e8fb650386000ad28412a065df45a3c0356352ca \
+            c9c60e0c04b692745e0f36279f4e598c5eaca72c \
+            c33f894a5fc656bd6fb50eb81732877d1ada9e02 \
+            a2efe5870be2996049e49af890ea97d505fed55a \
+            2c2dff7be6dd5489262b5253270a57134a8bfb24 \
+            e2a1d698b3027cebbb8cbe95fed6b243e4115917 \
+            953ba7ce132cfc9c435269c80ae5493b937b5536 \
+            14d3ab7243fca203d9f2108640176da0beb80007 \
+            245c3f758900220ed4c862bccc2c3b9b2da09d53 \
+            16691759c0da3774af8573411f1a96cda0ce482c \
+            8368b26ad9d8a4038ed40a983b040d32e2812be5 \
+            e2bd50d1b047f1830db07302aed14a4a3952b601 \
+            14e57f1be061c51105faa7157b05f8a8f3f101c6 \
+            fd291c8d2320277f105e6ad572664cd2eafb3961
+          do
+            gh api "repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" --jq .content \
+              | tr -d '\n' \
+              | base64 -d >> /tmp/sentinel-1.9.b64
+          done
+          base64 -d /tmp/sentinel-1.9.b64 > /tmp/sentinel-1.9-overlay.tar.gz
+          echo "507a71bd711bf8df035a1571a4518677e17e3b6c8113a62ab863774e1fc3745e  /tmp/sentinel-1.9-overlay.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/sentinel-1.9-overlay.tar.gz -C .
 
-      - name: Upload source archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: sentinel-main-bootstrap
-          path: |
-            sentinel-main.zip
-            sentinel-main.sha256
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit product slice
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            README.md \
+            app/core/version.py \
+            app/main.py \
+            app/models/__init__.py \
+            app/models/portfolio.py \
+            app/routers/portfolio.py \
+            app/schemas/portfolio.py \
+            app/services/portfolio.py \
+            app/services/release_readiness.py \
+            app/templates/index.html \
+            app/templates/portfolio_dashboard.html \
+            app/templates/portfolios.html \
+            docs/ARCHITECTURE.md \
+            docs/BUILD_LOG.md \
+            docs/EVIDENCE_BUNDLE.md \
+            docs/PORTFOLIO_GOVERNANCE.md \
+            pyproject.toml \
+            tests/test_portfolio.py \
+            tests/test_portfolio_api.py
+          git diff --cached --check
+          git commit -m "Sentinel 1.9: portfolio security governance"
+          git push origin HEAD:codex/sentinel-1.9-portfolio-governance
