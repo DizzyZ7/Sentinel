@@ -47,7 +47,9 @@ Traditional SAST has deterministic evidence but often produces noise. Unconstrai
 8. **Risk Intelligence** maps confirmed evidence to an affected asset, business impact, residual score, and remediation plan.
 9. **Security Posture Trends** measure lineage risk, remediation speed, SLA attainment, and exact recurrence.
 10. **Security Objectives and Forecasting** version target states and project whether observed remediation capacity can reach them.
-11. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
+11. **Portfolio Security Governance** rolls independent lineages into a fail-closed executive scope.
+12. **Continuous Security Control Plane** stores immutable snapshots, state transitions, local alerts, and hash-chained audit events.
+13. **Evidence Bundle** exports the complete privacy-safe chain with integrity hashes.
 
 ## Architecture
 
@@ -257,6 +259,19 @@ GET  /portfolios/{portfolio_id}/governance
 PUT  /portfolios/{portfolio_id}/governance
 GET  /portfolios/{portfolio_id}/dashboard
 GET  /portfolios/{portfolio_id}/evidence
+GET  /portfolios/{portfolio_id}/control-plane
+PUT  /portfolios/{portfolio_id}/control-plane
+GET  /portfolios/{portfolio_id}/control-plane/status
+GET  /portfolios/{portfolio_id}/control-plane/verify
+POST /portfolios/{portfolio_id}/snapshots
+GET  /portfolios/{portfolio_id}/snapshots
+GET  /portfolios/{portfolio_id}/snapshots/{snapshot_id}
+GET  /portfolios/{portfolio_id}/timeline
+GET  /portfolios/{portfolio_id}/alerts
+POST /portfolios/{portfolio_id}/alerts/{alert_id}/acknowledge
+POST /portfolios/{portfolio_id}/alerts/{alert_id}/resolve
+GET  /portfolios/{portfolio_id}/audit-events
+GET  /portfolios/{portfolio_id}/control-plane/evidence
 ```
 
 OpenAPI is available at `http://localhost:8000/docs`.
@@ -434,3 +449,18 @@ curl http://localhost:8000/portfolios/<portfolio_id>/evidence
 ```
 
 The dashboard rolls up posture, policy, exception-aware governance, SLA debt, objectives, forecasts, and criticality-weighted residual-risk concentration. Governance profiles are immutable and versioned by canonical SHA-256. The portfolio evidence export receives per-section and canonical payload integrity hashes. See [`docs/PORTFOLIO_GOVERNANCE.md`](docs/PORTFOLIO_GOVERNANCE.md).
+
+
+## Continuous Security Control Plane
+
+Sentinel 2.0 converts query-time portfolio governance into an explicit operational record. Each capture stores an immutable dashboard, its governance/control versions, a previous-snapshot hash, deterministic metric and member transitions, and a snapshot SHA-256.
+
+```bash
+curl -X POST http://localhost:8000/portfolios/<portfolio_id>/snapshots \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"scheduled","actor":"nightly-ci","idempotency_key":"security-2026-07-19"}'
+curl 'http://localhost:8000/portfolios/<portfolio_id>/timeline?format=html'
+curl -OJ http://localhost:8000/portfolios/<portfolio_id>/control-plane/evidence
+```
+
+Cadence is caller-driven: Sentinel reports `current`, `due`, `overdue`, or `never_captured` but does not pretend to run a hidden scheduler. Persistent conditions are deduplicated into a local alert queue, automatically resolve when cleared, and reopen on recurrence. Control-profile changes, snapshots, and alert lifecycle actions are recorded in an append-only SHA-256 audit chain. No external alert transport is invoked. See [`docs/CONTROL_PLANE.md`](docs/CONTROL_PLANE.md).

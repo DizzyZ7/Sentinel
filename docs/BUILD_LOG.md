@@ -172,3 +172,16 @@ Added immutable security SLA profiles, lineage-stable finding clocks, ownership 
 - Added deterministic roll-up of posture, release policy, exception governance, SLA debt, objectives, and remediation forecasts.
 - Added weighted residual-risk concentration instead of hiding concentrated exposure behind an average.
 - Added responsive executive portfolio UI and integrity-covered portfolio evidence export.
+
+
+## Sentinel 2.0 — Continuous Security Control Plane
+
+- Added immutable portfolio snapshots with idempotent capture keys, exact governance/control provenance, dashboard hashes, and previous-snapshot chaining.
+- Added deterministic portfolio state, metric, member, evidence, governance-check, and risk transitions.
+- Added immutable control-profile versions for caller-driven cadence and local alert-routing policy.
+- Added deduplicated persistent alerts with acknowledgement, manual resolution, automatic clearing, and recurrence reopening.
+- Added append-only per-portfolio audit events with SHA-256 previous-event chaining.
+- Added explicit `never_captured`, `current`, `due`, and `overdue` schedule states without claiming a hidden scheduler.
+- Added semantic configuration-drift detection against the latest immutable snapshot.
+- Added responsive control-plane timeline UI and integrity-covered control-plane evidence export.
+- Added service, persistence, API, OpenAPI, idempotency, alert lifecycle, hash-chain, schedule, evidence, and regression tests.

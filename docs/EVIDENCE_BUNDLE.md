@@ -72,3 +72,16 @@ GET /portfolios/{portfolio_id}/evidence
 It contains application and portfolio-engine versions, explicit lineage membership, pinned-head choices, the exact immutable governance profile, portfolio checks, executive summary, member posture/objective/forecast snapshots, and criticality-weighted risk concentration. Missing, stale, failed, in-progress, and ambiguous evidence remain visible rather than being omitted from the roll-up.
 
 Each top-level portfolio section receives SHA-256 over canonical sorted-key UTF-8 JSON, followed by a canonical payload SHA-256. This is a query-time evidence snapshot: `generated_at`, selected heads, evidence freshness, profile version, and integrity hashes define its reproducibility boundary.
+
+
+## Continuous control-plane evidence
+
+Sentinel 2.0 adds a separate `sentinel-control-plane-evidence-v1` export at:
+
+```http
+GET /portfolios/{portfolio_id}/control-plane/evidence
+```
+
+It contains the exact immutable control-profile history, caller-driven schedule state, every stored portfolio snapshot and transition, snapshot SHA-256 chaining, local alert lifecycle records, the ascending append-only audit-event hash chain, and deterministic verification results for both chains. App, portfolio, control-plane, alert, and audit-chain engine versions are explicit.
+
+Each top-level section receives canonical sorted-key UTF-8 JSON SHA-256 followed by a canonical payload SHA-256. The immutable snapshot and audit chains remain stable; schedule age and export `generated_at` are explicit query-time boundaries and may legitimately change on a later export. The bundle proves internal integrity, not third-party identity or external alert delivery.
